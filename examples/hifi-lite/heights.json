@@ -1,0 +1,66 @@
+{
+ "_doc": "Part heights above the board's top face and pin depth below its bottom face, mm, by footprint name (the part after 'lib:'). From the parts' STEP models (kicad-cli pcb export step) and their LCSC 'Height - Seated (Max)', rounded up. A footprint not listed takes 'default'. 'note' says where a number came from.",
+ "default": {
+  "above": 2.5,
+  "below": 0.0
+ },
+ "CONN-TH_XDJK-0271-1650": {
+  "above": 27.0,
+  "below": 2.9,
+  "note": "stacked RCA pair; STEP model sits 13.5 mm low and 6.1 mm in, corrected"
+ },
+ "CONN-TH_4P-P5.08_DIBO_DB128V-5.08": {
+  "above": 14.0,
+  "below": 1.9,
+  "note": "LCSC: height above board 14 mm"
+ },
+ "CAP-SMD_BD10.0-L10.3-W10.3-FD-LS11.0": {
+  "above": 13.0,
+  "below": 0.0,
+  "note": "MA35V470M10X13, seated max 12.5"
+ },
+ "CAP-SMD_BD8.0-L8.3-W8.3-LS9.3-FD": {
+  "above": 10.5,
+  "below": 0.0,
+  "note": "RVT 8x10.2, seated max 10.2"
+ },
+ "IND-SMD_L8.0-W8.0_XR0850": {
+  "above": 5.2,
+  "below": 0.0,
+  "note": "XR0850 8x8x5.0, no STEP model"
+ },
+ "IND-SMD_L6.0-W6.0_SWPA6045S": {
+  "above": 4.7,
+  "below": 0.0
+ },
+ "IND-SMD_L4.0-W4.0_VLCF4020": {
+  "above": 2.2,
+  "below": 0.0
+ },
+ "WIFI-SMD_ESP32-WROVER-IE8MB": {
+  "above": 3.4,
+  "below": 0.0
+ },
+ "USB-C-SMD_MC-311D": {
+  "above": 3.4,
+  "below": 0.0
+ },
+ "SENSOR-SMD_IRM-H638T-TR2-TL": {
+  "above": 4.2,
+  "below": 0.0
+ },
+ "SW-SMD_4P-L5.1-W5.1-P3.70-LS6.5-TL_H1.5": {
+  "above": 1.5,
+  "below": 0.0,
+  "note": "TS-1187A actuator top at 1.5 mm, 1.6 N"
+ },
+ "MountingHole_3.2mm_M3_Pad_Via": {
+  "above": 0.1,
+  "below": 0.0
+ },
+ "OPTO-TH_IRM-3638T": {
+  "above": 8.0,
+  "below": 2.5,
+  "note": "IRM-3638T standing, lens forward at the front edge, ~5 mm up (Lite worker, 15:03)"
+ }
+}

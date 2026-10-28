@@ -1,0 +1,154 @@
+# Making an enclosure with mech in the Hive
+
+mech is for an agent that has to put a KiCad board in a 3D-printable box.
+It reads the board, gives you a few build123d bricks, and checks the result.
+The enclosure itself is a short Python script in the project you work in.
+mech is a toolbox, not a pipeline: use the parts that help and write your own
+build123d for the rest.
+
+```
+mech board boards/lite/kicad/lite-main.kicad_pcb -o enclosure/board.json
+mech build enclosure/lite.py        # STL + STEP + fit check + renders in enclosure/out/
+```
+
+`mech` here means `$HIVE_MODULES/hive-mech/bin/mech` (the module's install
+folder). On first use it builds its venv (build123d with OCP, matplotlib,
+pytest) in `~/.cache/mech` with the Hive's uv. That takes a few minutes,
+because OCP is a large download. Nothing gets installed outside your HOME,
+and KiCad isn't needed: mech reads the `.kicad_pcb` file itself.
+
+## 1. Read the board: `mech board`
+
+`mech board <pcb> [-o board.json] [--heights heights.json]` writes
+everything an enclosure needs, in one frame: mm, X right, Y up, origin at
+the outline box's lower-left corner, z = 0 at the board's bottom face. It
+also prints a one-line summary and a warning for every height it guessed.
+
+- **outline**, **cutouts**: the Edge.Cuts loops. Arcs and circles are
+  turned into segments.
+- **holes**: mounting holes (MountingHole footprints, or H/MH refs with a
+  hole of 2 mm or more), with their drill and pad size.
+- **parts**: every footprint's courtyard box, side, z span and `under`
+  (how far its leads stick out past the other face). `height_from` says
+  where the height came from:
+  - `model`: the 3D model the footprint names, VRML or STEP, with its
+    offset, rotation and scale applied.
+  - `name`: an `H<n>` in the footprint's name.
+  - `table`: a common package.
+  - `guess`: 5 mm, with a warning.
+  - `override`: your heights file.
+- **ports**: connectors within 2 mm of the outline box's edge, each with the
+  `edge` (W E S N), the `face` rectangle, and a `kind` (`usb-c`,
+  `usb-micro`, `usb-a`, `terminal`, `generic`). The kind sets the opening
+  the mating plug needs (`Port.opening()`) and how deep the face may sit
+  behind the outside (`kicad.PLUGS`).
+- **top_access**: switches, LEDs, IR receivers and displays. Each one needs
+  a decision: a button, a light pipe, a window, or nothing.
+
+**Check the heights.** 3D models are often wrong. On the hifi Lite board,
+the 470 µF cap's model is 7.8 mm tall but the real part is 13 mm, and the
+EasyEDA STEP for the RCA jack sits 13.5 mm low. Put a datasheet number in a
+`heights.json`:
+`{"CONN-TH_XDJK-0271-1650": {"above": 27.0, "below": 2.9, "note": "..."}}`.
+Keys can be a reference or a footprint name. This file is the same format
+as hifi-receiver's `enclosure/heights.json`.
+
+## 2. Write the enclosure
+
+```python
+from mech.box import Tray
+
+BOARD = "board.json"                 # or the .kicad_pcb, relative to this file
+PRINT = {"lid": "flip"}              # turn parts for the bed (or (rx, ry, rz))
+FIT = {"max_recess": {"J4": 6.0}}    # optional: fit.check keyword args
+
+def build(board):
+    t = Tray(board, wall=2.0, standoff=5.0, gap=0.6, top_clear=2.0)
+    base = t.cut_ports(t.base())     # floor, walls, bosses, every port's opening
+    base = t.window(base, "U9", "S") # an IR receiver seen from the front
+    lid = t.cut_top(t.lid(), "D2", d=3.0)
+    lid, btn = t.button(lid, "SW1")  # a printed plunger for a tact switch
+    lid = t.vents(lid, (55, 30, 95, 50))  # slots over the amplifier
+    return {"base": base, "lid": lid, "btn_SW1": btn}
+```
+
+Return the parts **assembled**, in the board's frame; `mech build` turns
+them for printing. `Tray` is one way to build the box: two parts, the board
+screwed to bosses (pilot 2.5 mm for an M3 self-tapper in PETG, 4.0 for a
+heat-set insert), and a lid with a locating lip that steps round tall parts.
+For a different shape (a sloped front, a panel-mount, a clamshell), use
+`mech.box.block/rounded/cylinder` or plain build123d, and keep whatever
+`Tray` helpers still fit. `examples/hifi-lite/enclosure.py` is a complete
+script.
+
+## 3. Build and check: `mech build`
+
+`mech build <enclosure.py> [-o DIR] [--no-render]` writes these to `out/`
+next to the script:
+
+- `<part>.stl`, each part as printed.
+- `enclosure.step`, the assembly plus the board as a slab, for Onshape or
+  any other CAD.
+- `board.json` and `fit.json`.
+- PNG renders.
+
+It exits 1 if a fit check fails. `mech fit <enclosure.py>` runs the check
+alone. The checks:
+
+| check | what it means |
+|---|---|
+| board_clear | the board slab touches nothing |
+| parts_apart | base, lid and buttons don't overlap as assembled |
+| parts_clear | no part's box, and no through-hole lead under the board, runs into the enclosure |
+| port_<ref> | the plug's opening is clear straight out through the wall, and the face isn't recessed deeper than the plug can reach |
+| hole_<ref> | the board is held under each mounting hole |
+| bed_<part> | the part as printed fits the bed (default 220 x 220 x 250 mm; `FIT = {"bed": (...)}`) |
+
+It also lists what is above each top-access part (open, lid, a button) and
+each part's volume and solid PETG mass, which gives a material cost (PETG is
+about $20/kg).
+
+The renders are hidden-line drawings. `iso.png` shows the assembly with the
+lid lifted, `top.png` the top view, and `port-<edge>.png` one view per edge
+with ports, where each connector (blue) should be framed by its opening.
+Look at them: the checks only catch what they measure.
+
+## Things to know
+
+- Use PETG or ASA, not PLA, near anything warm (an amplifier's heatsink
+  reaches 60-80 °C). Walls of 2 mm and a 5 mm standoff print well. Leave a
+  0.25 mm gap on press fits.
+- Port openings follow the plug, not the receptacle. A USB-C opening is at
+  least 12.4 x 6.6 mm, so the overmold fits. A connector set back from the
+  board edge adds that set-back to the recess. Tell the board's worker to
+  move it to the edge rather than thinning the wall.
+- Board outlines are boxed: the cavity follows the outline's bounding box.
+  For a shaped board, cut the cavity from `board.outline` yourself.
+- build123d's `Text()` can hang for minutes looking for fonts, so leave
+  embossed labels out or give it a font file path.
+- The machine is often loaded. One CAD build at a time, at `nice 19`, takes
+  about 1 min for the Lite box.
+
+## Handing it to the person: Onshape
+
+See [onshape.md](onshape.md). In short: STEP goes to Onshape as a new
+document, with the person's API keys in the environment for that one run and
+never in a file. Until they give keys, hand them `out/enclosure.step` and
+the STLs.
+
+## Test and score
+
+- `mech test` runs the module's tests: the KiCad reader on a hand-written
+  board, every fit check made to fail the way it should, the Onshape client
+  against a fake server, and every example's fit.
+- `mech score` gives 100 x fit checks passed / fit checks over
+  `examples/*/enclosure.py`; higher is better. An example that doesn't
+  build counts as a failed check. Add an example (a board.json and its
+  enclosure) when a real board teaches mech something new.
+
+## Be critical of the tools
+
+When a brick, a check or the reader gets something wrong, fix it here: a
+false port, a height the table gets wrong, a check that passed a box that
+didn't fit. A board-local workaround is the failure mode. If the fix isn't
+small, file it with `hive agent brief --project hive-mech`.

@@ -1,0 +1,6 @@
+{
+  "name": "mech",
+  "description": "Mechanical design: 3D-printable enclosures fitted to KiCad boards, modelled in code. bin/mech reads a .kicad_pcb (outline, mounting holes, part heights from their 3D models or a heights file, edge connectors and the plug each needs), gives build123d bricks for a base, lid, port openings, buttons, windows and vents, exports STL and STEP, renders hidden-line views, and runs a fit check (ports open, parts and leads clear, bosses under the holes, parts fit the bed). The enclosure is a short script in the agent's own project; mech is a toolbox, not a pipeline. It runs in the agent's sandbox with a Python venv in its HOME (build123d/OCP, built with the Hive's uv). The Onshape handoff takes the person's API key pair from the environment for one run and never stores it; ordering prints or buying a printer stays the person's.",
+  "provides": {"procedures": ["docs/README.md"]},
+  "projects": ["*"]
+}
