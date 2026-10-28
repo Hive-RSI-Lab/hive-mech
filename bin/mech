@@ -1,0 +1,55 @@
+#!/bin/sh
+# mech inside the Hive: enclosures in code for KiCad boards. Keeps its Python
+# venv (build123d, matplotlib, pytest) in the agent's own HOME and runs
+# mech/cli.py with it.
+#
+#   mech board <x.kicad_pcb> [-o board.json]  outline, holes, parts, ports
+#   mech build <enclosure.py> [-o DIR]        export STL/STEP, fit-check, render
+#   mech fit <enclosure.py>                   the fit check alone
+#   mech onshape check|upload ...             the Onshape handoff (docs/onshape.md)
+#   mech test [args]                          the module's tests
+#   mech score                                fit checks passed over examples/
+#   mech python [args]                        the venv's python, mech importable
+#   mech env                                  print the exports
+#
+# Nothing here installs anything outside HOME: the venv is built from
+# requirements.lock with the Hive's uv on first use (a few minutes: OCP is big).
+set -e
+here=$(cd "$(dirname "$0")/.." && pwd)
+tools=${HIVE_TOOLS:-/hive/tools}
+state=${MECH_HOME:-$HOME/.cache/mech}
+venv=${MECH_VENV:-$state/venv}
+
+if [ ! -x "$venv/bin/python" ] || [ "$here/requirements.lock" -nt "$venv/.mech-lock" ]; then
+	uv=$(command -v uv || true)
+	[ -z "$uv" ] && [ -x "$tools/uv/bin/uv" ] && uv=$tools/uv/bin/uv
+	[ -z "$uv" ] && { echo "mech: needs uv (hive agent install --tool uv)" >&2; exit 127; }
+	mkdir -p "$state"
+	echo "mech: building the venv in $venv (first use)" >&2
+	"$uv" venv -q --clear --python 3.12 "$venv" >&2
+	VIRTUAL_ENV=$venv "$uv" pip install -q -r "$here/requirements.lock" >&2
+	touch "$venv/.mech-lock"
+fi
+export PYTHONPATH="$here${PYTHONPATH:+:$PYTHONPATH}"
+export MPLBACKEND=Agg
+
+case "${1:-}" in
+env)
+	printf "export PYTHONPATH='%s'\nexport MECH_PY='%s'\n" "$PYTHONPATH" "$venv/bin/python"
+	;;
+test)
+	shift
+	cd "$here"
+	exec "$venv/bin/python" -m pytest "$@"
+	;;
+python)
+	shift
+	exec "$venv/bin/python" "$@"
+	;;
+"" | -h | --help)
+	sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'
+	;;
+*)
+	exec "$venv/bin/python" -m mech.cli "$@"
+	;;
+esac

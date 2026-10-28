@@ -1,0 +1,204 @@
+{
+ "ok": true,
+ "checks": [
+  {
+   "name": "board_clear",
+   "ok": true,
+   "overlap_mm3": 0
+  },
+  {
+   "name": "parts_apart",
+   "ok": true,
+   "clashes": []
+  },
+  {
+   "name": "parts_clear",
+   "ok": true,
+   "hits": []
+  },
+  {
+   "name": "port_J3",
+   "ok": true,
+   "edge": "N",
+   "kind": "generic",
+   "blocked_mm3": 0,
+   "recess_mm": 2.6,
+   "max_recess_mm": 3.0
+  },
+  {
+   "name": "port_J1",
+   "ok": true,
+   "edge": "N",
+   "kind": "usb-c",
+   "blocked_mm3": 0,
+   "recess_mm": 2.6,
+   "max_recess_mm": 3.0
+  },
+  {
+   "name": "port_J2",
+   "ok": true,
+   "edge": "N",
+   "kind": "generic",
+   "blocked_mm3": 0,
+   "recess_mm": 2.6,
+   "max_recess_mm": 3.0
+  },
+  {
+   "name": "port_J4",
+   "ok": true,
+   "edge": "N",
+   "kind": "terminal",
+   "blocked_mm3": 0,
+   "recess_mm": 3.2,
+   "max_recess_mm": 6.0
+  },
+  {
+   "name": "hole_H2",
+   "ok": true,
+   "supported": 1.0
+  },
+  {
+   "name": "hole_H1",
+   "ok": true,
+   "supported": 1.0
+  },
+  {
+   "name": "hole_H4",
+   "ok": true,
+   "supported": 1.0
+  },
+  {
+   "name": "hole_H3",
+   "ok": true,
+   "supported": 1.0
+  },
+  {
+   "name": "bed_base",
+   "ok": true,
+   "size_mm": [
+    105.2,
+    95.2,
+    37.6
+   ],
+   "bed_mm": [
+    220.0,
+    220.0,
+    250.0
+   ]
+  },
+  {
+   "name": "bed_btn_SW1",
+   "ok": true,
+   "size_mm": [
+    7.0,
+    7.0,
+    30.2
+   ],
+   "bed_mm": [
+    220.0,
+    220.0,
+    250.0
+   ]
+  },
+  {
+   "name": "bed_btn_SW2",
+   "ok": true,
+   "size_mm": [
+    7.0,
+    7.0,
+    30.2
+   ],
+   "bed_mm": [
+    220.0,
+    220.0,
+    250.0
+   ]
+  },
+  {
+   "name": "bed_btn_SW3",
+   "ok": true,
+   "size_mm": [
+    7.0,
+    7.0,
+    30.2
+   ],
+   "bed_mm": [
+    220.0,
+    220.0,
+    250.0
+   ]
+  },
+  {
+   "name": "bed_lid",
+   "ok": true,
+   "size_mm": [
+    105.2,
+    95.2,
+    5.0
+   ],
+   "bed_mm": [
+    220.0,
+    220.0,
+    250.0
+   ]
+  }
+ ],
+ "top_access": [
+  {
+   "ref": "SW3",
+   "open_above": false,
+   "under": [
+    "btn_SW3"
+   ]
+  },
+  {
+   "ref": "SW2",
+   "open_above": false,
+   "under": [
+    "btn_SW2"
+   ]
+  },
+  {
+   "ref": "SW1",
+   "open_above": false,
+   "under": [
+    "btn_SW1"
+   ]
+  },
+  {
+   "ref": "U9",
+   "open_above": false,
+   "under": [
+    "lid"
+   ]
+  },
+  {
+   "ref": "D2",
+   "open_above": true,
+   "under": []
+  }
+ ],
+ "material": {
+  "base": {
+   "volume_cm3": 44.8,
+   "solid_petg_g": 56.9
+  },
+  "btn_SW1": {
+   "volume_cm3": 0.3,
+   "solid_petg_g": 0.4
+  },
+  "btn_SW2": {
+   "volume_cm3": 0.3,
+   "solid_petg_g": 0.4
+  },
+  "btn_SW3": {
+   "volume_cm3": 0.3,
+   "solid_petg_g": 0.4
+  },
+  "lid": {
+   "volume_cm3": 21.0,
+   "solid_petg_g": 26.7
+  }
+ },
+ "build_s": 0.3
+}

@@ -1,3 +1,4 @@
 {
-  "test": ""
+  "test": "bin/mech test",
+  "score": {"command": "bin/mech score", "direction": "higher", "tolerance": 0, "paths": ["mech/cli.py", "mech/fit.py", "examples/"]}
 }
