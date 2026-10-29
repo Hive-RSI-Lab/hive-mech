@@ -84,6 +84,11 @@ script.
 
 ## 3. Build and check: `mech build`
 
+Inside a Hive turn, `build`, `fit`, `score` and `test` wait for `hive agent
+heavy`'s lease (the machine is shared; at most 10 minutes, then they run
+anyway), so give the shell command a timeout to match. Where the hive has no
+`heavy` op yet they run at once.
+
 `mech build <enclosure.py> [-o DIR] [--no-render]` writes these to `out/`
 next to the script:
 
