@@ -75,7 +75,8 @@ def build(board):
 Return the parts **assembled**, in the board's frame; `mech build` turns
 them for printing. `Tray` is one way to build the box: two parts, the board
 screwed to bosses (pilot 2.5 mm for an M3 self-tapper in PETG, 4.0 for a
-heat-set insert), and a lid with a locating lip that steps round tall parts.
+heat-set insert), walls that follow the board's outline, and a lid with a
+locating lip that steps round tall parts.
 For a different shape (a sloped front, a panel-mount, a clamshell), use
 `mech.box.block/rounded/cylinder` or plain build123d, and keep whatever
 `Tray` helpers still fit. `examples/hifi-lite/enclosure.py` is a complete
@@ -122,8 +123,13 @@ Look at them: the checks only catch what they measure.
   least 12.4 x 6.6 mm, so the overmold fits. A connector set back from the
   board edge adds that set-back to the recess. Tell the board's worker to
   move it to the edge rather than thinning the wall.
-- Board outlines are boxed: the cavity follows the outline's bounding box.
-  For a shaped board, cut the cavity from `board.outline` yourself.
+- The cavity follows the board's outline (Edge.Cuts) grown by `gap`, so a
+  shaped board sits in a box of the same shape. Each wall, the lid and its lip
+  are offsets of that plan. Convex corners round by the offset; concave ones
+  stay sharp. `Tray(board, shape="box")` gives the old rounded rectangle round
+  the outline's box, with `corner` as its radius. The board's internal cutouts
+  aren't in the plan. A part overhanging a shaped edge that isn't a port
+  shows up in `parts_clear`.
 - build123d's `Text()` can hang for minutes looking for fonts, so leave
   embossed labels out or give it a font file path.
 - The machine is often loaded. One CAD build at a time, at `nice 19`, takes
