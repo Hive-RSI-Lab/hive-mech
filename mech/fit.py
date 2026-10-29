@@ -33,6 +33,7 @@ receivers) have an opening above them, and each part's volume and mass.
 """
 from __future__ import annotations
 
+import json
 import math
 
 from build123d import Axis, Compound, Face, Kind, Part, Polygon, Pos, extrude, offset
@@ -263,3 +264,29 @@ def summary(report: dict) -> str:
     passed = sum(c["ok"] for c in report["checks"])
     lines.append(f"fit: {passed}/{len(report['checks'])} checks pass")
     return "\n".join(lines)
+
+
+def _cell(v) -> str:
+    return (json.dumps(v) if isinstance(v, (list, dict)) else str(v)).replace("|", "\\|")
+
+
+def markdown(report: dict, title: str = "") -> str:
+    """The report as fit.md: a table with one row per check, its second cell
+    pass or fail (what a project's own tests can read), then the parts
+    reached from above and the material."""
+    passed = sum(c["ok"] for c in report["checks"])
+    lines = [f"# Fit{': ' + title if title else ''}", "",
+             f"{passed}/{len(report['checks'])} checks pass" + ("." if report["ok"] else ", some fail."), "",
+             "| check | result | measured |", "|---|---|---|"]
+    for c in report["checks"]:
+        info = ", ".join(f"{k}={_cell(v)}" for k, v in c.items() if k not in ("name", "ok"))
+        lines.append(f"| {c['name']} | {'pass' if c['ok'] else 'fail'} | {info} |")
+    if report.get("top_access"):
+        lines += ["", "## Reached from above", ""]
+        for t in report["top_access"]:
+            lines.append(f"- {t['ref']}: " + ("open above" if t["open_above"] else "under " + ", ".join(t["under"])))
+    if report.get("material"):
+        lines += ["", "## Material", ""]
+        for n, m in report["material"].items():
+            lines.append(f"- {n}: {m['volume_cm3']} cm3, {m['solid_petg_g']} g PETG if solid")
+    return "\n".join(lines) + "\n"

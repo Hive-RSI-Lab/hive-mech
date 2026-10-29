@@ -76,7 +76,9 @@ Something that isn't on the board but must fit inside the box (a heatsink,
 a binding post's nut and lug, a second board and its parts) goes in as
 `board.add_box(ref, x0, y0, z0, x1, y1, z1, what)` before you build round
 it. The fit check then holds the plastic clear of it (`parts_clear`) and
-it clear of the board's own parts (`added_parts_clear`).
+it clear of the board's own parts (`added_parts_clear`). A part you make
+yourself counts as added when its footprint starts with `enclosure:`
+(`mech.kicad.ADDED`), as `add_box`'s do.
 
 Return the parts **assembled**, in the board's frame; `mech build` turns
 them for printing. `Tray` is one way to build the box: two parts, the board
@@ -106,7 +108,9 @@ next to the script:
 - `<part>.stl`, each part as printed.
 - `enclosure.step`, the assembly plus the board as a slab, for Onshape or
   any other CAD.
-- `board.json` and `fit.json`.
+- `board.json`, `fit.json`, and `fit.md`: the same report as a table, one
+  row per check whose second cell is `pass` or `fail`, for a project's own
+  tests to read.
 - PNG renders.
 
 It exits 1 if a fit check fails. `mech fit <enclosure.py>` runs the check
