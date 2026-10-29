@@ -180,8 +180,8 @@
  ],
  "material": {
   "base": {
-   "volume_cm3": 44.8,
-   "solid_petg_g": 56.9
+   "volume_cm3": 44.7,
+   "solid_petg_g": 56.8
   },
   "btn_SW1": {
    "volume_cm3": 0.3,
@@ -197,8 +197,8 @@
   },
   "lid": {
    "volume_cm3": 21.0,
-   "solid_petg_g": 26.7
+   "solid_petg_g": 26.6
   }
  },
- "build_s": 0.7
+ "build_s": 0.9
 }

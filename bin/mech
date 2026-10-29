@@ -13,6 +13,10 @@
 #   mech python [args]                        the venv's python, mech importable
 #   mech env                                  print the exports
 #
+# test, score, build and fit (OCP models, renders, a whole suite) wait for
+# `hive agent heavy`'s lease inside a Hive turn (at most 10 minutes, then run
+# anyway): give the shell command a timeout to match.
+#
 # Nothing here installs anything outside HOME: the venv is built from
 # requirements.lock with the Hive's uv on first use (a few minutes: OCP is big).
 set -e
@@ -34,6 +38,22 @@ fi
 export PYTHONPATH="$here${PYTHONPATH:+:$PYTHONPATH}"
 export MPLBACKEND=Agg
 
+# A heavy command runs under `hive agent heavy`, which waits while the machine
+# is strained and others run one: on 10-28 ten hwde suites, freerouting and a
+# mech build at once took a 20-core load to 137. Not when it is already
+# inside one (a test that runs mech) or the hive at hand has no heavy op yet:
+# then it runs bare.
+heavy=
+x() {
+	if [ -n "$heavy" ] && [ -z "${MECH_HEAVY_HELD:-}" ] && command -v hive >/dev/null 2>&1 &&
+		hive agent help 2>/dev/null | grep -q '^  heavy '; then
+		export MECH_HEAVY_HELD=1
+		exec hive agent heavy --what "$heavy" -- "$@"
+	fi
+	[ -n "$heavy" ] && export MECH_HEAVY_HELD=1
+	exec "$@"
+}
+
 case "${1:-}" in
 env)
 	printf "export PYTHONPATH='%s'\nexport MECH_PY='%s'\n" "$PYTHONPATH" "$venv/bin/python"
@@ -41,16 +61,20 @@ env)
 test)
 	shift
 	cd "$here"
-	exec "$venv/bin/python" -m pytest "$@"
+	heavy="mech test (the module's pytest suite)"
+	x "$venv/bin/python" -m pytest "$@"
 	;;
 python)
 	shift
 	exec "$venv/bin/python" "$@"
 	;;
 "" | -h | --help)
-	sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '2,21p' "$0" | sed 's/^# \{0,1\}//'
 	;;
 *)
-	exec "$venv/bin/python" -m mech.cli "$@"
+	case $1 in
+	build | fit | score) heavy="mech $1" ;;
+	esac
+	x "$venv/bin/python" -m mech.cli "$@"
 	;;
 esac

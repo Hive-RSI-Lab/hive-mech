@@ -91,3 +91,32 @@ def test_vents_and_window_cut_material(board):
     win = t.window(base, "SW1", "S")
     assert win.volume < base.volume
     assert fit.check(board, {"base": win, "lid": vented})["ok"]
+
+
+def l_shaped(board):
+    """The tiny board with its NE corner (x > 40, y > 20) cut away."""
+    import dataclasses
+    return dataclasses.replace(board, outline=[[0, 0], [50, 0], [50, 20], [40, 20], [40, 30], [0, 30]])
+
+
+def test_cavity_follows_a_shaped_outline(board):
+    shaped = l_shaped(board)
+    t = Tray(shaped)
+    base, lid = t.cut_ports(t.base()), t.lid()
+    r = fit.check(shaped, {"base": base, "lid": lid})
+    assert names_failing(r) == [], fit.summary(r)
+    zs = (t.z_floor + 1, t.z_top - 1)
+    wall = block(41.0, 24, zs[0], 42.4, 27, zs[1])  # just past the notch's W edge (x = 40)
+    corner = block(44, 24, t.z_bottom - 1, 47, 27, t.z_top + t.lid_t + 1)  # well inside the cut-away
+    assert (base & wall).volume > 0.99 * wall.volume  # the wall turns into the notch
+    assert fit._overlap(base, corner) < fit.EPS and fit._overlap(lid, corner) < fit.EPS  # nothing over it
+    boxed = Tray(shaped, shape="box")
+    assert fit._overlap(boxed.base(), wall) < fit.EPS  # the bounding box left it hollow
+
+
+def test_box_shape_still_builds(board):
+    t = Tray(board, shape="box")
+    r = fit.check(board, {"base": t.cut_ports(t.base()), "lid": t.lid()})
+    assert names_failing(r) == [], fit.summary(r)
+    with pytest.raises(ValueError):
+        Tray(board, shape="round")
