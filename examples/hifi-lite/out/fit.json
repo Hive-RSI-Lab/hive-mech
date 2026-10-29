@@ -7,6 +7,12 @@
    "overlap_mm3": 0
   },
   {
+   "name": "lid_covers",
+   "ok": true,
+   "open_mm2": 0.0,
+   "where": []
+  },
+  {
    "name": "parts_apart",
    "ok": true,
    "clashes": []
@@ -200,5 +206,5 @@
    "solid_petg_g": 26.6
   }
  },
- "build_s": 1.1
+ "build_s": 2.4
 }

@@ -11,6 +11,8 @@ they sit when assembled; `mech build` turns them for printing.
     lid = t.lid()            # a plate with a locating lip
     lid = t.cut_top(lid, "SW1", d=4)   # a hole over a part on the board
     lid = t.vents(lid, (60, 30, 95, 50))  # slots over a hot area
+    base, lid = t.screws_from_below(base, lid)  # screws up through the board into lid pillars
+    base -= teardrop(x, y, z, 4.3, 6)   # a hole through an upright wall that prints unsupported
 
 Each brick is a plain function of numbers you can read and change: use the
 ones that fit, write your own build123d for the rest. A Tray is only a
@@ -18,6 +20,7 @@ holder for the numbers they share.
 """
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 
 from build123d import (Align, Box, Cylinder, Kind, Part, Polygon, Pos,
@@ -44,13 +47,31 @@ def cylinder(x, y, z0, z1, d) -> Part:
     return Pos(x, y, z0) * Cylinder(d / 2, z1 - z0, align=(Align.CENTER, Align.CENTER, Align.MIN))
 
 
+def teardrop(x, y, z, d, length, axis="y") -> Part:
+    """A horizontal hole of diameter d along axis ("x" or "y"), centred at
+    (x, y, z), with a 45-degree point on top, so a wall printed upright
+    makes it without support (binding posts, a round jack)."""
+    r = d / 2
+    if axis == "y":
+        hole = Pos(x, y, z) * Rot(90, 0, 0) * Cylinder(r, length)
+        tip = Pos(x, y, z + r / math.sqrt(2)) * Rot(0, 45, 0) * Box(r, length, r)
+    elif axis == "x":
+        hole = Pos(x, y, z) * Rot(0, 90, 0) * Cylinder(r, length)
+        tip = Pos(x, y, z + r / math.sqrt(2)) * Rot(45, 0, 0) * Box(length, r, r)
+    else:
+        raise ValueError(f"teardrop axis: {axis!r}, want 'x' or 'y'")
+    return hole + tip
+
+
 @dataclass
 class Tray:
     """A two-part box: a base the board screws into, a lid that drops on.
 
     shape: "outline" (the cavity is the board's outline grown by gap, so a
     shaped board sits in a shaped box) or "box" (a rounded rectangle round
-    the outline's box). gap: board edge to inner wall. corner: the box
+    `inner`, the outline's box grown by gap). The default is "outline",
+    or "box" for a subclass that overrides `inner` (a gap per side, say):
+    the outline's plan can't follow an overridden `inner`. gap: board edge to inner wall. corner: the box
     cavity's corner radius (default: the most that clears a square board
     corner; "outline" rounds each corner by gap instead). standoff: floor top to board bottom.
     top_clear: tallest top part to the lid's underside. boss_d, pilot_d: the
@@ -59,7 +80,7 @@ class Tray:
     connector's face. lip: the lid's locating lip (height, thickness, fit gap).
     """
     board: Board
-    shape: str = "outline"
+    shape: str | None = None
     wall: float = 2.0
     floor: float = 2.0
     lid_t: float = 2.0
@@ -80,6 +101,12 @@ class Tray:
             self.corner = round(min(3.0, 3.4 * self.gap), 2)
         if self.ports is None:
             self.ports = list(self.board.ports)
+        custom = type(self).inner is not Tray.inner and type(self).plan is Tray.plan
+        if self.shape is None:
+            self.shape = "box" if custom else "outline"
+        elif self.shape == "outline" and custom:
+            raise ValueError(f"{type(self).__name__} overrides inner, which shape='outline' can't follow: "
+                             "use shape='box', or override plan() too")
         if self.shape not in ("outline", "box"):
             raise ValueError(f"Tray.shape: {self.shape!r}, want 'outline' or 'box'")
 
@@ -144,6 +171,24 @@ class Tray:
                 lid -= block(p.bbox[0] - 0.5, p.bbox[1] - 0.5, self.z_top - lh - 1,
                              p.bbox[2] + 0.5, p.bbox[3] + 0.5, self.z_top)
         return lid
+
+    def screws_from_below(self, base: Part, lid: Part, clear: float = 3.4, head: float = 6.2,
+                          head_depth: float = 3.0, pillar_d: float = 6.0, pilot: float = 2.5,
+                          short: float = 0.2) -> tuple[Part, Part]:
+        """One screw per mounting hole, from under the base through the board
+        into a pillar hanging from the lid: it clamps the board and holds the
+        lid. Returns (base, lid). The base gets a clearance hole and a
+        counterbore for the head; the lid a pillar that stops `short` above
+        the board (so the screw pulls the lid down onto the walls) with a
+        pilot for an M3 thread-former (2.5 in PETG). Screw length: floor +
+        standoff + board + about 6 mm of pillar."""
+        zb, zt, top = self.z_bottom, self.z_top, self.board.thickness
+        for h in self.board.holes:
+            base -= cylinder(h.x, h.y, zb - 1, 1.0, clear)
+            base -= cylinder(h.x, h.y, zb - 1, zb + head_depth, head)
+            lid += cylinder(h.x, h.y, top + short, zt + 0.01, pillar_d)
+            lid -= cylinder(h.x, h.y, top, zt + self.lid_t - 0.8, pilot)
+        return base, lid
 
     def port_box(self, port: Port, margin: float | None = None) -> Part:
         """The solid a port's opening removes: the mating plug's outline

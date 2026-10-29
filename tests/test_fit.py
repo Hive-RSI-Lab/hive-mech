@@ -120,3 +120,86 @@ def test_box_shape_still_builds(board):
     assert names_failing(r) == [], fit.summary(r)
     with pytest.raises(ValueError):
         Tray(board, shape="round")
+
+
+def test_lid_short_of_the_cavity_fails(board):
+    t = Tray(board)
+    base = t.cut_ports(t.base())
+    short = t.lid() - block(-10, -10, t.z_top - 10, 60, 5.0, t.z_top + 10)  # 5.6 mm missing at the S wall
+    r = fit.check(board, {"base": base, "lid": short})
+    assert names_failing(r) == ["lid_covers"], fit.summary(r)
+    gap = next(c for c in r["checks"] if c["name"] == "lid_covers")
+    assert gap["open_mm2"] > 100 and gap["where"][0][1] < 0 < gap["where"][0][3]
+
+
+def test_lid_from_a_smaller_plan_fails(board):
+    # The 10-28 core_box bug: the base built round a bigger cavity than the lid's.
+    base = Tray(board, shape="box", gap=4.0).base()
+    r = fit.check(board, {"base": base, "lid": Tray(board, shape="box").lid()})
+    assert "lid_covers" in names_failing(r)
+
+
+def test_lid_inside_the_walls_covers(board):
+    # A plate dropped inside the walls with a 0.25 mm fit gap: the ring round it isn't a hole.
+    t = Tray(board)
+    plate = t.plan(-0.25, t.z_top - t.lid_t, t.z_top)
+    r = fit.check(board, {"base": t.cut_ports(t.base()), "lid": t.vents(plate, (5, 5, 25, 15))})
+    assert "lid_covers" not in names_failing(r), fit.summary(r)
+
+
+def test_tray_with_its_own_inner_is_a_box(board):
+    class Wide(Tray):
+        @property
+        def inner(self):
+            w, h = self.board.size
+            return (-0.6, -6.0, w + 0.6, h + 0.6)  # room in front of the S edge
+    t = Wide(board)
+    assert t.shape == "box"
+    lid = t.lid()
+    assert lid.bounding_box().min.Y < -7.9  # the lid reaches the moved S wall
+    r = fit.check(board, {"base": t.cut_ports(t.base()), "lid": lid})
+    assert "lid_covers" not in names_failing(r), fit.summary(r)
+    with pytest.raises(ValueError):
+        Wide(board, shape="outline")
+
+
+def test_added_box_inside_a_part_fails(board):
+    import copy
+    b = copy.deepcopy(board)
+    t = Tray(b)
+    b.add_box("HS1", 33, 13, 10, 37, 17, 14, "heatsink over C1")  # C1 is 13 mm tall there
+    b.add_box("NUT1", 41, 20, 2, 45, 23, 6, "a nut in free space")
+    r = fit.check(b, {"base": t.cut_ports(t.base()), "lid": t.lid()})
+    assert "added_parts_clear" in names_failing(r), fit.summary(r)
+    c = next(c for c in r["checks"] if c["name"] == "added_parts_clear")
+    assert c["clashes"] == [["HS1", "C1"]] and c["added"] == 2
+    b.parts = [p for p in b.parts if p.ref != "HS1"]
+    r = fit.check(b, {"base": t.cut_ports(t.base()), "lid": t.lid()})
+    assert "added_parts_clear" not in names_failing(r), fit.summary(r)
+
+
+def test_nothing_added_no_added_check(board):
+    t = Tray(board)
+    r = fit.check(board, {"base": t.cut_ports(t.base()), "lid": t.lid()})
+    assert "added_parts_clear" not in [c["name"] for c in r["checks"]]
+
+
+def test_screws_from_below_into_lid_pillars(board):
+    t = Tray(board)
+    base, lid = t.screws_from_below(t.cut_ports(t.base()), t.lid())
+    r = fit.check(board, {"base": base, "lid": lid})
+    assert names_failing(r) == [], fit.summary(r)
+    h = board.holes[0]
+    pillar = block(h.x + 1.4, h.y - 0.5, 3.0, h.x + 2.6, h.y + 0.5, t.z_top - 1)  # in the pillar's wall
+    assert (lid & pillar).volume > 0.99 * pillar.volume
+    head = block(h.x - 2, h.y - 2, t.z_bottom - 0.5, h.x + 2, h.y + 2, t.z_bottom + 2.5)  # the counterbore
+    assert fit._overlap(base, head) < fit.EPS
+
+
+def test_teardrop_has_a_point_on_top():
+    from mech.box import teardrop
+    for axis in ("x", "y"):
+        d = teardrop(0, 0, 0, 4.0, 10, axis=axis)
+        bb = d.bounding_box()
+        assert abs(bb.max.Z - 2.0 * 2 ** 0.5) < 0.01 and abs(bb.min.Z + 2.0) < 0.01
+        assert abs(d.volume - (3.14159 * 4 + 2.0 ** 2 - 3.14159 * 4 / 4) * 10) < 1.0
