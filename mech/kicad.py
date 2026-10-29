@@ -79,6 +79,7 @@ _KINDS = [
     (re.compile(r"usb[-_]?a\b", re.I), "usb-a"),
     (re.compile(r"terminal|screw|DB128|KF128|phoenix|5\.08|3\.81", re.I), "terminal"),
 ]
+ADDED = "enclosure:"  # footprint prefix of a part a script added (Board.add_box), not a footprint
 THT_LEAD = 2.5  # mm a through-hole lead sticks out when its model doesn't say
 
 
@@ -151,6 +152,17 @@ class Board:
             if p.ref == ref:
                 return p
         raise KeyError(ref)
+
+    def add_box(self, ref: str, x0: float, y0: float, z0: float, x1: float, y1: float, z1: float,
+                what: str = "") -> Part:
+        """Something that isn't a footprint on this board but must fit in the
+        box (a heatsink, a binding post's nut, a second board), as a part the
+        fit check knows: parts_clear checks it against the enclosure, and
+        added_parts_clear against the board's own parts."""
+        p = Part(ref, what, ADDED + what, "top", (x0 + x1) / 2, (y0 + y1) / 2, 0.0,
+                 [min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1)], [min(z0, z1), max(z0, z1)], "added", False)
+        self.parts.append(p)
+        return p
 
     def port(self, ref: str) -> Port:
         for p in self.ports:
