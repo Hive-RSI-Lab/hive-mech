@@ -77,7 +77,7 @@ _KINDS = [
     (re.compile(r"usb[-_]?c\b|type[-_]?c|usb4105|usb-3\.1-smd_16p", re.I), "usb-c"),
     (re.compile(r"micro[-_]?usb|usb[-_]?micro", re.I), "usb-micro"),
     (re.compile(r"usb[-_]?a\b", re.I), "usb-a"),
-    (re.compile(r"terminal|screw|DB128|KF128|phoenix|5\.08|3\.81", re.I), "terminal"),
+    (re.compile(r"terminal|screw|DB128|KF128|KF301|DG301|phoenix|5\.08|3\.81", re.I), "terminal"),
 ]
 THT_LEAD = 2.5  # mm a through-hole lead sticks out when its model doesn't say
 

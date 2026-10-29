@@ -8,7 +8,8 @@
 #   mech fit <enclosure.py>                   the fit check alone
 #   mech onshape check|upload ...             the Onshape handoff (docs/onshape.md)
 #   mech test [args]                          the module's tests
-#   mech score                                fit checks passed over examples/
+#   mech pin <clone> [--sha REV]              pin hifi-receiver's committed boards
+#   mech score                                each pinned board's enclosure, fit-checked
 #   mech python [args]                        the venv's python, mech importable
 #   mech env                                  print the exports
 #
@@ -47,7 +48,7 @@ python)
 	exec "$venv/bin/python" "$@"
 	;;
 "" | -h | --help)
-	sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'
 	;;
 *)
 	exec "$venv/bin/python" -m mech.cli "$@"

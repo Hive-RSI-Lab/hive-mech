@@ -1,4 +1,5 @@
-"""The hifi receiver's Lite board in a two-part PETG box: the module's proof.
+"""The hifi receiver's Lite board (lite-main) in a two-part PETG box: the
+module's stand-in until the product commits its own (`mech score` prefers that).
 
 The board (100 x 90 mm, four M3 holes at the corners) screws onto bosses in
 the base. The rear (the board's N edge) has openings for both RCA pairs
@@ -6,13 +7,11 @@ the base. The rear (the board's N edge) has openings for both RCA pairs
 window for the IR receiver (U9); the three switches (SW1-3) get printed
 buttons through the lid, and the status LED (D2) a hole over it.
 
-board.json is the Lite board at hifi-receiver edbe4bd, read by `mech board`.
-The product's own enclosure lives in the hifi-receiver repo; this one is
-here so the module's test and score run on a real board.
+The board is examples/product/boards/lite-main.json, pinned by `mech pin`.
 """
 from mech.box import Tray
 
-BOARD = "board.json"
+BOARD = "../product/boards/lite-main.json"
 PRINT = {"lid": "flip", "btn_SW1": "flip", "btn_SW2": "flip", "btn_SW3": "flip"}
 
 

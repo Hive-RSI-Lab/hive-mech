@@ -26,19 +26,19 @@
    "max_recess_mm": 3.0
   },
   {
-   "name": "port_J1",
+   "name": "port_J2",
    "ok": true,
    "edge": "N",
-   "kind": "usb-c",
+   "kind": "generic",
    "blocked_mm3": 0,
    "recess_mm": 2.6,
    "max_recess_mm": 3.0
   },
   {
-   "name": "port_J2",
+   "name": "port_J1",
    "ok": true,
    "edge": "N",
-   "kind": "generic",
+   "kind": "usb-c",
    "blocked_mm3": 0,
    "recess_mm": 2.6,
    "max_recess_mm": 3.0
@@ -145,6 +145,18 @@
  ],
  "top_access": [
   {
+   "ref": "D2",
+   "open_above": true,
+   "under": []
+  },
+  {
+   "ref": "U9",
+   "open_above": false,
+   "under": [
+    "lid"
+   ]
+  },
+  {
    "ref": "SW3",
    "open_above": false,
    "under": [
@@ -164,18 +176,6 @@
    "under": [
     "btn_SW1"
    ]
-  },
-  {
-   "ref": "U9",
-   "open_above": false,
-   "under": [
-    "lid"
-   ]
-  },
-  {
-   "ref": "D2",
-   "open_above": true,
-   "under": []
   }
  ],
  "material": {
@@ -200,5 +200,5 @@
    "solid_petg_g": 26.7
   }
  },
- "build_s": 0.3
+ "build_s": 0.7
 }

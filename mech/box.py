@@ -139,14 +139,18 @@ class Tray:
         u0, u1, z0, z1 = port.opening()
         u0, u1, z0, z1 = u0 - m, u1 + m, z0 - m, z1 + m
         ox0, oy0, ox1, oy1 = self.outer
+        ix0, iy0, ix1, iy1 = self.inner
         p = port.plane
+        # From inside the cavity (or the face, if that is further in) out
+        # past the wall: a connector that overhangs the board's edge passes
+        # through the wall, not only its plug.
         if port.edge == "W":
-            return block(min(ox0, p) - 1, u0, z0, p + 1, u1, z1)
+            return block(min(ox0, p) - 1, u0, z0, max(ix0, p) + 1, u1, z1)
         if port.edge == "E":
-            return block(p - 1, u0, z0, max(ox1, p) + 1, u1, z1)
+            return block(min(ix1, p) - 1, u0, z0, max(ox1, p) + 1, u1, z1)
         if port.edge == "S":
-            return block(u0, min(oy0, p) - 1, z0, u1, p + 1, z1)
-        return block(u0, p - 1, z0, u1, max(oy1, p) + 1, z1)
+            return block(u0, min(oy0, p) - 1, z0, u1, max(iy0, p) + 1, z1)
+        return block(u0, min(iy1, p) - 1, z0, u1, max(oy1, p) + 1, z1)
 
     def cut_ports(self, part: Part, refs: list[str] | None = None, margin: float | None = None) -> Part:
         for p in self.ports:
@@ -171,6 +175,29 @@ class Tray:
         port = Port(ref, edge, [b[1], b[3], p.z[0], p.z[1]] if edge in "WE" else [b[0], b[2], p.z[0], p.z[1]],
                     {"W": b[0], "E": b[2], "S": b[1], "N": b[3]}[edge], 0.0, p.side)
         return part - self.port_box(port, margin)
+
+    def pocket(self, base: Part, ref: str, margin: float = 0.5, skin: float = 1.2) -> Part:
+        """Room in the wall for a part that overhangs the board's edge (a
+        module's antenna end, a connector body): its box grown by margin is
+        cut out of the walls, and where that leaves less than `skin` of
+        wall a pad is added outside it, the wall's full height."""
+        p = self.board.part(ref)
+        b = p.bbox
+        x0, y0, x1, y1 = b[0] - margin, b[1] - margin, b[2] + margin, b[3] + margin
+        z0, z1 = max(self.z_floor, p.z[0] - margin), min(self.z_top, p.z[1] + margin)
+        base = base - block(x0, y0, z0, x1, y1, z1)
+        ox0, oy0, ox1, oy1 = self.outer
+        ix0, iy0, ix1, iy1 = self.inner
+        zb, zt = self.z_bottom, self.z_top
+        if x1 + skin > ox1:
+            base += rounded(ix1, y0 - skin, x1 + skin, y1 + skin, zb, zt, skin)
+        if x0 - skin < ox0:
+            base += rounded(x0 - skin, y0 - skin, ix0, y1 + skin, zb, zt, skin)
+        if y1 + skin > oy1:
+            base += rounded(x0 - skin, iy1, x1 + skin, y1 + skin, zb, zt, skin)
+        if y0 - skin < oy0:
+            base += rounded(x0 - skin, y0 - skin, x1 + skin, iy0, zb, zt, skin)
+        return base - block(x0, y0, z0, x1, y1, z1)
 
     def button(self, lid: Part, ref: str, d: float = 5.0, clear: float = 0.3, flange: float = 1.5,
                rim: float = 1.0, travel: float = 0.3) -> tuple[Part, Part]:

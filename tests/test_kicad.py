@@ -82,16 +82,21 @@ def test_json_round_trip(tiny, tmp_path):
     assert back.port("J1").opening() == tiny.port("J1").opening()
 
 
-def test_lite_example_board():
-    b = load(ROOT / "examples" / "hifi-lite" / "board.json")
+def test_pinned_product_boards():
+    b = load(ROOT / "examples" / "product" / "boards" / "lite-main.json")
     assert b.size == [100, 90]
     assert len(b.holes) == 4
     assert {p.ref: p.edge for p in b.ports} == {"J1": "N", "J2": "N", "J3": "N", "J4": "N"}
     assert b.port("J1").kind == "usb-c" and b.port("J4").kind == "terminal"
     # The stacked RCA jacks are the tallest part: 27 mm above the board, from
-    # the enclosure worker's heights.json (their model agrees once scaled).
+    # the product's enclosure/heights.json (their model agrees once scaled).
     assert b.part("J2").z[1] == pytest.approx(28.6) and b.part("J2").height_from == "override"
     assert b.part("C1").height_from == "model"
+    core = load(ROOT / "examples" / "product" / "boards" / "core.json")
+    assert core.size == [120, 100]
+    # KF301 screw terminals are terminals; the RCA pairs stand past the edge.
+    assert {core.port(r).kind for r in ("J6", "J7", "J10", "J11")} == {"terminal"}
+    assert core.port("J4").overhang > 5
 
 
 def test_heights_override_models_and_names(tmp_path):
