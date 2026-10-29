@@ -20,8 +20,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from build123d import (Align, Box, Cylinder, Part, Pos, RectangleRounded,
-                       Rot, extrude)
+from build123d import (Align, Box, Cylinder, Kind, Part, Polygon, Pos,
+                       RectangleRounded, Rot, extrude, offset)
 
 from .kicad import Board, Port
 
@@ -48,14 +48,18 @@ def cylinder(x, y, z0, z1, d) -> Part:
 class Tray:
     """A two-part box: a base the board screws into, a lid that drops on.
 
-    gap: board edge to inner wall. corner: the cavity's corner radius
-    (default: the most that clears a square board corner). standoff: floor top to board bottom.
+    shape: "outline" (the cavity is the board's outline grown by gap, so a
+    shaped board sits in a shaped box) or "box" (a rounded rectangle round
+    the outline's box). gap: board edge to inner wall. corner: the box
+    cavity's corner radius (default: the most that clears a square board
+    corner; "outline" rounds each corner by gap instead). standoff: floor top to board bottom.
     top_clear: tallest top part to the lid's underside. boss_d, pilot_d: the
     standoff's outer diameter and screw hole (2.5 for an M3 self-tapper in
     PETG, 4.0 for an M3 heat-set insert). port_margin: added round each
     connector's face. lip: the lid's locating lip (height, thickness, fit gap).
     """
     board: Board
+    shape: str = "outline"
     wall: float = 2.0
     floor: float = 2.0
     lid_t: float = 2.0
@@ -76,8 +80,23 @@ class Tray:
             self.corner = round(min(3.0, 3.4 * self.gap), 2)
         if self.ports is None:
             self.ports = list(self.board.ports)
+        if self.shape not in ("outline", "box"):
+            raise ValueError(f"Tray.shape: {self.shape!r}, want 'outline' or 'box'")
 
-    # The cavity and the outside, in the board's frame.
+    def plan(self, d: float, z0: float, z1: float) -> Part:
+        """The cavity's plan grown by d (negative: shrunk), extruded from z0 to z1.
+        d = 0 is the cavity, d = wall the outside."""
+        if self.shape == "box":
+            x0, y0, x1, y1 = self.inner
+            r = self.corner + d if d >= 0 else max(0.5, self.corner + d)
+            return rounded(x0 - d, y0 - d, x1 + d, y1 + d, z0, z1, r)
+        face = Polygon(*[tuple(p) for p in self.board.outline], align=None)
+        g = self.gap + d
+        if abs(g) > 1e-6:
+            face = offset(face, amount=g, kind=Kind.ARC)
+        return Pos(0, 0, z0) * extrude(face, amount=z1 - z0)
+
+    # The cavity's and the outside's boxes, in the board's frame.
     @property
     def inner(self) -> tuple[float, float, float, float]:
         w, h = self.board.size
@@ -105,10 +124,8 @@ class Tray:
         return self.board.top_height() + self.top_clear
 
     def base(self) -> Part:
-        x0, y0, x1, y1 = self.outer
-        ix0, iy0, ix1, iy1 = self.inner
-        shell = rounded(x0, y0, x1, y1, self.z_bottom, self.z_top, self.corner + self.wall)
-        shell -= rounded(ix0, iy0, ix1, iy1, self.z_floor, self.z_top + 1, self.corner)
+        shell = self.plan(self.wall, self.z_bottom, self.z_top)
+        shell -= self.plan(0.0, self.z_floor, self.z_top + 1)
         for h in self.board.holes:
             shell += cylinder(h.x, h.y, self.z_floor - 0.01, 0.0, max(self.boss_d, h.pad))
         for h in self.board.holes:
@@ -116,13 +133,10 @@ class Tray:
         return shell
 
     def lid(self) -> Part:
-        x0, y0, x1, y1 = self.outer
-        ix0, iy0, ix1, iy1 = self.inner
         lh, lt, lg = self.lip
-        plate = rounded(x0, y0, x1, y1, self.z_top, self.z_top + self.lid_t, self.corner + self.wall)
-        ring = rounded(ix0 + lg, iy0 + lg, ix1 - lg, iy1 - lg, self.z_top - lh, self.z_top, max(0.5, self.corner - lg))
-        ring -= rounded(ix0 + lg + lt, iy0 + lg + lt, ix1 - lg - lt, iy1 - lg - lt, self.z_top - lh - 1,
-                        self.z_top + 1, max(0.5, self.corner - lg - lt))
+        plate = self.plan(self.wall, self.z_top, self.z_top + self.lid_t)
+        ring = self.plan(-lg, self.z_top - lh, self.z_top)
+        ring -= self.plan(-lg - lt, self.z_top - lh - 1, self.z_top + 1)
         lid = plate + ring
         # The lip mustn't land on a tall part or a connector near the wall.
         for p in self.board.parts:
