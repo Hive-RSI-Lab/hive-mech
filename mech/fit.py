@@ -95,6 +95,12 @@ def _boxes_meet(a, b, tol=0.01) -> bool:
     return all(min(a[i + 3], b[i + 3]) - max(a[i], b[i]) > tol for i in range(3))
 
 
+def _span(shape) -> tuple:
+    """shape's bounding box as (x0, y0, z0, x1, y1, z1)."""
+    bb = shape.bounding_box()
+    return (bb.min.X, bb.min.Y, bb.min.Z, bb.max.X, bb.max.Y, bb.max.Z)
+
+
 def _section(part, z: float, fill: bool) -> list:
     """The faces where the plane at z cuts part, laid down at z = 0; fill: each with its holes filled in."""
     bb = part.bounding_box()
@@ -191,12 +197,15 @@ def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: floa
     boxes = [(p, part_box(p)) for p in board.parts if p.z[1] - p.z[0] > 0]
     leads = [(p, lead_box(p, board.size)) for p in board.parts if p.under > 0]
     boxes += [(p, b) for p, b in leads if b is not None]
-    allboxes = Compound(children=[b for _, b in boxes]) if boxes else None
-    if allboxes is not None and any(_overlap(allboxes, e) >= EPS for e in enc):
-        for p, b in boxes:
-            v = sum(_overlap(b, e) for e in enc)
-            if v >= EPS:
-                hits.append({"ref": p.ref, "overlap_mm3": round(v, 3)})
+    # One box against one part at a time, and only where their bounding boxes
+    # meet: a Compound of all of them in one boolean took the core board's
+    # 290 boxes to 6 GB and 5 minutes (issue #19); this is seconds and MBs.
+    spans = [_span(e) for e in enc]
+    for p, b in boxes:
+        sb = _span(b)
+        v = sum(_overlap(b, e) for e, se in zip(enc, spans) if _boxes_meet(sb, se, tol=0.0))
+        if v >= EPS:
+            hits.append({"ref": p.ref, "overlap_mm3": round(v, 3)})
     add("parts_clear", not hits, hits=hits)
 
     added = [p for p in board.parts if p.footprint.startswith(ADDED)]
