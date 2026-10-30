@@ -41,7 +41,7 @@ def test_coupon_is_one_flat_print(parts):
     from build123d import Compound
     assert set(parts) == {"plate", "plug", "pin"}
     bb = Compound(children=list(parts.values())).bounding_box()
-    assert bb.min.Z > -0.01 and bb.max.Z <= coupon.BOSS_H + 0.01
+    assert bb.min.Z > -0.01 and bb.max.Z <= max(coupon.BOSS_H.values()) + 0.01
     assert bb.size.X < 100 and bb.size.Y < 80  # small: well inside any bed
     for name, p in parts.items():
         assert len(p.solids()) == 1, name  # the plate is one piece: nothing left floating
@@ -65,7 +65,7 @@ def test_coupon_features_are_cut_to_size(parts):
             r = (coupon.PIN_D + 2 * s if t == "button" else s) / 2
             assert not solid(x + r - 0.03, y) and solid(x + r + 0.03, y), f
         elif t in ("pilot", "insert"):
-            zz = coupon.BOSS_H - 1
+            zz = coupon.BOSS_H[t] - 1
             assert not solid(x + s / 2 - 0.03, y, zz) and solid(x + s / 2 + 0.03, y, zz), f
         else:
             top = coupon.PLATE + coupon.BRIDGE_Z
@@ -85,7 +85,7 @@ def test_record_writes_the_sizes_that_fit(tmp_path):
     assert got["clear_d"] == FITS["clear_d"]  # not tried: as it was
     again = coupon.record({"bridge": 1}, p=p, today="2026-11-01")
     assert again["calibrated"] == {"date": "2026-11-01", "note": "MK4, PETG",
-                                   "dots": {"lip": 4, "pilot": 3, "bridge": 1}}
+                                   "picked": {"lip": 4, "pilot": 3, "bridge": 1}}
     assert fits.load(p) == json.loads(p.read_text())
     for bad in ({"lip": 7}, {"lid": 2}, {}):
         with pytest.raises(ValueError):

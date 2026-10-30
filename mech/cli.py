@@ -188,7 +188,7 @@ def cmd_coupon(a) -> int:
         for kv in a.record:
             k, _, v = kv.partition("=")
             if not v.strip().isdigit():
-                print(f"mech coupon --record: {kv!r}: want test=dots, e.g. lip=4", file=sys.stderr)
+                print(f"mech coupon --record: {kv!r}: want test=number, e.g. lip=4", file=sys.stderr)
                 return 2
             picks[k.strip()] = int(v)
         try:
@@ -292,7 +292,7 @@ def main(argv=None) -> int:
     s = sub.add_parser("coupon", help="the test print that calibrates mech's clearances (mech/fits.json)")
     s.add_argument("-o", "--output", help="where to write it (default: ./coupon)")
     s.add_argument("--no-slice", action="store_true", help="skip PrusaSlicer")
-    s.add_argument("--record", nargs="+", metavar="TEST=DOTS", help="what fit, e.g. lip=4 pilot=2")
+    s.add_argument("--record", nargs="+", metavar="TEST=N", help="what fit, by its number in its test (1 the smallest), e.g. lip=4 pilot=2")
     s.add_argument("--note", default="", help="with --record: the printer and filament")
     s = sub.add_parser("pin", help="pin the product's committed boards for the score")
     s.add_argument("clone", help="a hifi-receiver clone, e.g. $HIVE_PROJECTS/hifi-receiver-2")

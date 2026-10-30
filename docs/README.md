@@ -223,8 +223,8 @@ the longest bridge the fit check passes (`max_bridge`). While
 `mech coupon [-o DIR]` makes the print that checks them: one 70 x 41 mm
 plate, a plug (a lid's corner with its lip) and a pin (a button's cap),
 about 20 minutes on the receiver's profile with no support. Each clearance
-is cut at three to six sizes round the guess, smallest first, counted by
-dots beside it. It writes `coupon.stl`, `coupon.png` (a labelled map),
+is cut at three to five sizes round the guess, smallest first, a dot
+behind the smallest. It writes `coupon.stl`, `coupon.png` (a labelled map),
 `coupon.md` (what to try and what to report, for the person) and the
 slicer's time and grams. Printing it is the person's; hand them the folder.
 When they say what fit (`lip 4, pilot 2, ...`), record it and commit
