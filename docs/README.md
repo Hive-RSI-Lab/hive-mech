@@ -229,9 +229,10 @@ the STLs.
   swap. It peaks near 450 MB (test_product alone 470 MB, 30 s), most of it
   build123d/OCP itself.
 - `mech score` measures mech itself: how many real enclosure mistakes its
-  fit check catches (mech/corpus.py). The corpus is four known-good boxes
+  fit check catches (mech/corpus.py). The corpus is five known-good boxes
   (examples/tiny on the tests' board, the lite-main stand-in, and the
-  product's own Lite and Plus as pinned), and about twenty faults planted
+  product's own Lite, Plus and Ultra as pinned, Ultra with ultra-front
+  behind its front panel), and about twenty faults planted
   on each in code at run time: a port closed or at the bottom of a deep
   collar, a standoff short or off its hole, the screw hole left out, the
   lid short, a wall tight on the board, a rib into the board, the lid or
