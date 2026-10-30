@@ -1,5 +1,5 @@
 {
- "source": "boards/core/kicad/core.kicad_pcb@18ceb297b956",
+ "source": "boards/core/kicad/core.kicad_pcb@a7f32da6ed6b",
  "thickness": 1.6,
  "outline": [
   [
@@ -415,9 +415,9 @@
    ],
    "z": [
     1.6,
-    5.6
+    6.8
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "IND-SMD_L8.5-W8.0_PCC-M0854M.wrl",
    "under": 0.0
@@ -530,12 +530,12 @@
    ],
    "z": [
     1.6,
-    11.5
+    11.6
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": true,
    "model": "CONN-TH_P5.00_KF301-5.0-2P.wrl",
-   "under": 1.9
+   "under": 3.5
   },
   {
    "ref": "C1",
@@ -645,9 +645,9 @@
    ],
    "z": [
     1.6,
-    5.6
+    6.8
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "IND-SMD_L8.5-W8.0_PCC-M0854M.wrl",
    "under": 0.0
@@ -737,9 +737,9 @@
    ],
    "z": [
     1.6,
-    2.411
+    2.6
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "OSC-SMD_4P-L3.2-W2.5-H1.0.wrl",
    "under": 0.0
@@ -783,9 +783,9 @@
    ],
    "z": [
     1.6,
-    5.6
+    6.8
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "IND-SMD_L8.5-W8.0_PCC-M0854M.wrl",
    "under": 0.0
@@ -1151,12 +1151,12 @@
    ],
    "z": [
     1.6,
-    11.5
+    11.6
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": true,
    "model": "CONN-TH_P5.00_KF301-5.0-2P.wrl",
-   "under": 1.9
+   "under": 3.5
   },
   {
    "ref": "SW3",
@@ -1404,9 +1404,9 @@
    ],
    "z": [
     1.6,
-    2.411
+    2.6
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "OSC-SMD_4P-L3.2-W2.5-H1.0.wrl",
    "under": 0.0
@@ -1473,12 +1473,12 @@
    ],
    "z": [
     1.6,
-    17.51
+    22.1
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": true,
    "model": "CAP-TH_D10.0-H16.0-P5.00.wrl",
-   "under": 1.9
+   "under": 2.5
   },
   {
    "ref": "Q6",
@@ -1565,9 +1565,9 @@
    ],
    "z": [
     1.6,
-    3.51
+    3.6
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "IND-SMD_L4.0-W4.0-H1.9.wrl",
    "under": 0.0
@@ -1680,9 +1680,9 @@
    ],
    "z": [
     1.6,
-    3.26
+    3.6
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "IND-SMD_L4.0-W4.0-H1.65.wrl",
    "under": 0.0
@@ -1841,9 +1841,9 @@
    ],
    "z": [
     1.6,
-    5.6
+    6.8
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "IND-SMD_L8.5-W8.0_PCC-M0854M.wrl",
    "under": 0.0
@@ -2050,10 +2050,10 @@
     1.6,
     26.1
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": true,
    "model": "SW-TH_EC11E1820402-L11.7-W12.0-H24.5-P2.5-LS14.5.wrl",
-   "under": 1.9
+   "under": 3.5
   },
   {
    "ref": "R401",
@@ -3129,12 +3129,12 @@
    ],
    "z": [
     1.6,
-    17.51
+    22.1
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": true,
    "model": "CAP-TH_D10.0-H16.0-P5.00.wrl",
-   "under": 1.9
+   "under": 2.5
   },
   {
    "ref": "C66",
@@ -3382,9 +3382,9 @@
    ],
    "z": [
     1.6,
-    5.6
+    6.8
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "IND-SMD_L8.5-W8.0_PCC-M0854M.wrl",
    "under": 0.0
@@ -3474,9 +3474,9 @@
    ],
    "z": [
     1.6,
-    3.6
+    3.7
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "FPC-SMD_20P-P0.50_XUNPU_FPC-05F-20PH20.wrl",
    "under": 0.0
@@ -3773,9 +3773,9 @@
    ],
    "z": [
     1.6,
-    5.6
+    6.8
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "IND-SMD_L8.5-W8.0_PCC-M0854M.wrl",
    "under": 0.0
@@ -3980,12 +3980,12 @@
    ],
    "z": [
     1.6,
-    11.5
+    11.6
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": true,
    "model": "CONN-TH_P5.00_KF301-5.0-2P.wrl",
-   "under": 1.9
+   "under": 3.5
   },
   {
    "ref": "C102",
@@ -4233,9 +4233,9 @@
    ],
    "z": [
     1.6,
-    5.6
+    6.8
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "IND-SMD_L8.5-W8.0_PCC-M0854M.wrl",
    "under": 0.0
@@ -4601,9 +4601,9 @@
    ],
    "z": [
     1.6,
-    2.21
+    2.3
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "R2512_L6.3-W3.2-H0.6.wrl",
    "under": 0.0
@@ -4716,12 +4716,12 @@
    ],
    "z": [
     1.6,
-    15.44
+    15.4
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": true,
    "model": "RJ45-TH_HR911105A.wrl",
-   "under": 1.7
+   "under": 3.3
   },
   {
    "ref": "R212",
@@ -5222,9 +5222,9 @@
    ],
    "z": [
     1.6,
-    5.6
+    6.8
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "IND-SMD_L8.5-W8.0_PCC-M0854M.wrl",
    "under": 0.0
@@ -5268,9 +5268,9 @@
    ],
    "z": [
     1.6,
-    2.31
+    2.4
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": false,
    "model": "LED0603_L1.6-W0.8-H0.6.wrl",
    "under": 0.0
@@ -5636,12 +5636,12 @@
    ],
    "z": [
     1.6,
-    11.55
+    11.6
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": true,
    "model": "OPTO-TH_PLR237-T10BK.wrl",
-   "under": 1.8
+   "under": 3.4
   },
   {
    "ref": "R82",
@@ -5935,12 +5935,12 @@
    ],
    "z": [
     1.6,
-    17.51
+    22.1
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": true,
    "model": "CAP-TH_D10.0-H16.0-P5.00.wrl",
-   "under": 1.9
+   "under": 2.5
   },
   {
    "ref": "C122",
@@ -6418,12 +6418,12 @@
    ],
    "z": [
     1.6,
-    11.5
+    11.6
    ],
-   "height_from": "model",
+   "height_from": "override",
    "tht": true,
    "model": "CONN-TH_P5.00_KF301-5.0-2P.wrl",
-   "under": 1.9
+   "under": 3.5
   },
   {
    "ref": "R92",
@@ -6618,7 +6618,7 @@
     9.499,
     19.5,
     1.6,
-    11.5
+    11.6
    ],
    "plane": 98.1,
    "overhang": -1.9,
@@ -6646,7 +6646,7 @@
     42.4,
     52.4,
     1.6,
-    11.5
+    11.6
    ],
    "plane": 98.1,
    "overhang": -1.9,
@@ -6688,7 +6688,7 @@
     12.3,
     27.7,
     1.6,
-    3.6
+    3.7
    ],
    "plane": -0.7,
    "overhang": 0.7,
@@ -6702,7 +6702,7 @@
     54.9,
     64.9,
     1.6,
-    11.5
+    11.6
    ],
    "plane": 98.1,
    "overhang": -1.9,
@@ -6716,7 +6716,7 @@
     8.751,
     27.25,
     1.6,
-    15.44
+    15.4
    ],
    "plane": -0.401,
    "overhang": 0.401,
@@ -6730,7 +6730,7 @@
     22.0,
     32.0,
     1.6,
-    11.5
+    11.6
    ],
    "plane": 98.1,
    "overhang": -1.9,

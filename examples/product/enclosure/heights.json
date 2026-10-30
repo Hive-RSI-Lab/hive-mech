@@ -1,0 +1,135 @@
+{
+ "_doc": "Part heights above the board's top face and pin depth below its bottom face, mm, by footprint name (the part after 'lib:'). From the parts' STEP models (kicad-cli pcb export step) and their LCSC 'Height - Seated (Max)', rounded up. A footprint not listed takes 'default'. 'note' says where a number came from.",
+ "default": {
+  "above": 2.5,
+  "below": 0.0
+ },
+ "CONN-TH_XDJK-0271-1650": {
+  "above": 27.0,
+  "below": 2.9,
+  "note": "stacked RCA pair; STEP model sits 13.5 mm low and 6.1 mm in, corrected"
+ },
+ "CONN-TH_4P-P5.08_DIBO_DB128V-5.08": {
+  "above": 14.0,
+  "below": 1.9,
+  "note": "LCSC: height above board 14 mm"
+ },
+ "CAP-SMD_BD10.0-L10.3-W10.3-FD-LS11.0": {
+  "above": 13.0,
+  "below": 0.0,
+  "note": "MA35V470M10X13, seated max 12.5"
+ },
+ "CAP-SMD_BD8.0-L8.3-W8.3-LS9.3-FD": {
+  "above": 10.5,
+  "below": 0.0,
+  "note": "RVT 8x10.2, seated max 10.2"
+ },
+ "IND-SMD_L8.0-W8.0_XR0850": {
+  "above": 5.2,
+  "below": 0.0,
+  "note": "XR0850 8x8x5.0, no STEP model"
+ },
+ "IND-SMD_L6.0-W6.0_SWPA6045S": {
+  "above": 4.7,
+  "below": 0.0
+ },
+ "IND-SMD_L4.0-W4.0_VLCF4020": {
+  "above": 2.2,
+  "below": 0.0
+ },
+ "WIFI-SMD_ESP32-WROVER-IE8MB": {
+  "above": 3.4,
+  "below": 0.0
+ },
+ "USB-C-SMD_MC-311D": {
+  "above": 3.4,
+  "below": 0.0
+ },
+ "SENSOR-SMD_IRM-H638T-TR2-TL": {
+  "above": 4.2,
+  "below": 0.0
+ },
+ "SW-SMD_4P-L5.1-W5.1-P3.70-LS6.5-TL_H1.5": {
+  "above": 1.5,
+  "below": 0.0,
+  "note": "TS-1187A actuator top at 1.5 mm, 1.6 N"
+ },
+ "MountingHole_3.2mm_M3_Pad_Via": {
+  "above": 0.1,
+  "below": 0.0
+ },
+ "OPTO-TH_IRM-3638T": {
+  "above": 8.0,
+  "below": 2.5,
+  "note": "IRM-3638T standing, lens forward at the front edge, ~5 mm up (Lite worker, 15:03)"
+ },
+ "CAP-TH_BD10.0-P5.00-D1.0-FD": {
+  "above": 20.5,
+  "below": 2.5,
+  "note": "core C5/C6/C311, Rubycon 50PX470MEFC10X20 (LCSC C88733): seated max 20 mm; leads clipped to 2.5"
+ },
+ "IND-SMD_L8.5-W8.0_PCC-M0854M": {
+  "above": 5.2,
+  "below": 0.0,
+  "note": "core amp filter, PSPMAA0805-100M (C2962885): library model 4.0, 0805 series 5.0 max"
+ },
+ "CONN-TH_P5.00_KF301-5.0-2P": {
+  "above": 10.0,
+  "below": 3.5,
+  "note": "KF301-5.0-2P (C474881): LCSC height above board 10 mm; library model pins 3.5"
+ },
+ "RJ45-TH_HR911105A": {
+  "above": 13.8,
+  "below": 3.3,
+  "note": "HR911105A (C12074): library model 13.8 / 3.3"
+ },
+ "OPTO-TH_PLR237-T10BK": {
+  "above": 10.0,
+  "below": 3.4,
+  "note": "PLR237 TOSLINK: library model 9.9 / 3.4"
+ },
+ "SW-TH_EC11E1820402": {
+  "above": 24.5,
+  "below": 3.5,
+  "note": "EC11 vertical encoder, shaft tip: library model (H24.5); Alps lists EC11E1834403 with a 20 mm flat shaft, so the knob's bore takes 20-24.5"
+ },
+ "OSC-SMD_4P-L3.2-W2.5-BL": {
+  "above": 1.0,
+  "below": 0.0,
+  "note": "3225 oscillator, library model 0.8"
+ },
+ "IND-SMD_L4.0-W4.0": {
+  "above": 2.0,
+  "below": 0.0,
+  "note": "4x4 power inductor, library model 1.9"
+ },
+ "IND-SMD_L4.0-W4.0_LQH44PN2R2MP0L": {
+  "above": 2.0,
+  "below": 0.0,
+  "note": "LQH44PN, 1.8 max"
+ },
+ "FPC-SMD_20P-P0.50_XUNPU_FPC-05F-20PH20": {
+  "above": 2.1,
+  "below": 0.0,
+  "note": "FPC-05F-20PH20, 2.0 mm tall (H20)"
+ },
+ "R2512": {
+  "above": 0.7,
+  "below": 0.0
+ },
+ "LED-SMD_L1.6-W0.8-R-RD": {
+  "above": 0.8,
+  "below": 0.0,
+  "note": "0603 LED"
+ },
+ "FPC-SMD_12P-P0.50_XUNPU_FPC-05FB-12PH20": {
+  "above": 2.1,
+  "below": 0.0,
+  "note": "FPC-05FB-12PH20, 2.0 mm tall"
+ },
+ "LED-SMD_4P-L1.6-W1.5-TR": {
+  "above": 0.8,
+  "below": 0.0,
+  "note": "TJ-S1615 RGB LED, 1.6x1.5 x ~0.6"
+ }
+}
