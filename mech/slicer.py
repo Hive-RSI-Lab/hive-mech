@@ -19,7 +19,8 @@ the G-code read back for what printing it costs:
 
 The slicer is PrusaSlicer 2.8.1's AppImage (the last with a Linux build),
 pinned by sha256, unpacked into $MECH_HOME/prusaslicer (`mech slicer
-install`; about 120 MB after trimming). The GUI's web view libraries
+install`; about 120 MB after trimming), or found in the shared environment
+`mech publish` made ($MECH_SHARED, which bin/mech sets when it uses it). The GUI's web view libraries
 (webkit2gtk, libsoup, javascriptcore) are linked but never called when
 slicing, so where the system lacks them mech gives empty stand-ins of the
 same name. MECH_SLICER names another prusa-slicer binary to use instead.
@@ -60,7 +61,14 @@ def find() -> Path | None:
     if env:
         return Path(env)
     w = home() / "prusa-slicer"
-    return w if w.exists() else None
+    if w.exists():
+        return w
+    shared = os.environ.get("MECH_SHARED")
+    if shared:
+        w = Path(shared) / f"prusaslicer-{VERSION}" / "prusa-slicer"
+        if w.exists():
+            return w
+    return None
 
 
 def install(log=print) -> Path:

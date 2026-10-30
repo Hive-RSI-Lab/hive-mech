@@ -12,9 +12,16 @@ mech build enclosure/lite.py        # STL + STEP + fit check + renders in enclos
 ```
 
 `mech` here means `$HIVE_MODULES/hive-mech/bin/mech` (the module's install
-folder). On first use it builds its venv (build123d with OCP, matplotlib,
-pytest) in `~/.cache/mech` with the Hive's uv. That takes a few minutes,
-because OCP is a large download. Nothing gets installed outside your HOME,
+folder). It runs on the shared Python environment in the Hive's tools
+folder (`/hive/tools/mech`, build123d with OCP, matplotlib, pytest, and
+PrusaSlicer) when that pins the same `requirements.lock`. Otherwise, on
+first use, it builds its own venv in `~/.cache/mech` with the Hive's uv.
+That takes a few minutes, because OCP is a large download. A Hive check
+starts with an empty HOME every time, so without the shared copy every
+check would install OCP again. After a change to `requirements.lock`, a
+warden runs `bin/mech publish /hive/tools` (the tools folder is read-only
+to agents) so the shared copy pins the new lock; until then everyone
+falls back to their own venv. Nothing gets installed outside your HOME,
 and KiCad isn't needed: mech reads the `.kicad_pcb` file itself.
 
 ## 1. Read the board: `mech board`

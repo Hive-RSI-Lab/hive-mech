@@ -13,29 +13,83 @@
 #   mech score [--product]                    planted enclosure faults caught (or the product's fit)
 #   mech python [args]                        the venv's python, mech importable
 #   mech env                                  print the exports
+#   mech publish <dir>                        put a shared environment at <dir>/mech
+#                                             (a warden runs it into the Hive's tools
+#                                             folder, so checks and turns reuse one)
 #
 # test, score, build and fit (OCP models, renders, a whole suite) wait for
 # `hive agent heavy`'s lease inside a Hive turn (at most 10 minutes, then run
 # anyway): give the shell command a timeout to match.
 #
-# Nothing here installs anything outside HOME: the venv is built from
-# requirements.lock with the Hive's uv on first use (a few minutes: OCP is big).
+# The Python environment (build123d with OCP, matplotlib, pytest, shapely):
+# the shared one in the Hive's tools folder ($HIVE_TOOLS/mech, made by
+# `mech publish`) when it pins the same requirements.lock, so a check, whose
+# HOME is new and thrown away each time, doesn't download and install OCP
+# again; else a venv in HOME, built from requirements.lock with the Hive's uv
+# on first use (a few minutes: OCP is big). MECH_VENV names a venv to use
+# instead of either. Nothing here installs anything outside HOME but
+# publish's <dir>.
 set -e
 here=$(cd "$(dirname "$0")/.." && pwd)
 tools=${HIVE_TOOLS:-/hive/tools}
 state=${MECH_HOME:-$HOME/.cache/mech}
 venv=${MECH_VENV:-$state/venv}
-
-if [ ! -x "$venv/bin/python" ] || [ "$here/requirements.lock" -nt "$venv/.mech-lock" ]; then
+shared=${MECH_SHARED:-$tools/mech}
+finduv() {
 	uv=$(command -v uv || true)
 	[ -z "$uv" ] && [ -x "$tools/uv/bin/uv" ] && uv=$tools/uv/bin/uv
-	[ -z "$uv" ] && { echo "mech: needs uv (hive agent install --tool uv)" >&2; exit 127; }
+	[ -n "$uv" ] || { echo "mech: needs uv (hive agent install --tool uv)" >&2; exit 127; }
+}
+
+# publish builds the environment beside <dir>/mech and swaps it in, so a
+# check that is running keeps the old one whole. Its python is a
+# python-build-standalone (relocatable: the host's path to the tools folder
+# isn't /hive/tools) with the packages installed in it, no venv, whose
+# symlinks and pyvenv.cfg would name the builder's path. PrusaSlicer goes in
+# beside it, so a build in a check slices without fetching it.
+if [ "${1:-}" = publish ]; then
+	[ -n "${2:-}" ] && [ -d "$2" ] || { echo "usage: mech publish <existing dir>" >&2; exit 2; }
+	dest=$(cd "$2" && pwd)
+	finduv
+	ver=$(git -C "$here" rev-parse --short HEAD 2>/dev/null || date -u +%Y%m%d%H%M%S)
+	new=$dest/.mech-new-$$
+	rm -rf "$new"
+	trap 'rm -rf "$new"' EXIT
+	mkdir -p "$new"
+	"$uv" python install -q --install-dir "$new/python" --no-bin 3.12 >&2
+	find "$new/python" -maxdepth 1 -type l -exec rm {} + # absolute links to $new
+	py=$(ls -d "$new"/python/cpython-3.12.*/bin/python3.12 | sort -V | tail -n 1)
+	"$uv" pip install -q --python "$py" --break-system-packages -r "$here/requirements.lock" >&2
+	"$py" -c 'import build123d, matplotlib, pytest, shapely' # the copy runs, or nothing is swapped
+	MECH_HOME=$new PYTHONPATH=$here "$py" -c 'from mech import slicer; slicer.install()' >&2 ||
+		echo "mech publish: no PrusaSlicer in the copy (a build will fetch its own)" >&2
+	cp "$here/requirements.lock" "$new/requirements.lock"
+	echo "$ver" >"$new/VERSION"
+	rm -rf "$dest/.mech-old"
+	[ -d "$dest/mech" ] && mv "$dest/mech" "$dest/.mech-old"
+	mv "$new" "$dest/mech"
+	rm -rf "$dest/.mech-old"
+	echo "$ver" >"$dest/mech.version"
+	echo "mech $ver published at $dest/mech"
+	exit 0
+fi
+
+py=
+if [ -z "${MECH_VENV:-}" ] && cmp -s "$shared/requirements.lock" "$here/requirements.lock"; then
+	py=$(ls -d "$shared"/python/cpython-3.12.*/bin/python3.12 2>/dev/null | sort -V | tail -n 1)
+fi
+if [ -n "$py" ]; then
+	# mech.slicer looks here after MECH_HOME for its PrusaSlicer.
+	export MECH_SHARED=$shared
+elif [ ! -x "$venv/bin/python" ] || [ "$here/requirements.lock" -nt "$venv/.mech-lock" ]; then
+	finduv
 	mkdir -p "$state"
 	echo "mech: building the venv in $venv (first use)" >&2
 	"$uv" venv -q --clear --python 3.12 "$venv" >&2
 	VIRTUAL_ENV=$venv "$uv" pip install -q -r "$here/requirements.lock" >&2
 	touch "$venv/.mech-lock"
 fi
+[ -n "$py" ] || py=$venv/bin/python
 export PYTHONPATH="$here${PYTHONPATH:+:$PYTHONPATH}"
 export MPLBACKEND=Agg
 
@@ -57,25 +111,25 @@ x() {
 
 case "${1:-}" in
 env)
-	printf "export PYTHONPATH='%s'\nexport MECH_PY='%s'\n" "$PYTHONPATH" "$venv/bin/python"
+	printf "export PYTHONPATH='%s'\nexport MECH_PY='%s'\n" "$PYTHONPATH" "$py"
 	;;
 test)
 	shift
 	cd "$here"
 	heavy="mech test (the module's pytest suite)"
-	x "$venv/bin/python" -m pytest "$@"
+	x "$py" -m pytest "$@"
 	;;
 python)
 	shift
-	exec "$venv/bin/python" "$@"
+	exec "$py" "$@"
 	;;
 "" | -h | --help)
-	sed -n '2,22p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '2,31p' "$0" | sed 's/^# \{0,1\}//'
 	;;
 *)
 	case $1 in
 	build | fit | score | slice) heavy="mech $1" ;;
 	esac
-	x "$venv/bin/python" -m mech.cli "$@"
+	x "$py" -m mech.cli "$@"
 	;;
 esac
