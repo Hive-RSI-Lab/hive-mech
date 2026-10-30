@@ -8,42 +8,42 @@
    "refdes_class": {
     "J1": "smt_placed"
    },
-   "lcsc": "C5184243",
-   "mpn": "USB4105-GF-A-120",
-   "value": "USB4105-GF-A-120",
-   "package": "USB-C-SMD_MC-311D",
+   "lcsc": "C7095263",
+   "mpn": "USB4085-GF-A",
+   "value": "USB4085-GF-A",
+   "package": "USC-C-SMD_USB4085-GF-A",
    "block": "power_in",
    "basic": false,
-   "role": "USB-C receptacle, 48 V/5 A rated (EPR 28 V)",
-   "price": 0.9171,
+   "role": "USB-C receptacle, 48 V/5 A, 240 W (EPR 28 V)",
+   "price": 1.4028,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.9171
+     "price": 1.4028
     },
     {
      "qty": 10,
-     "price": 0.7206
+     "price": 1.1669
     },
     {
      "qty": 30,
-     "price": 0.624
+     "price": 1.0374
     },
     {
      "qty": 100,
-     "price": 0.5257
+     "price": 0.8915
     },
     {
-     "qty": 500,
-     "price": 0.5257
+     "qty": 700,
+     "price": 0.826
     },
     {
-     "qty": 1000,
-     "price": 0.5257
+     "qty": 1400,
+     "price": 0.7965
     }
    ],
-   "stock": 2230,
-   "description": "-40℃~+85℃ 1 16P 48V 5A Black Female Type-C USB 2.0 SMD USB Connectors ROHS"
+   "stock": 2910,
+   "description": "-40℃~+85℃ 1 48V 5A Black Female Right Angle Type-C USB 2.0 插件 USB Connectors ROHS"
   },
   {
    "refdes": [
@@ -71,7 +71,7 @@
     },
     {
      "qty": 300,
-     "price": 0.0339
+     "price": 0.034
     },
     {
      "qty": 3000,
@@ -79,14 +79,14 @@
     },
     {
      "qty": 6000,
-     "price": 0.0272
+     "price": 0.0273
     },
     {
      "qty": 9000,
      "price": 0.0258
     }
    ],
-   "stock": 142959,
+   "stock": 139798,
    "description": "-65℃~+150℃ 12.4A@10/1000us 1uA 30V 36.8V 48.4V 600W@10/1000us TVS Unidirectional DO-214AA(SMB) ESD and Surge Protection (TVS/ESD) ROHS"
   },
   {
@@ -111,7 +111,7 @@
     },
     {
      "qty": 100,
-     "price": 0.0385
+     "price": 0.0386
     },
     {
      "qty": 300,
@@ -123,14 +123,14 @@
     },
     {
      "qty": 6000,
-     "price": 0.0231
+     "price": 0.0232
     },
     {
      "qty": 9000,
      "price": 0.0222
     }
    ],
-   "stock": 124405,
+   "stock": 122336,
    "description": "0.35pF、0.8pF 100nA 150W@8/20us 15V 2 5V 6A@8/20us 6V ESD SOT-23-6 ESD and Surge Protection (TVS/ESD) ROHS"
   },
   {
@@ -147,34 +147,34 @@
    "block": "power_in",
    "basic": false,
    "role": "USB PD 3.2 EPR sink, asks for 28 V",
-   "price": 0.452,
+   "price": 0.4524,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.452
+     "price": 0.4524
     },
     {
      "qty": 10,
-     "price": 0.3587
+     "price": 0.3589
     },
     {
      "qty": 30,
-     "price": 0.3178
+     "price": 0.318
     },
     {
      "qty": 100,
-     "price": 0.267
+     "price": 0.2672
     },
     {
      "qty": 500,
-     "price": 0.2441
+     "price": 0.2442
     },
     {
      "qty": 1000,
-     "price": 0.231
+     "price": 0.2311
     }
    ],
-   "stock": 10991,
+   "stock": 10876,
    "description": "-40℃~+105℃ 140W 1C 4V~30V 5V、9V、12V、15V、20V、28V PD 3.2、BC 1.2、AVS、PPS、SPR Power Receiver Controller DFN-10-EP(2x2) USB PD ROHS"
   },
   {
@@ -199,7 +199,7 @@
     },
     {
      "qty": 1000,
-     "price": 0.001
+     "price": 0.0009
     },
     {
      "qty": 3000,
@@ -207,7 +207,7 @@
     },
     {
      "qty": 10000,
-     "price": 0.0008
+     "price": 0.0007
     },
     {
      "qty": 50000,
@@ -218,8 +218,98 @@
      "price": 0.0006
     }
    ],
-   "stock": 506177,
+   "stock": 501295,
    "description": "-55℃~+155℃ 210kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
+  },
+  {
+   "refdes": [
+    "R20",
+    "R8",
+    "R9",
+    "R30",
+    "R31",
+    "R32",
+    "R33",
+    "R36",
+    "R50",
+    "R51",
+    "R52",
+    "R53",
+    "R54",
+    "R55",
+    "R56",
+    "R57",
+    "R58",
+    "R67",
+    "R70",
+    "R121",
+    "R122",
+    "R131",
+    "R137",
+    "R135"
+   ],
+   "refdes_class": {
+    "R20": "smt_placed",
+    "R8": "smt_placed",
+    "R9": "smt_placed",
+    "R30": "smt_placed",
+    "R31": "smt_placed",
+    "R32": "smt_placed",
+    "R33": "smt_placed",
+    "R36": "smt_placed",
+    "R50": "smt_placed",
+    "R51": "smt_placed",
+    "R52": "smt_placed",
+    "R53": "smt_placed",
+    "R54": "smt_placed",
+    "R55": "smt_placed",
+    "R56": "smt_placed",
+    "R57": "smt_placed",
+    "R58": "smt_placed",
+    "R67": "smt_placed",
+    "R70": "smt_placed",
+    "R121": "smt_placed",
+    "R122": "smt_placed",
+    "R131": "smt_placed",
+    "R137": "smt_placed",
+    "R135": "smt_placed"
+   },
+   "lcsc": "C25744",
+   "mpn": "10k",
+   "value": "10k",
+   "package": "R0402",
+   "block": "power_in",
+   "basic": true,
+   "role": "CH224Q PG pull-up",
+   "price": 0.0024,
+   "price_breaks": [
+    {
+     "qty": 1,
+     "price": 0.0024
+    },
+    {
+     "qty": 1000,
+     "price": 0.0018
+    },
+    {
+     "qty": 3000,
+     "price": 0.0016
+    },
+    {
+     "qty": 10000,
+     "price": 0.0014
+    },
+    {
+     "qty": 50000,
+     "price": 0.0013
+    },
+    {
+     "qty": 50200,
+     "price": 0.0013
+    }
+   ],
+   "stock": 17125662,
+   "description": "-55℃~+155℃ 10kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
    "refdes": [
@@ -266,13 +356,12 @@
      "price": 0.0007
     }
    ],
-   "stock": 3371896,
+   "stock": 3229760,
    "description": "-55℃~+155℃ 10Ω 50V 62.5mW Thick Film Resistor ±1% ±200ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
    "refdes": [
     "C1",
-    "C8",
     "C207",
     "C209",
     "C226",
@@ -288,19 +377,18 @@
    ],
    "refdes_class": {
     "C1": "smt_placed",
-    "C8": "smt_placed",
     "C207": "smt_placed",
     "C209": "smt_placed",
     "C226": "smt_placed",
     "C229": "smt_placed",
     "C232": "smt_placed",
     "C235": "smt_placed",
-    "C307": "dnp",
-    "C309": "dnp",
-    "C324": "dnp",
-    "C327": "dnp",
-    "C330": "dnp",
-    "C333": "dnp"
+    "C307": "smt_placed",
+    "C309": "smt_placed",
+    "C324": "smt_placed",
+    "C327": "smt_placed",
+    "C330": "smt_placed",
+    "C333": "smt_placed"
    },
    "lcsc": "C28323",
    "mpn": "1uF",
@@ -309,15 +397,15 @@
    "block": "power_in",
    "basic": true,
    "role": "",
-   "price": 0.0421,
+   "price": 0.0422,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.0421
+     "price": 0.0422
     },
     {
      "qty": 100,
-     "price": 0.0344
+     "price": 0.0345
     },
     {
      "qty": 300,
@@ -325,7 +413,7 @@
     },
     {
      "qty": 2000,
-     "price": 0.0272
+     "price": 0.0273
     },
     {
      "qty": 4000,
@@ -336,7 +424,7 @@
      "price": 0.0253
     }
    ],
-   "stock": 1681041,
+   "stock": 2324795,
    "description": "1uF 50V X7R ±10% 0805 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
@@ -365,22 +453,22 @@
     },
     {
      "qty": 300,
-     "price": 0.0521
+     "price": 0.0522
     },
     {
      "qty": 1000,
-     "price": 0.0467
+     "price": 0.0468
     },
     {
      "qty": 4000,
-     "price": 0.0425
+     "price": 0.0361
     },
     {
      "qty": 8000,
-     "price": 0.0403
+     "price": 0.034
     }
    ],
-   "stock": 72289,
+   "stock": 71347,
    "description": "10mΩ 3W Current Sense Resistor SMD ±1% ±50ppm/℃ 2512 Current Sense Resistors / Shunt Resistors ROHS"
   },
   {
@@ -397,34 +485,34 @@
    "block": "power_in",
    "basic": false,
    "role": "VBUS current sense, 25 V/V, 40 V common mode",
-   "price": 0.7681,
+   "price": 0.7686,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.7681
+     "price": 0.7686
     },
     {
      "qty": 10,
-     "price": 0.6584
+     "price": 0.6588
     },
     {
      "qty": 30,
-     "price": 0.5814
+     "price": 0.5818
     },
     {
      "qty": 100,
-     "price": 0.5192
+     "price": 0.5195
     },
     {
      "qty": 500,
-     "price": 0.4979
+     "price": 0.4982
     },
     {
      "qty": 1000,
-     "price": 0.4864
+     "price": 0.4868
     }
    ],
-   "stock": 3645,
+   "stock": 3595,
    "description": "-200mV~40V -40℃~+125℃ 0.3V/us 0.5uV/℃ 1 1.7V~5.5V 150dB 25V/V 45kHz 48uA 500pA 50uV 75nV/√Hz High-side detection、Low-side detection、Bidirectional detection、Zero drift / auto-zero、Analog output interface、Input filter、Enable/shutdown function ±42V SC-70-6 Current Sense Amplifiers ROHS"
   },
   {
@@ -434,7 +522,6 @@
     "C33",
     "C34",
     "C46",
-    "C47",
     "C41",
     "C42",
     "C43",
@@ -449,6 +536,7 @@
     "C120",
     "C121",
     "C125",
+    "C132",
     "C126",
     "C202",
     "C302"
@@ -459,7 +547,6 @@
     "C33": "smt_placed",
     "C34": "smt_placed",
     "C46": "smt_placed",
-    "C47": "smt_placed",
     "C41": "smt_placed",
     "C42": "smt_placed",
     "C43": "smt_placed",
@@ -474,9 +561,10 @@
     "C120": "smt_placed",
     "C121": "smt_placed",
     "C125": "smt_placed",
+    "C132": "smt_placed",
     "C126": "dnp",
     "C202": "smt_placed",
-    "C302": "dnp"
+    "C302": "smt_placed"
    },
    "lcsc": "C1525",
    "mpn": "100nF",
@@ -512,7 +600,7 @@
      "price": 0.0016
     }
    ],
-   "stock": 32807958,
+   "stock": 31917093,
    "description": "100nF 16V X7R ±10% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
@@ -529,23 +617,23 @@
    "block": "power_in",
    "basic": true,
    "role": "differential filter, 80 kHz",
-   "price": 0.0087,
+   "price": 0.009,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.0087
+     "price": 0.009
     },
     {
      "qty": 1000,
-     "price": 0.0066
+     "price": 0.0067
     },
     {
      "qty": 3000,
-     "price": 0.0056
+     "price": 0.0057
     },
     {
      "qty": 10000,
-     "price": 0.0048
+     "price": 0.0049
     },
     {
      "qty": 50000,
@@ -556,7 +644,7 @@
      "price": 0.0044
     }
    ],
-   "stock": 19423227,
+   "stock": 21136002,
    "description": "100nF 50V X7R ±10% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
@@ -602,7 +690,7 @@
      "price": 0.0008
     }
    ],
-   "stock": 22715108,
+   "stock": 21806884,
    "description": "-55℃~+155℃ 1kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
@@ -635,7 +723,7 @@
     },
     {
      "qty": 1000,
-     "price": 0.0029
+     "price": 0.003
     },
     {
      "qty": 3000,
@@ -654,7 +742,7 @@
      "price": 0.002
     }
    ],
-   "stock": 6372890,
+   "stock": 6220214,
    "description": "10nF 50V X7R ±10% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
@@ -671,115 +759,81 @@
    "block": "power_in",
    "basic": false,
    "role": "PVDD P-FET switch, 40 V",
-   "price": 0.3102,
+   "price": 0.3104,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.3102
+     "price": 0.3104
     },
     {
      "qty": 50,
-     "price": 0.2434
+     "price": 0.2436
     },
     {
      "qty": 150,
-     "price": 0.2147
+     "price": 0.2149
     },
     {
      "qty": 500,
-     "price": 0.1791
+     "price": 0.1792
     },
     {
      "qty": 3000,
-     "price": 0.1632
+     "price": 0.1633
     },
     {
      "qty": 6000,
-     "price": 0.1537
+     "price": 0.1538
     }
    ],
-   "stock": 54231,
+   "stock": 54066,
    "description": "-55℃~+150℃ 1 P-Channel 1.7V 10A 15mΩ@10V 180pF 3.1W 3nF 40V 55nC@10V SOIC-8 MOSFETs ROHS"
   },
   {
    "refdes": [
     "R4",
-    "R5",
-    "R7",
-    "R10",
-    "R11",
-    "R12",
-    "R15",
-    "R40",
-    "R41",
-    "R42",
-    "R43",
-    "R44",
-    "R45",
-    "R102",
-    "R112",
-    "R120",
-    "R213",
-    "R214",
-    "R215"
+    "R5"
    ],
    "refdes_class": {
     "R4": "smt_placed",
-    "R5": "smt_placed",
-    "R7": "smt_placed",
-    "R10": "smt_placed",
-    "R11": "smt_placed",
-    "R12": "smt_placed",
-    "R15": "smt_placed",
-    "R40": "smt_placed",
-    "R41": "smt_placed",
-    "R42": "smt_placed",
-    "R43": "smt_placed",
-    "R44": "smt_placed",
-    "R45": "smt_placed",
-    "R102": "smt_placed",
-    "R112": "smt_placed",
-    "R120": "smt_placed",
-    "R213": "smt_placed",
-    "R214": "smt_placed",
-    "R215": "smt_placed"
+    "R5": "smt_placed"
    },
-   "lcsc": "C25741",
-   "mpn": "100k",
-   "value": "100k",
+   "lcsc": "C25790",
+   "mpn": "470k",
+   "value": "470k",
    "package": "R0402",
    "block": "power_in",
-   "basic": true,
+   "basic": false,
    "role": "",
-   "price": 0.0015,
+   "price": 0.0012,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.0015
-    },
-    {
-     "qty": 1000,
      "price": 0.0012
     },
     {
-     "qty": 3000,
-     "price": 0.001
-    },
-    {
-     "qty": 10000,
+     "qty": 1000,
      "price": 0.0009
     },
     {
-     "qty": 50000,
+     "qty": 3000,
      "price": 0.0008
     },
     {
+     "qty": 10000,
+     "price": 0.0007
+    },
+    {
+     "qty": 50000,
+     "price": 0.0006
+    },
+    {
      "qty": 50200,
-     "price": 0.0008
+     "price": 0.0006
     }
    ],
-   "stock": 7257752,
-   "description": "-55℃~+155℃ 100kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
+   "stock": 184574,
+   "description": "-55℃~+155℃ 470kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
    "refdes": [
@@ -795,8 +849,8 @@
     "C11": "smt_placed",
     "C208": "smt_placed",
     "C210": "smt_placed",
-    "C308": "dnp",
-    "C310": "dnp"
+    "C308": "smt_placed",
+    "C310": "smt_placed"
    },
    "lcsc": "C14663",
    "mpn": "100nF",
@@ -805,35 +859,79 @@
    "block": "power_in",
    "basic": true,
    "role": "soft-start gate-drain",
-   "price": 0.0081,
+   "price": 0.0086,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.0081
+     "price": 0.0086
     },
     {
      "qty": 500,
-     "price": 0.0063
+     "price": 0.0067
     },
     {
      "qty": 1500,
-     "price": 0.0053
+     "price": 0.0057
     },
     {
      "qty": 4000,
-     "price": 0.0047
+     "price": 0.005
     },
     {
      "qty": 24000,
-     "price": 0.0042
+     "price": 0.0045
     },
     {
      "qty": 48000,
-     "price": 0.0039
+     "price": 0.0042
     }
    ],
-   "stock": 39459845,
+   "stock": 38111504,
    "description": "100nF 50V X7R ±10% 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
+  },
+  {
+   "refdes": [
+    "C8"
+   ],
+   "refdes_class": {
+    "C8": "smt_placed"
+   },
+   "lcsc": "C377773",
+   "mpn": "2.2uF",
+   "value": "2.2uF",
+   "package": "C0805",
+   "block": "power_in",
+   "basic": true,
+   "role": "gate-source: holds Q1 off while VBUS steps (attach, 5 V to 28 V)",
+   "price": 0.0549,
+   "price_breaks": [
+    {
+     "qty": 1,
+     "price": 0.0549
+    },
+    {
+     "qty": 100,
+     "price": 0.0451
+    },
+    {
+     "qty": 300,
+     "price": 0.04
+    },
+    {
+     "qty": 2000,
+     "price": 0.0336
+    },
+    {
+     "qty": 4000,
+     "price": 0.0323
+    },
+    {
+     "qty": 10000,
+     "price": 0.0314
+    }
+   ],
+   "stock": 906488,
+   "description": "2.2uF 50V X5R ±10% 0805 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
    "refdes": [
@@ -849,11 +947,11 @@
    "block": "power_in",
    "basic": false,
    "role": "Q1 gate-source clamp, 15 V",
-   "price": 0.0161,
+   "price": 0.0162,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.0161
+     "price": 0.0162
     },
     {
      "qty": 500,
@@ -865,18 +963,18 @@
     },
     {
      "qty": 6000,
-     "price": 0.0086
+     "price": 0.0087
     },
     {
      "qty": 24000,
-     "price": 0.0077
+     "price": 0.0078
     },
     {
      "qty": 51000,
      "price": 0.0073
     }
    ],
-   "stock": 149227,
+   "stock": 148842,
    "description": "1 Independent 100nA@11V 14.25V~15.75V 15V 40Ω 500mW SOD-123 Zener Diodes ROHS"
   },
   {
@@ -892,7 +990,7 @@
    "package": "SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR",
    "block": "power_in",
    "basic": true,
-   "role": "",
+   "role": "PVDD enable: firmware (PVDD_EN) AND the PD contract (PG low)",
    "price": 0.0161,
    "price_breaks": [
     {
@@ -920,8 +1018,138 @@
      "price": 0.009
     }
    ],
-   "stock": 3113593,
+   "stock": 3064160,
    "description": "1 N-channel 115mA 2.5V 225mW 25pF 50pF 5pF 5Ω@10V 60V N-Channel ±20V SOT-23 MOSFETs ROHS"
+  },
+  {
+   "refdes": [
+    "R7",
+    "R404",
+    "R10",
+    "R11",
+    "R12",
+    "R15",
+    "R40",
+    "R41",
+    "R42",
+    "R43",
+    "R44",
+    "R102",
+    "R112",
+    "R120",
+    "R132",
+    "R149",
+    "R138",
+    "R150",
+    "R134",
+    "R213",
+    "R214",
+    "R215"
+   ],
+   "refdes_class": {
+    "R7": "smt_placed",
+    "R404": "smt_placed",
+    "R10": "smt_placed",
+    "R11": "smt_placed",
+    "R12": "smt_placed",
+    "R15": "smt_placed",
+    "R40": "smt_placed",
+    "R41": "smt_placed",
+    "R42": "smt_placed",
+    "R43": "smt_placed",
+    "R44": "smt_placed",
+    "R102": "smt_placed",
+    "R112": "smt_placed",
+    "R120": "smt_placed",
+    "R132": "smt_placed",
+    "R149": "smt_placed",
+    "R138": "smt_placed",
+    "R150": "smt_placed",
+    "R134": "smt_placed",
+    "R213": "smt_placed",
+    "R214": "smt_placed",
+    "R215": "smt_placed"
+   },
+   "lcsc": "C25741",
+   "mpn": "100k",
+   "value": "100k",
+   "package": "R0402",
+   "block": "power_in",
+   "basic": true,
+   "role": "",
+   "price": 0.0012,
+   "price_breaks": [
+    {
+     "qty": 1,
+     "price": 0.0012
+    },
+    {
+     "qty": 1000,
+     "price": 0.001
+    },
+    {
+     "qty": 3000,
+     "price": 0.0008
+    },
+    {
+     "qty": 10000,
+     "price": 0.0008
+    },
+    {
+     "qty": 50000,
+     "price": 0.0007
+    },
+    {
+     "qty": 50200,
+     "price": 0.0007
+    }
+   ],
+   "stock": 8519793,
+   "description": "-55℃~+155℃ 100kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
+  },
+  {
+   "refdes": [
+    "D5"
+   ],
+   "refdes_class": {
+    "D5": "smt_placed"
+   },
+   "lcsc": "C99382",
+   "mpn": "BAS16L",
+   "value": "BAS16L",
+   "package": "SOD-882_L1.0-W0.6-RD",
+   "block": "power_in",
+   "basic": false,
+   "role": "Q1 fast-off: blocks the follower's base-emitter reverse bias while Q2 is on",
+   "price": 0.0399,
+   "price_breaks": [
+    {
+     "qty": 1,
+     "price": 0.0399
+    },
+    {
+     "qty": 200,
+     "price": 0.0309
+    },
+    {
+     "qty": 600,
+     "price": 0.0258
+    },
+    {
+     "qty": 2000,
+     "price": 0.0228
+    },
+    {
+     "qty": 10000,
+     "price": 0.02
+    },
+    {
+     "qty": 20000,
+     "price": 0.0187
+    }
+   ],
+   "stock": 66192,
+   "description": "1.25V@150mA 100V 215mA 250mW 4A 4ns 500nA@80V Independent DFN1006-2 Switching Diodes ROHS"
   },
   {
    "refdes": [
@@ -936,7 +1164,7 @@
    "package": "SOD-123_L2.7-W1.6-LS3.7-RD",
    "block": "power_in",
    "basic": false,
-   "role": "33 V zener: gross-overvoltage trip, ~32-36 V (TPA3221 abs max 37 V)",
+   "role": "33 V zener: gross-overvoltage trip, ~32-36 V (TPA3220 abs max 37 V)",
    "price": 0.0169,
    "price_breaks": [
     {
@@ -964,140 +1192,52 @@
      "price": 0.0077
     }
    ],
-   "stock": 16710,
+   "stock": 16672,
    "description": "1 Independent 31V~35V 325Ω 33V 500mW 500nA@0.1V 80Ω SOD-123 Zener Diodes ROHS"
   },
   {
    "refdes": [
-    "R8",
-    "R9",
-    "R30",
-    "R31",
-    "R32",
-    "R33",
-    "R36",
-    "R50",
-    "R51",
-    "R52",
-    "R53",
-    "R54",
-    "R55",
-    "R56",
-    "R57",
-    "R58",
-    "R67",
-    "R70",
-    "R121",
-    "R122"
+    "Q3"
    ],
    "refdes_class": {
-    "R8": "smt_placed",
-    "R9": "smt_placed",
-    "R30": "smt_placed",
-    "R31": "smt_placed",
-    "R32": "smt_placed",
-    "R33": "smt_placed",
-    "R36": "smt_placed",
-    "R50": "smt_placed",
-    "R51": "smt_placed",
-    "R52": "smt_placed",
-    "R53": "smt_placed",
-    "R54": "smt_placed",
-    "R55": "smt_placed",
-    "R56": "smt_placed",
-    "R57": "smt_placed",
-    "R58": "smt_placed",
-    "R67": "smt_placed",
-    "R70": "smt_placed",
-    "R121": "smt_placed",
-    "R122": "smt_placed"
+    "Q3": "smt_placed"
    },
-   "lcsc": "C25744",
-   "mpn": "10k",
-   "value": "10k",
-   "package": "R0402",
+   "lcsc": "C83572",
+   "mpn": "MMDT3904",
+   "value": "MMDT3904",
+   "package": "SOT-363_L2.0-W1.3-P0.65-LS2.1-TL",
    "block": "power_in",
-   "basic": true,
-   "role": "",
-   "price": 0.0024,
+   "basic": false,
+   "role": "unit 1 pulls PVDD enable low above ~31 V; unit 2 pulls Q1's gate to VBUS when Q2 is off",
+   "price": 0.0586,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.0024
+     "price": 0.0586
     },
     {
-     "qty": 1000,
-     "price": 0.0018
+     "qty": 100,
+     "price": 0.0468
     },
     {
-     "qty": 3000,
-     "price": 0.0016
-    },
-    {
-     "qty": 10000,
-     "price": 0.0014
-    },
-    {
-     "qty": 50000,
-     "price": 0.0013
-    },
-    {
-     "qty": 50200,
-     "price": 0.0013
-    }
-   ],
-   "stock": 17430326,
-   "description": "-55℃~+155℃ 10kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
-  },
-  {
-   "refdes": [
-    "Q3",
-    "Q4",
-    "Q5",
-    "Q6"
-   ],
-   "refdes_class": {
-    "Q3": "smt_placed",
-    "Q4": "smt_placed",
-    "Q5": "smt_placed",
-    "Q6": "smt_placed"
-   },
-   "lcsc": "C2146",
-   "mpn": "S8050",
-   "value": "S8050",
-   "package": "SOT-23-3_L3.0-W1.7-P0.95-LS2.9-BR",
-   "block": "power_in",
-   "basic": true,
-   "role": "pulls PVDD enable low above ~31 V",
-   "price": 0.0142,
-   "price_breaks": [
-    {
-     "qty": 1,
-     "price": 0.0142
-    },
-    {
-     "qty": 500,
-     "price": 0.0109
+     "qty": 300,
+     "price": 0.041
     },
     {
      "qty": 3000,
-     "price": 0.0095
+     "price": 0.0322
     },
     {
      "qty": 6000,
-     "price": 0.0084
+     "price": 0.0286
     },
     {
-     "qty": 24000,
-     "price": 0.008
-    },
-    {
-     "qty": 51000,
-     "price": 0.0077
+     "qty": 9000,
+     "price": 0.0269
     }
    ],
-   "stock": 1452294,
-   "description": "-55℃~+150℃ 1 NPN 100nA 150MHz 200 25V 300mW 500mA 5V 600mV NPN SOT-23 Bipolar (BJT) ROHS"
+   "stock": 31272,
+   "description": "-55℃~+150℃ 100 2 NPN 200mA 200mV 200mW 300MHz 40V 50nA 6V NPN SOT-363 Bipolar (BJT) ROHS"
   },
   {
    "refdes": [
@@ -1108,7 +1248,7 @@
    "refdes_class": {
     "C5": "smt_placed",
     "C6": "smt_placed",
-    "C311": "dnp"
+    "C311": "smt_placed"
    },
    "lcsc": "C88733",
    "mpn": "470uF/50V",
@@ -1117,19 +1257,19 @@
    "block": "power_in",
    "basic": false,
    "role": "PVDD bulk, zone A",
-   "price": 0.2377,
+   "price": 0.2378,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.2377
+     "price": 0.2378
     },
     {
      "qty": 50,
-     "price": 0.1897
+     "price": 0.1898
     },
     {
      "qty": 150,
-     "price": 0.1661
+     "price": 0.1663
     },
     {
      "qty": 500,
@@ -1137,14 +1277,14 @@
     },
     {
      "qty": 2500,
-     "price": 0.1199
+     "price": 0.12
     },
     {
      "qty": 5000,
-     "price": 0.1165
+     "price": 0.1166
     }
    ],
-   "stock": 60197,
+   "stock": 60076,
    "description": "-25℃~+105℃ 10mm 2000hrs@105℃ 20mm 470uF 50V 5mm ±20% 插件,D10xL20mm Aluminum Electrolytic Capacitors - Leaded ROHS"
   },
   {
@@ -1163,34 +1303,34 @@
    "block": "power_in",
    "basic": true,
    "role": "",
-   "price": 0.2744,
+   "price": 0.2431,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.2744
+     "price": 0.2431
     },
     {
      "qty": 100,
-     "price": 0.2213
+     "price": 0.1901
     },
     {
      "qty": 300,
-     "price": 0.1956
+     "price": 0.1643
     },
     {
      "qty": 2000,
-     "price": 0.1725
+     "price": 0.1413
     },
     {
      "qty": 4000,
-     "price": 0.1661
+     "price": 0.1349
     },
     {
      "qty": 10000,
-     "price": 0.1623
+     "price": 0.1312
     }
    ],
-   "stock": 3217854,
+   "stock": 3157701,
    "description": "10uF 50V X5R ±10% 1206 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
@@ -1207,34 +1347,34 @@
    "block": "rails",
    "basic": false,
    "role": "VBUS to 5.1 V, 3 A, 1 MHz",
-   "price": 0.6109,
+   "price": 0.6113,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.6109
+     "price": 0.6113
     },
     {
      "qty": 10,
-     "price": 0.511
+     "price": 0.5113
     },
     {
      "qty": 30,
-     "price": 0.4389
+     "price": 0.4392
     },
     {
      "qty": 100,
-     "price": 0.38
+     "price": 0.3802
     },
     {
      "qty": 500,
-     "price": 0.3456
+     "price": 0.3458
     },
     {
      "qty": 1000,
-     "price": 0.3358
+     "price": 0.336
     }
    ],
-   "stock": 125096,
+   "stock": 124371,
    "description": "-40℃~+105℃ 1 18uA 3A 4.5V~40V 500kHz~2.5MHz Adjustable Buck Buck Built-in Yes TSOT-23-8 DC-DC Converters ROHS"
   },
   {
@@ -1251,11 +1391,11 @@
    "block": "rails",
    "basic": false,
    "role": "",
-   "price": 0.0603,
+   "price": 0.0604,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.0603
+     "price": 0.0604
     },
     {
      "qty": 100,
@@ -1267,7 +1407,7 @@
     },
     {
      "qty": 2000,
-     "price": 0.0372
+     "price": 0.0373
     },
     {
      "qty": 4000,
@@ -1278,7 +1418,7 @@
      "price": 0.0325
     }
    ],
-   "stock": 45609,
+   "stock": 44640,
    "description": "2A 3.2A 4.7uH 78mΩ ±20% SMD,4x4mm Power Inductors ROHS"
   },
   {
@@ -1295,11 +1435,11 @@
    "block": "rails",
    "basic": true,
    "role": "5.1 V = 0.6 x (1 + 15k/2k)",
-   "price": 0.001,
+   "price": 0.0011,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.001
+     "price": 0.0011
     },
     {
      "qty": 1000,
@@ -1322,7 +1462,7 @@
      "price": 0.0005
     }
    ],
-   "stock": 1737095,
+   "stock": 2529258,
    "description": "-55℃~+155℃ 15kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
@@ -1355,7 +1495,7 @@
     },
     {
      "qty": 1000,
-     "price": 0.0019
+     "price": 0.002
     },
     {
      "qty": 3000,
@@ -1374,7 +1514,7 @@
      "price": 0.0012
     }
    ],
-   "stock": 6968067,
+   "stock": 10032868,
    "description": "-55℃~+155℃ 2kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
@@ -1399,34 +1539,34 @@
    "block": "rails",
    "basic": true,
    "role": "",
-   "price": 0.1918,
+   "price": 0.192,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.1918
+     "price": 0.192
     },
     {
      "qty": 200,
-     "price": 0.1509
+     "price": 0.151
     },
     {
      "qty": 600,
-     "price": 0.1311
+     "price": 0.1312
     },
     {
      "qty": 2000,
-     "price": 0.1132
+     "price": 0.1133
     },
     {
      "qty": 10000,
-     "price": 0.1083
+     "price": 0.1084
     },
     {
      "qty": 20000,
-     "price": 0.1055
+     "price": 0.1056
     }
    ],
-   "stock": 3945432,
+   "stock": 3805533,
    "description": "22uF 25V X5R ±20% 0805 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
@@ -1443,11 +1583,11 @@
    "block": "rails",
    "basic": false,
    "role": "5 V to 3.3 V, 2 A",
-   "price": 0.0865,
+   "price": 0.0866,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.0865
+     "price": 0.0866
     },
     {
      "qty": 50,
@@ -1463,14 +1603,14 @@
     },
     {
      "qty": 3000,
-     "price": 0.0498
+     "price": 0.0499
     },
     {
      "qty": 6000,
      "price": 0.0482
     }
    ],
-   "stock": 81955,
+   "stock": 71369,
    "description": "-40℃~+125℃@(TA/TJ) 1 1.5MHz 2.5V~5.5V 2A 50uA Adjustable Buck Buck Built-in Yes SOT-23-5 DC-DC Converters ROHS"
   },
   {
@@ -1490,7 +1630,7 @@
     "C59": "smt_placed",
     "C64": "smt_placed",
     "C201": "smt_placed",
-    "C301": "dnp"
+    "C301": "smt_placed"
    },
    "lcsc": "C19702",
    "mpn": "10uF",
@@ -1507,7 +1647,7 @@
     },
     {
      "qty": 200,
-     "price": 0.0163
+     "price": 0.0164
     },
     {
      "qty": 600,
@@ -1526,7 +1666,7 @@
      "price": 0.0115
     }
    ],
-   "stock": 12311750,
+   "stock": 12035193,
    "description": "10V 10uF X5R ±10% 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
@@ -1570,7 +1710,7 @@
      "price": 0.0335
     }
    ],
-   "stock": 34159,
+   "stock": 33783,
    "description": "2.2uH Wire-wound inductor ±20% SMD,4x4mm Power Inductors ROHS"
   },
   {
@@ -1614,7 +1754,7 @@
      "price": 0.0005
     }
    ],
-   "stock": 1224736,
+   "stock": 1217553,
    "description": "-55℃~+155℃ 22kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
@@ -1631,15 +1771,15 @@
    "block": "rails",
    "basic": false,
    "role": "analog 3.3 V for the converters",
-   "price": 0.1651,
+   "price": 0.1652,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.1651
+     "price": 0.1652
     },
     {
      "qty": 50,
-     "price": 0.1273
+     "price": 0.1274
     },
     {
      "qty": 150,
@@ -1647,18 +1787,18 @@
     },
     {
      "qty": 500,
-     "price": 0.0924
+     "price": 0.0925
     },
     {
      "qty": 3000,
-     "price": 0.088
+     "price": 0.0881
     },
     {
      "qty": 6000,
-     "price": 0.0852
+     "price": 0.0853
     }
    ],
-   "stock": 34949,
+   "stock": 33310,
    "description": "-40℃~+125℃@(Tj) 1 10uVrms 12uA 250mA 250mV@(250mA) 3.3V 5.5V 82dB@(1kHz) Fixed Positive Short Circuit Protection、Thermal shutdown、Enable control、Input under-voltage protection、Output discharge SOT-23-5 Voltage Regulators - Linear, Low Drop Out (LDO) Regulators ROHS"
   },
   {
@@ -1666,19 +1806,18 @@
     "C18",
     "C19",
     "C32",
+    "C47",
     "C40",
     "C50",
     "C52",
     "C68",
     "C69",
     "C70",
-    "C101",
-    "C102",
-    "C111",
-    "C112",
     "C122",
     "C123",
     "C124",
+    "C131",
+    "C137",
     "C204",
     "C206",
     "C304",
@@ -1688,23 +1827,22 @@
     "C18": "smt_placed",
     "C19": "smt_placed",
     "C32": "smt_placed",
+    "C47": "smt_placed",
     "C40": "smt_placed",
     "C50": "smt_placed",
     "C52": "smt_placed",
     "C68": "smt_placed",
     "C69": "smt_placed",
     "C70": "smt_placed",
-    "C101": "smt_placed",
-    "C102": "smt_placed",
-    "C111": "smt_placed",
-    "C112": "smt_placed",
     "C122": "smt_placed",
     "C123": "smt_placed",
     "C124": "smt_placed",
+    "C131": "smt_placed",
+    "C137": "smt_placed",
     "C204": "smt_placed",
     "C206": "smt_placed",
-    "C304": "dnp",
-    "C306": "dnp"
+    "C304": "smt_placed",
+    "C306": "smt_placed"
    },
    "lcsc": "C52923",
    "mpn": "1uF",
@@ -1740,7 +1878,7 @@
      "price": 0.0034
     }
    ],
-   "stock": 10844698,
+   "stock": 10429441,
    "description": "1uF 25V X5R ±10% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
@@ -1761,34 +1899,34 @@
    "block": "rails",
    "basic": true,
    "role": "+5VA for op-amp and switch",
-   "price": 0.0152,
+   "price": 0.0147,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.0152
+     "price": 0.0147
     },
     {
      "qty": 500,
-     "price": 0.012
+     "price": 0.0115
     },
     {
      "qty": 1500,
-     "price": 0.0106
+     "price": 0.0101
     },
     {
      "qty": 4000,
-     "price": 0.0092
+     "price": 0.0086
     },
     {
      "qty": 24000,
-     "price": 0.0087
+     "price": 0.0082
     },
     {
      "qty": 48000,
-     "price": 0.0084
+     "price": 0.0079
     }
    ],
-   "stock": 2596697,
+   "stock": 2521833,
    "description": "-55℃~+125℃ 1 120Ω@100MHz 2A 50mΩ ±25% 0603 Ferrite Beads ROHS"
   },
   {
@@ -1805,31 +1943,31 @@
    "block": "mcu",
    "basic": false,
    "role": "Wi-Fi/BT module, 8 MB flash + 8 MB PSRAM",
-   "price": 3.8272,
+   "price": 3.8299,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 3.8272
+     "price": 3.8299
     },
     {
      "qty": 10,
-     "price": 3.7339
+     "price": 3.7365
     },
     {
      "qty": 12,
-     "price": 3.7339
+     "price": 3.7365
     },
     {
      "qty": 14,
-     "price": 3.7339
+     "price": 3.7365
     },
     {
      "qty": 16,
-     "price": 3.7339
+     "price": 3.7365
     },
     {
      "qty": 18,
-     "price": 3.7339
+     "price": 3.7365
     }
    ],
    "stock": 4296,
@@ -1842,51 +1980,103 @@
    "refdes_class": {
     "U8": "smt_placed"
    },
-   "lcsc": "C84681",
-   "mpn": "CH340C",
-   "value": "CH340C",
+   "lcsc": "C81010",
+   "mpn": "CH340B",
+   "value": "CH340B",
    "package": "SOP-16_L10.0-W3.9-P1.27-LS6.0-BL",
    "block": "mcu",
    "basic": false,
    "role": "USB-UART for console and flashing",
-   "price": 0.5454,
+   "price": 0.9063,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.5454
+     "price": 0.9063
     },
     {
      "qty": 10,
-     "price": 0.4553
+     "price": 0.7424
     },
     {
      "qty": 50,
-     "price": 0.3882
+     "price": 0.6621
     },
     {
      "qty": 100,
-     "price": 0.3341
+     "price": 0.5802
     },
     {
      "qty": 500,
-     "price": 0.3178
+     "price": 0.5327
     },
     {
      "qty": 1000,
-     "price": 0.3079
+     "price": 0.5081
     }
    ],
-   "stock": 109322,
-   "description": "-20℃~+70℃ 2Mbps 3.3V、5V 50uA 7mA Transceiver USB 2.0 SOP-16 USB Converters ROHS"
+   "stock": 5064,
+   "description": "15mA 200uA 2Mbps 3.3V、5V Transceiver USB 2.0 SOP-16 USB Converters ROHS"
+  },
+  {
+   "refdes": [
+    "Q4",
+    "Q5",
+    "Q6",
+    "Q7"
+   ],
+   "refdes_class": {
+    "Q4": "smt_placed",
+    "Q5": "smt_placed",
+    "Q6": "smt_placed",
+    "Q7": "smt_placed"
+   },
+   "lcsc": "C2146",
+   "mpn": "S8050",
+   "value": "S8050",
+   "package": "SOT-23-3_L3.0-W1.7-P0.95-LS2.9-BR",
+   "block": "mcu",
+   "basic": true,
+   "role": "auto-reset: EN",
+   "price": 0.0142,
+   "price_breaks": [
+    {
+     "qty": 1,
+     "price": 0.0142
+    },
+    {
+     "qty": 500,
+     "price": 0.0109
+    },
+    {
+     "qty": 3000,
+     "price": 0.0095
+    },
+    {
+     "qty": 6000,
+     "price": 0.0084
+    },
+    {
+     "qty": 24000,
+     "price": 0.008
+    },
+    {
+     "qty": 51000,
+     "price": 0.0077
+    }
+   ],
+   "stock": 1402530,
+   "description": "-55℃~+150℃ 1 NPN 100nA 150MHz 200 25V 300mW 500mA 5V 600mV NPN SOT-23 Bipolar (BJT) ROHS"
   },
   {
    "refdes": [
     "R34",
-    "R35"
+    "R35",
+    "R45"
    ],
    "refdes_class": {
     "R34": "smt_placed",
-    "R35": "smt_placed"
+    "R35": "smt_placed",
+    "R45": "smt_placed"
    },
    "lcsc": "C25879",
    "mpn": "2.2k",
@@ -1922,7 +2112,7 @@
      "price": 0.0006
     }
    ],
-   "stock": 2811232,
+   "stock": 3728230,
    "description": "-55℃~+155℃ 2.2kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
@@ -1932,42 +2122,42 @@
    "refdes_class": {
     "U17": "smt_placed"
    },
-   "lcsc": "C465732",
-   "mpn": "TCA9555",
-   "value": "TCA9555",
+   "lcsc": "C131972",
+   "mpn": "TCA9539",
+   "value": "TCA9539",
    "package": "TSSOP-24_L7.8-W4.4-P0.65-LS6.4-BL",
    "block": "mcu",
    "basic": false,
-   "role": "I2C I/O expander, 0x20",
-   "price": 0.7042,
+   "role": "I2C I/O expander, 0x74, reset with the ESP32",
+   "price": 1.2209,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.7042
+     "price": 1.2209
     },
     {
      "qty": 10,
-     "price": 0.5618
+     "price": 1.0259
     },
     {
      "qty": 30,
-     "price": 0.4913
+     "price": 0.9178
     },
     {
      "qty": 100,
-     "price": 0.4209
+     "price": 0.7965
     },
     {
      "qty": 500,
-     "price": 0.3505
+     "price": 0.7424
     },
     {
      "qty": 1000,
-     "price": 0.3276
+     "price": 0.7178
     }
    ],
-   "stock": 31593,
-   "description": "-40℃~+85℃ 1.65V~5.5V 10mA 16 25mA 3.5uA 400kHz 4V 500mV 8 I2C、SMBus Interrupt Output Push-Pull Reset function、Cascading and address extension、Built-in LED driver TSSOP-24 I/O Expanders ROHS"
+   "stock": 8013,
+   "description": "-40℃~+85℃ 1.5uA 1.65V~5.5V 10mA 16 25mA 4 4.1V 400kHz 400mV I2C、SMBus Interrupt Output Push-Pull Reset function、Cascading and address extension、Built-in LED driver TSSOP-24 I/O Expanders ROHS"
   },
   {
    "refdes": [
@@ -1983,44 +2173,42 @@
    "block": "ethernet",
    "basic": false,
    "role": "10/100 RMII PHY, REF_CLK in from ESP32 GPIO0",
-   "price": 0.7943,
+   "price": 0.7949,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.7943
+     "price": 0.7949
     },
     {
      "qty": 10,
-     "price": 0.6764
+     "price": 0.6769
     },
     {
      "qty": 30,
-     "price": 0.5929
+     "price": 0.5933
     },
     {
      "qty": 100,
-     "price": 0.5241
+     "price": 0.5245
     },
     {
      "qty": 500,
-     "price": 0.4406
+     "price": 0.4409
     },
     {
      "qty": 1000,
-     "price": 0.4291
+     "price": 0.4294
     }
    ],
-   "stock": 29588,
+   "stock": 29534,
    "description": "0℃~+85℃ 1 1.6V~3.6V 10BASE-T、100BASE-TX 10Mbit/s、100Mbit/s PHY Transceiver Programmable LED indication、Low-power mode、Power-on reset RMII QFN-24-EP(4x4) Ethernet Transceivers ROHS"
   },
   {
    "refdes": [
-    "Y2",
-    "Y1"
+    "Y2"
    ],
    "refdes_class": {
-    "Y2": "smt_placed",
-    "Y1": "smt_placed"
+    "Y2": "smt_placed"
    },
    "lcsc": "C717684",
    "mpn": "50MHz",
@@ -2029,34 +2217,34 @@
    "block": "ethernet",
    "basic": false,
    "role": "RMII 50 MHz clock into PHY CLKIN and ESP32 GPIO0; held off (OE low) until firmware releases PHY_RST, so GPIO0 boots clean",
-   "price": 0.5372,
+   "price": 0.5376,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.5372
+     "price": 0.5376
     },
     {
      "qty": 50,
-     "price": 0.4111
+     "price": 0.4114
     },
     {
      "qty": 150,
-     "price": 0.3505
+     "price": 0.3507
     },
     {
      "qty": 500,
-     "price": 0.2883
+     "price": 0.2885
     },
     {
      "qty": 3000,
-     "price": 0.2735
+     "price": 0.2737
     },
     {
      "qty": 6000,
-     "price": 0.2637
+     "price": 0.2639
     }
    ],
-   "stock": 51003,
+   "stock": 50474,
    "description": "-40℃~+85℃ 1.8V~3.3V 50MHz CMOS ±10ppm ±20ppm SMD3225-4P Crystal Oscillators ROHS"
   },
   {
@@ -2106,7 +2294,7 @@
      "price": 0.0007
     }
    ],
-   "stock": 2136476,
+   "stock": 1983008,
    "description": "-55℃~+155℃ 33Ω 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
@@ -2150,23 +2338,15 @@
      "price": 0.0009
     }
    ],
-   "stock": 824388,
+   "stock": 806971,
    "description": "-55℃~+155℃ 12kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
    "refdes": [
-    "R62",
-    "R73",
-    "R75",
-    "R81",
-    "R83"
+    "R62"
    ],
    "refdes_class": {
-    "R62": "smt_placed",
-    "R73": "smt_placed",
-    "R75": "smt_placed",
-    "R81": "smt_placed",
-    "R83": "smt_placed"
+    "R62": "smt_placed"
    },
    "lcsc": "C25867",
    "mpn": "1.5k",
@@ -2202,7 +2382,7 @@
      "price": 0.0013
     }
    ],
-   "stock": 1593806,
+   "stock": 1544200,
    "description": "-55℃~+155℃ 1.5kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
@@ -2252,7 +2432,7 @@
      "price": 0.0008
     }
    ],
-   "stock": 1367373,
+   "stock": 1322954,
    "description": "-55℃~+155℃ 49.9Ω 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
@@ -2269,34 +2449,34 @@
    "block": "ethernet",
    "basic": false,
    "role": "RJ45 with magnetics",
-   "price": 1.7261,
+   "price": 1.7273,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 1.7261
+     "price": 1.7273
     },
     {
      "qty": 10,
-     "price": 1.4559
+     "price": 1.4569
     },
     {
      "qty": 31,
-     "price": 1.2119
+     "price": 1.2127
     },
     {
      "qty": 93,
-     "price": 1.0203
+     "price": 1.021
     },
     {
      "qty": 496,
-     "price": 0.9433
+     "price": 0.944
     },
     {
      "qty": 992,
-     "price": 0.904
+     "price": 0.9047
     }
    ],
-   "stock": 61275,
+   "stock": 60671,
    "description": "0℃~+70℃ 1 Filtered Gold Non-PoE Phosphor bronze RJ45 Jack Right Angle Shielded With LED 插件 Ethernet Connectors / Modular Connectors (RJ45 RJ11) ROHS"
   },
   {
@@ -2313,31 +2493,31 @@
    "block": "dac",
    "basic": false,
    "role": "Sabre 32-bit stereo DAC, mains, I2C 0x48",
-   "price": 3.5865,
+   "price": 3.589,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 3.5865
+     "price": 3.589
     },
     {
      "qty": 10,
-     "price": 3.0444
+     "price": 3.0465
     },
     {
      "qty": 30,
-     "price": 2.7235
+     "price": 2.7253
     },
     {
      "qty": 100,
-     "price": 2.3976
+     "price": 2.3992
     },
     {
      "qty": 500,
-     "price": 2.2469
+     "price": 2.2485
     },
     {
      "qty": 1000,
-     "price": 2.1798
+     "price": 2.1813
     }
    ],
    "stock": 706,
@@ -2346,10 +2526,18 @@
   {
    "refdes": [
     "C56",
+    "C101",
+    "C102",
+    "C111",
+    "C112",
     "C400"
    ],
    "refdes_class": {
     "C56": "smt_placed",
+    "C101": "smt_placed",
+    "C102": "smt_placed",
+    "C111": "smt_placed",
+    "C112": "smt_placed",
     "C400": "smt_placed"
    },
    "lcsc": "C19666",
@@ -2386,8 +2574,52 @@
      "price": 0.0086
     }
    ],
-   "stock": 3081656,
+   "stock": 4289922,
    "description": "16V 4.7uF X5R ±10% 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
+  },
+  {
+   "refdes": [
+    "Y1"
+   ],
+   "refdes_class": {
+    "Y1": "smt_placed"
+   },
+   "lcsc": "C7431354",
+   "mpn": "49.152MHz",
+   "value": "49.152MHz",
+   "package": "OSC-SMD_4P-L3.2-W2.5-BL",
+   "block": "dac",
+   "basic": false,
+   "role": "DAC master clock, 1.7 % under the 50 MHz internal-DVDD limit",
+   "price": 0.5376,
+   "price_breaks": [
+    {
+     "qty": 1,
+     "price": 0.5376
+    },
+    {
+     "qty": 10,
+     "price": 0.4212
+    },
+    {
+     "qty": 30,
+     "price": 0.3721
+    },
+    {
+     "qty": 100,
+     "price": 0.3098
+    },
+    {
+     "qty": 500,
+     "price": 0.2819
+    },
+    {
+     "qty": 1000,
+     "price": 0.2655
+    }
+   ],
+   "stock": 502,
+   "description": "-40℃~+85℃ 20mA 3.3V 49.152MHz CMOS ±10ppm ±20ppm SMD3225-4P Crystal Oscillators ROHS"
   },
   {
    "refdes": [
@@ -2403,35 +2635,85 @@
    "block": "dac",
    "basic": false,
    "role": "DAC output stage",
-   "price": 0.719,
+   "price": 0.7195,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.719
+     "price": 0.7195
     },
     {
      "qty": 10,
-     "price": 0.606
+     "price": 0.6064
     },
     {
      "qty": 30,
-     "price": 0.5241
+     "price": 0.5245
     },
     {
      "qty": 100,
-     "price": 0.4586
+     "price": 0.4589
     },
     {
      "qty": 500,
-     "price": 0.3947
+     "price": 0.395
     },
     {
      "qty": 1000,
-     "price": 0.3833
+     "price": 0.3835
     }
    ],
-   "stock": 11860,
+   "stock": 11484,
    "description": "-18V~-2.25V、2.25V~18V -40℃~+85℃ 10pA 10pA 110dB 16MHz 2 2mA 2uV/℃ 4.5V~36V 4.5nV/√Hz@1kHz 500uV 50mA 9V/us Built-in compensation、ESD protection Rail-to-rail output SOIC-8-150mil Operational Amplifier ROHS"
+  },
+  {
+   "refdes": [
+    "R73",
+    "R75",
+    "R81",
+    "R83"
+   ],
+   "refdes_class": {
+    "R73": "smt_placed",
+    "R75": "smt_placed",
+    "R81": "smt_placed",
+    "R83": "smt_placed"
+   },
+   "lcsc": "C25866",
+   "mpn": "1.3k",
+   "value": "1.3k",
+   "package": "R0402",
+   "block": "dac",
+   "basic": false,
+   "role": "",
+   "price": 0.0029,
+   "price_breaks": [
+    {
+     "qty": 1,
+     "price": 0.0029
+    },
+    {
+     "qty": 1000,
+     "price": 0.0022
+    },
+    {
+     "qty": 3000,
+     "price": 0.0019
+    },
+    {
+     "qty": 10000,
+     "price": 0.0017
+    },
+    {
+     "qty": 50000,
+     "price": 0.0015
+    },
+    {
+     "qty": 50200,
+     "price": 0.0015
+    }
+   ],
+   "stock": 36978,
+   "description": "-55℃~+155℃ 1.3kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
    "refdes": [
@@ -2484,7 +2766,7 @@
      "price": 0.0019
     }
    ],
-   "stock": 2675581,
+   "stock": 2441620,
    "description": "1nF 50V X7R ±10% 0402 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
@@ -2536,7 +2818,7 @@
      "price": 0.0008
     }
    ],
-   "stock": 1094009,
+   "stock": 1146187,
    "description": "-55℃~+155℃ 470Ω 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
@@ -2553,34 +2835,34 @@
    "block": "dac",
    "basic": false,
    "role": "sub DAC, 2.1 Vrms ground-centred",
-   "price": 1.4739,
+   "price": 1.4733,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 1.4739
+     "price": 1.4733
     },
     {
      "qty": 10,
-     "price": 1.2938
+     "price": 1.2947
     },
     {
      "qty": 30,
-     "price": 1.1235
+     "price": 1.1243
     },
     {
      "qty": 100,
-     "price": 0.9401
+     "price": 0.9407
     },
     {
      "qty": 500,
-     "price": 0.8893
+     "price": 0.8899
     },
     {
      "qty": 1000,
-     "price": 0.8631
+     "price": 0.8637
     }
    ],
-   "stock": 3356,
+   "stock": 3241,
    "description": "-25℃~+85℃ 1.8V~3.3V 2 32 384kHz 500uA 50MHz Audio Decoder Digital filtering、Power-down mode I2S TSSOP-20 ADCs/DACs - Special Purpose ROHS"
   },
   {
@@ -2628,7 +2910,7 @@
      "price": 0.0062
     }
    ],
-   "stock": 2952425,
+   "stock": 2886877,
    "description": "16V 2.2uF X5R ±10% 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
@@ -2641,37 +2923,37 @@
     "J5": "smt_placed"
    },
    "lcsc": "C7527522",
-   "mpn": "SUB OUT",
+   "mpn": "XDJK-0271-1650",
    "value": "SUB OUT",
    "package": "CONN-TH_XDJK-0271-1650",
    "block": "dac",
    "basic": false,
    "role": "stacked dual RCA: SUB1 (top) / SUB2",
-   "price": 0.2583,
+   "price": 0.2585,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.2583
+     "price": 0.2585
     },
     {
      "qty": 50,
-     "price": 0.2023
+     "price": 0.2024
     },
     {
      "qty": 200,
-     "price": 0.1782
+     "price": 0.1783
     },
     {
      "qty": 400,
-     "price": 0.1483
+     "price": 0.1484
     },
     {
      "qty": 2000,
-     "price": 0.1348
+     "price": 0.1349
     },
     {
      "qty": 4000,
-     "price": 0.1268
+     "price": 0.1269
     }
    ],
    "stock": 4328,
@@ -2697,34 +2979,34 @@
    "block": "linein",
    "basic": true,
    "role": "halve 2 Vrms to 1 Vrms",
-   "price": 0.0021,
+   "price": 0.002,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.0021
+     "price": 0.002
     },
     {
      "qty": 1000,
-     "price": 0.0016
+     "price": 0.0015
     },
     {
      "qty": 3000,
-     "price": 0.0014
-    },
-    {
-     "qty": 10000,
      "price": 0.0013
     },
     {
+     "qty": 10000,
+     "price": 0.0012
+    },
+    {
      "qty": 50000,
-     "price": 0.0011
+     "price": 0.001
     },
     {
      "qty": 50200,
-     "price": 0.0011
+     "price": 0.001
     }
    ],
-   "stock": 14079428,
+   "stock": 15059029,
    "description": "-55℃~+155℃ 4.7kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
@@ -2755,7 +3037,7 @@
     },
     {
      "qty": 600,
-     "price": 0.0226
+     "price": 0.0227
     },
     {
      "qty": 2000,
@@ -2763,14 +3045,14 @@
     },
     {
      "qty": 10000,
-     "price": 0.0142
+     "price": 0.0143
     },
     {
      "qty": 20000,
      "price": 0.0135
     }
    ],
-   "stock": 1898860,
+   "stock": 1870390,
    "description": "25V 4.7uF X5R ±10% 0805 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
@@ -2787,42 +3069,44 @@
    "block": "linein",
    "basic": false,
    "role": "line-in ADC, MCLK taken from BCLK",
-   "price": 0.5552,
+   "price": 0.5556,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.5552
+     "price": 0.5556
     },
     {
      "qty": 10,
-     "price": 0.434
+     "price": 0.4343
     },
     {
      "qty": 30,
-     "price": 0.3816
+     "price": 0.3819
     },
     {
      "qty": 100,
-     "price": 0.3161
+     "price": 0.3163
     },
     {
      "qty": 500,
-     "price": 0.2735
+     "price": 0.2737
     },
     {
      "qty": 1000,
-     "price": 0.2572
+     "price": 0.2573
     }
    ],
-   "stock": 9495,
+   "stock": 9500,
    "description": "-40℃~+85℃ 1.7V~3.6V 16 24 48000Hz Audio Analog-to-Digital Converter I2S Programmable gain、Power-down mode Sigma-Delta QFN-20 ADCs/DACs - Special Purpose ROHS"
   },
   {
    "refdes": [
-    "U14"
+    "U14",
+    "U20"
    ],
    "refdes_class": {
-    "U14": "smt_placed"
+    "U14": "smt_placed",
+    "U20": "smt_placed"
    },
    "lcsc": "C11133",
    "mpn": "TS5A23157",
@@ -2831,35 +3115,177 @@
    "block": "linein",
    "basic": false,
    "role": "DAC path / DJ direct selector",
-   "price": 0.4881,
+   "price": 0.4884,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.4881
+     "price": 0.4884
     },
     {
      "qty": 10,
-     "price": 0.3816
+     "price": 0.3819
     },
     {
      "qty": 30,
-     "price": 0.3358
+     "price": 0.336
     },
     {
      "qty": 100,
-     "price": 0.2784
+     "price": 0.2786
     },
     {
      "qty": 500,
-     "price": 0.2539
+     "price": 0.2541
     },
     {
      "qty": 1000,
-     "price": 0.2375
+     "price": 0.2377
     }
    ],
-   "stock": 5373,
+   "stock": 5343,
    "description": "-40℃~+85℃ 1.65V~5.5V 1.7ns 10Ω 17.5pF 2 220MHz 2:1 800ps MSOP-10 Analog Switches, Multiplexers ROHS"
+  },
+  {
+   "refdes": [
+    "R130",
+    "R136"
+   ],
+   "refdes_class": {
+    "R130": "smt_placed",
+    "R136": "smt_placed"
+   },
+   "lcsc": "C22807",
+   "mpn": "150k",
+   "value": "150k",
+   "package": "R0603",
+   "block": "linein",
+   "basic": true,
+   "role": "speaker tap divider top (28 V)",
+   "price": 0.0017,
+   "price_breaks": [
+    {
+     "qty": 1,
+     "price": 0.0017
+    },
+    {
+     "qty": 1000,
+     "price": 0.0013
+    },
+    {
+     "qty": 5000,
+     "price": 0.0011
+    },
+    {
+     "qty": 10000,
+     "price": 0.0009
+    },
+    {
+     "qty": 50000,
+     "price": 0.0008
+    },
+    {
+     "qty": 50200,
+     "price": 0.0008
+    }
+   ],
+   "stock": 866945,
+   "description": "-55℃~+155℃ 100mW 150kΩ 75V Thick Film Resistor ±1% ±100ppm/℃ 0603 Chip Resistor - Surface Mount ROHS"
+  },
+  {
+   "refdes": [
+    "C130",
+    "C136"
+   ],
+   "refdes_class": {
+    "C130": "smt_placed",
+    "C136": "smt_placed"
+   },
+   "lcsc": "C1620",
+   "mpn": "470pF",
+   "value": "470pF",
+   "package": "C0603",
+   "block": "linein",
+   "basic": true,
+   "role": "tap carrier filter",
+   "price": 0.0058,
+   "price_breaks": [
+    {
+     "qty": 1,
+     "price": 0.0058
+    },
+    {
+     "qty": 1000,
+     "price": 0.0046
+    },
+    {
+     "qty": 4000,
+     "price": 0.0037
+    },
+    {
+     "qty": 8000,
+     "price": 0.0033
+    },
+    {
+     "qty": 48000,
+     "price": 0.0029
+    },
+    {
+     "qty": 100000,
+     "price": 0.0027
+    }
+   ],
+   "stock": 777363,
+   "description": "470pF 50V X7R ±10% 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
+  },
+  {
+   "refdes": [
+    "R133",
+    "R216",
+    "R217",
+    "R314"
+   ],
+   "refdes_class": {
+    "R133": "smt_placed",
+    "R216": "smt_placed",
+    "R217": "smt_placed",
+    "R314": "smt_placed"
+   },
+   "lcsc": "C25792",
+   "mpn": "47k",
+   "value": "47k",
+   "package": "R0402",
+   "block": "linein",
+   "basic": true,
+   "role": "",
+   "price": 0.0019,
+   "price_breaks": [
+    {
+     "qty": 1,
+     "price": 0.0019
+    },
+    {
+     "qty": 1000,
+     "price": 0.0015
+    },
+    {
+     "qty": 3000,
+     "price": 0.0012
+    },
+    {
+     "qty": 10000,
+     "price": 0.0011
+    },
+    {
+     "qty": 50000,
+     "price": 0.001
+    },
+    {
+     "qty": 50200,
+     "price": 0.001
+    }
+   ],
+   "stock": 6979720,
+   "description": "-55℃~+155℃ 47kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
    "refdes": [
@@ -2875,31 +3301,31 @@
    "block": "linein",
    "basic": false,
    "role": "TOSLINK receiver [Ultra]",
-   "price": 1.6721,
+   "price": 1.6732,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 1.6721
+     "price": 1.6732
     },
     {
      "qty": 10,
-     "price": 1.3986
+     "price": 1.3996
     },
     {
      "qty": 60,
-     "price": 1.2479
+     "price": 1.2488
     },
     {
      "qty": 120,
-     "price": 1.0776
+     "price": 1.0784
     },
     {
      "qty": 480,
-     "price": 1.0023
+     "price": 1.003
     },
     {
      "qty": 1020,
-     "price": 0.9679
+     "price": 0.9686
     }
    ],
    "stock": 236,
@@ -2912,44 +3338,44 @@
    ],
    "refdes_class": {
     "U15": "smt_placed",
-    "U16": "dnp"
+    "U16": "smt_placed"
    },
-   "lcsc": "C475500",
-   "mpn": "TPA3221",
-   "value": "TPA3221",
-   "package": "HTSSOP-44_L14.0-W6.1-P0.64-LS8.1-BL",
+   "lcsc": "C2879306",
+   "mpn": "TPA3220",
+   "value": "TPA3220",
+   "package": "HTSSOP-44-1EP_L14.0-W6.1-P0.64-LS8.1-EP7.3x4.43",
    "block": "amp_a",
    "basic": false,
-   "role": "zone A class-D amp, 2 x 77 W into 4 ohm at 28 V",
-   "price": 2.4369,
+   "role": "zone A class-D amp, pad-down, 2 x 77 W into 4 ohm at 28 V (1% THD peak)",
+   "price": 4.3117,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 2.4369
+     "price": 4.3117
     },
     {
      "qty": 10,
-     "price": 2.0897
+     "price": 3.8413
     },
     {
      "qty": 30,
-     "price": 1.8719
+     "price": 3.6021
     },
     {
      "qty": 100,
-     "price": 1.6475
+     "price": 3.2809
     },
     {
      "qty": 500,
-     "price": 1.5476
+     "price": 3.1662
     },
     {
      "qty": 1000,
-     "price": 1.5034
+     "price": 3.117
     }
    ],
-   "stock": 1107,
-   "description": "0.02% 1-Channel、2-Channel 105W×2@4Ω、112W×2@3Ω、208W×1@2Ω、88W×2@4Ω、100W×2@3Ω、170W×1@2Ω 108dB 2 Pairs Differential Inputs 25mA 60dB 7V~30V 90% Class D Enable/shutdown function、Overvoltage protection HTSSOP-44-6.1mm Audio Amplifiers ROHS"
+   "stock": 0,
+   "description": "0.02% 1-Channel、2-Channel 108dB 25mA 60W×2@8Ω、110W×2@4Ω 60dB 7V~30V 90% Class D Overvoltage protection、Automatic power-saving mode HTSSOP-44-EP-6.1mm Audio Amplifiers ROHS"
   },
   {
    "refdes": [
@@ -2973,12 +3399,12 @@
     "R230": "smt_placed",
     "R233": "smt_placed",
     "R236": "smt_placed",
-    "R303": "dnp",
-    "R305": "dnp",
-    "R325": "dnp",
-    "R328": "dnp",
-    "R331": "dnp",
-    "R334": "dnp"
+    "R303": "smt_placed",
+    "R305": "smt_placed",
+    "R325": "smt_placed",
+    "R328": "smt_placed",
+    "R331": "smt_placed",
+    "R334": "smt_placed"
    },
    "lcsc": "C23164",
    "mpn": "4.7R",
@@ -3003,7 +3429,7 @@
     },
     {
      "qty": 10000,
-     "price": 0.0015
+     "price": 0.0016
     },
     {
      "qty": 50000,
@@ -3014,7 +3440,7 @@
      "price": 0.0014
     }
    ],
-   "stock": 436298,
+   "stock": 424242,
    "description": "-55℃~+155℃ 100mW 4.7Ω 75V Thick Film Resistor ±1% ±400ppm/℃ 0603 Chip Resistor - Surface Mount ROHS"
   },
   {
@@ -3036,11 +3462,11 @@
     "C223": "smt_placed",
     "C224": "smt_placed",
     "C225": "smt_placed",
-    "C312": "dnp",
-    "C320": "dnp",
-    "C321": "dnp",
-    "C322": "dnp",
-    "C323": "dnp"
+    "C312": "smt_placed",
+    "C320": "smt_placed",
+    "C321": "smt_placed",
+    "C322": "smt_placed",
+    "C323": "smt_placed"
    },
    "lcsc": "C21117",
    "mpn": "33nF",
@@ -3049,23 +3475,23 @@
    "block": "amp_a",
    "basic": true,
    "role": "",
-   "price": 0.0137,
+   "price": 0.0136,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.0137
+     "price": 0.0136
     },
     {
      "qty": 500,
-     "price": 0.0107
+     "price": 0.0106
     },
     {
      "qty": 1500,
-     "price": 0.009
+     "price": 0.0089
     },
     {
      "qty": 4000,
-     "price": 0.008
+     "price": 0.0079
     },
     {
      "qty": 24000,
@@ -3073,10 +3499,10 @@
     },
     {
      "qty": 48000,
-     "price": 0.0067
+     "price": 0.0066
     }
    ],
-   "stock": 838117,
+   "stock": 831593,
    "description": "33nF 50V X7R ±10% 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
@@ -3120,56 +3546,8 @@
      "price": 0.0006
     }
    ],
-   "stock": 2925910,
+   "stock": 2900311,
    "description": "-55℃~+155℃ 20kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
-  },
-  {
-   "refdes": [
-    "R216",
-    "R217",
-    "R314"
-   ],
-   "refdes_class": {
-    "R216": "smt_placed",
-    "R217": "smt_placed",
-    "R314": "dnp"
-   },
-   "lcsc": "C25792",
-   "mpn": "47k",
-   "value": "47k",
-   "package": "R0402",
-   "block": "amp_a",
-   "basic": true,
-   "role": "",
-   "price": 0.002,
-   "price_breaks": [
-    {
-     "qty": 1,
-     "price": 0.002
-    },
-    {
-     "qty": 1000,
-     "price": 0.0015
-    },
-    {
-     "qty": 3000,
-     "price": 0.0013
-    },
-    {
-     "qty": 10000,
-     "price": 0.0012
-    },
-    {
-     "qty": 50000,
-     "price": 0.001
-    },
-    {
-     "qty": 50200,
-     "price": 0.001
-    }
-   ],
-   "stock": 6602710,
-   "description": "-55℃~+155℃ 47kΩ 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
    "refdes": [
@@ -3187,10 +3565,10 @@
     "C219": "smt_placed",
     "C220": "smt_placed",
     "C221": "smt_placed",
-    "C316": "dnp",
-    "C317": "dnp",
-    "C318": "dnp",
-    "C319": "dnp"
+    "C316": "smt_placed",
+    "C317": "smt_placed",
+    "C318": "smt_placed",
+    "C319": "smt_placed"
    },
    "lcsc": "C15850",
    "mpn": "10uF",
@@ -3199,11 +3577,11 @@
    "block": "amp_a",
    "basic": true,
    "role": "",
-   "price": 0.0438,
+   "price": 0.0436,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.0438
+     "price": 0.0436
     },
     {
      "qty": 200,
@@ -3226,7 +3604,7 @@
      "price": 0.0253
     }
    ],
-   "stock": 8554056,
+   "stock": 8481764,
    "description": "10uF 25V X5R ±10% 0805 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
@@ -3245,10 +3623,10 @@
     "L2": "smt_placed",
     "L3": "smt_placed",
     "L4": "smt_placed",
-    "L5": "dnp",
-    "L6": "dnp",
-    "L7": "dnp",
-    "L8": "dnp"
+    "L5": "smt_placed",
+    "L6": "smt_placed",
+    "L7": "smt_placed",
+    "L8": "smt_placed"
    },
    "lcsc": "C2962885",
    "mpn": "10uH",
@@ -3257,34 +3635,34 @@
    "block": "amp_a",
    "basic": false,
    "role": "output filter 10 uH, Isat 10 A (= TPA3221 OC limit)",
-   "price": 0.2814,
+   "price": 0.2816,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.2814
+     "price": 0.2816
     },
     {
      "qty": 50,
-     "price": 0.2236
+     "price": 0.2237
     },
     {
      "qty": 150,
-     "price": 0.1989
+     "price": 0.199
     },
     {
      "qty": 1000,
-     "price": 0.1522
+     "price": 0.1523
     },
     {
      "qty": 2000,
-     "price": 0.1384
+     "price": 0.1385
     },
     {
      "qty": 5000,
-     "price": 0.1302
+     "price": 0.1303
     }
    ],
-   "stock": 17625,
+   "stock": 17464,
    "description": "10A 10uH 30mΩ 6A ±20% SMD,8.5x8mm Power Inductors ROHS"
   },
   {
@@ -3303,10 +3681,10 @@
     "C231": "smt_placed",
     "C234": "smt_placed",
     "C237": "smt_placed",
-    "C326": "dnp",
-    "C329": "dnp",
-    "C332": "dnp",
-    "C335": "dnp"
+    "C326": "smt_placed",
+    "C329": "smt_placed",
+    "C332": "smt_placed",
+    "C335": "smt_placed"
    },
    "lcsc": "C1588",
    "mpn": "1nF",
@@ -3323,7 +3701,7 @@
     },
     {
      "qty": 500,
-     "price": 0.0076
+     "price": 0.0077
     },
     {
      "qty": 1500,
@@ -3342,8 +3720,8 @@
      "price": 0.0055
     }
    ],
-   "stock": 5277875,
-   "description": "1nF 50V X7R ±10% 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
+   "stock": 5089616,
+   "description": "-55℃~+125℃ 1nF 50V X7R ±10% 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
   },
   {
    "refdes": [
@@ -3355,29 +3733,29 @@
    "refdes_class": {
     "J6": "smt_placed",
     "J7": "smt_placed",
-    "J10": "dnp",
-    "J11": "dnp"
+    "J10": "smt_placed",
+    "J11": "smt_placed"
    },
    "lcsc": "C474881",
-   "mpn": "SPK A L",
+   "mpn": "KF301-5.0-2P",
    "value": "SPK A L",
    "package": "CONN-TH_P5.00_KF301-5.0-2P",
    "block": "amp_a",
    "basic": false,
    "role": "zone A L speaker terminal, 17 A",
-   "price": 0.1017,
+   "price": 0.1018,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.1017
+     "price": 0.1018
     },
     {
      "qty": 50,
-     "price": 0.0839
+     "price": 0.084
     },
     {
      "qty": 150,
-     "price": 0.0747
+     "price": 0.0748
     },
     {
      "qty": 1000,
@@ -3392,7 +3770,7 @@
      "price": 0.0584
     }
    ],
-   "stock": 76861,
+   "stock": 58480,
    "description": "-30℃~+120℃ 1 1.5 14~22 17A 1x2P 2 250V 2P 5mm Blue Through Hole 插件,P=5mm Screw Terminal Blocks ROHS"
   },
   {
@@ -3400,7 +3778,7 @@
     "R313"
    ],
    "refdes_class": {
-    "R313": "dnp"
+    "R313": "smt_placed"
    },
    "lcsc": "C25798",
    "mpn": "75k",
@@ -3436,7 +3814,7 @@
      "price": 0.0006
     }
    ],
-   "stock": 451005,
+   "stock": 446234,
    "description": "-55℃~+155℃ 50V 62.5mW 75kΩ Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
@@ -3444,7 +3822,7 @@
     "R315"
    ],
    "refdes_class": {
-    "R315": "dnp"
+    "R315": "smt_placed"
    },
    "lcsc": "C17168",
    "mpn": "0R",
@@ -3453,34 +3831,34 @@
    "block": "amp_b",
    "basic": true,
    "role": "",
-   "price": 0.0012,
+   "price": 0.001,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.0012
+     "price": 0.001
     },
     {
      "qty": 1000,
-     "price": 0.0009
-    },
-    {
-     "qty": 3000,
      "price": 0.0008
     },
     {
-     "qty": 10000,
+     "qty": 3000,
      "price": 0.0007
     },
     {
-     "qty": 50000,
+     "qty": 10000,
      "price": 0.0006
     },
     {
+     "qty": 50000,
+     "price": 0.0005
+    },
+    {
      "qty": 50200,
-     "price": 0.0006
+     "price": 0.0005
     }
    ],
-   "stock": 8554435,
+   "stock": 11414643,
    "description": "-55℃~+155℃ 0Ω 50V 62.5mW Thick Film Resistor ±1% ±800ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
@@ -3497,31 +3875,31 @@
    "block": "ui",
    "basic": false,
    "role": "volume knob [Plus]",
-   "price": 1.6,
+   "price": 1.6011,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 1.6
+     "price": 1.6011
     },
     {
      "qty": 10,
-     "price": 1.4739
+     "price": 1.4749
     },
     {
      "qty": 30,
-     "price": 1.3953
+     "price": 1.3963
     },
     {
      "qty": 120,
-     "price": 1.2103
+     "price": 1.2111
     },
     {
      "qty": 480,
-     "price": 1.1742
+     "price": 1.1751
     },
     {
      "qty": 960,
-     "price": 1.1595
+     "price": 1.1603
     }
    ],
    "stock": 3224,
@@ -3537,7 +3915,7 @@
     "SW3": "smt_placed"
    },
    "lcsc": "C318884",
-   "mpn": "BTN1",
+   "mpn": "TS-1187A-B-A-B",
    "value": "BTN1",
    "package": "SW-SMD_4P-L5.1-W5.1-P3.70-LS6.5-TL_H1.5",
    "block": "ui",
@@ -3570,7 +3948,7 @@
      "price": 0.0111
     }
    ],
-   "stock": 1127545,
+   "stock": 1127169,
    "description": "-30℃~+85℃ 1.5mm 1.6N 100,000 cycles 12V 5.1mm 5.1mm 50mA Gold No Round Button SPST Surface Mount,Vertical Without Bracket SMD-4P,5.1x5.1mm Tactile Switches ROHS"
   },
   {
@@ -3580,42 +3958,42 @@
    "refdes_class": {
     "U18": "smt_placed"
    },
-   "lcsc": "C91447",
-   "mpn": "IRM-H638T",
-   "value": "IRM-H638T",
-   "package": "SENSOR-SMD_IRM-H638T-TR2-TL",
+   "lcsc": "C42421366",
+   "mpn": "IRM-3638T",
+   "value": "IRM-3638T",
+   "package": "OPTO-TH_IRM-3638T",
    "block": "ui",
    "basic": false,
-   "role": "38 kHz IR receiver [Plus]",
-   "price": 0.2599,
+   "role": "38 kHz IR receiver, front-facing [Plus]",
+   "price": 0.1861,
    "price_breaks": [
     {
      "qty": 1,
-     "price": 0.2599
+     "price": 0.1861
     },
     {
      "qty": 50,
-     "price": 0.1989
+     "price": 0.1425
     },
     {
      "qty": 150,
-     "price": 0.1691
+     "price": 0.1213
     },
     {
-     "qty": 1500,
-     "price": 0.1435
+     "qty": 500,
+     "price": 0.1023
     },
     {
-     "qty": 3000,
-     "price": 0.1361
+     "qty": 2500,
+     "price": 0.0971
     },
     {
-     "qty": 4500,
-     "price": 0.1317
+     "qty": 5000,
+     "price": 0.094
     }
    ],
-   "stock": 138216,
-   "description": "-25℃~+85℃ 1.2mA 2.7V~5.5V 38kHz 45°、45° SMD-4P,5x4mm Infrared Remote Receiver (IRM) ROHS"
+   "stock": 101147,
+   "description": "SIP-3-2.54mm Infrared Remote Receiver (IRM) ROHS"
   },
   {
    "refdes": [
@@ -3658,7 +4036,7 @@
      "price": 0.0008
     }
    ],
-   "stock": 6308619,
+   "stock": 6151109,
    "description": "-55℃~+155℃ 100Ω 50V 62.5mW Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount ROHS"
   },
   {
@@ -3702,7 +4080,7 @@
      "price": 0.0036
     }
    ],
-   "stock": 7384122,
+   "stock": 7361800,
    "description": "-40℃~+85℃ 1.6mm x 0.8mm square LED 1.8V~2.4V 120° 20mA 300mcd 40mW 615nm~630nm 645nm Discrete Diode Red Water Clear 0603 LED Indication - Discrete ROHS"
   },
   {
@@ -3731,22 +4109,22 @@
     },
     {
      "qty": 150,
-     "price": 0.0757
+     "price": 0.0758
     },
     {
      "qty": 500,
-     "price": 0.0675
+     "price": 0.0676
     },
     {
      "qty": 2000,
-     "price": 0.0593
+     "price": 0.0594
     },
     {
      "qty": 4000,
      "price": 0.0574
     }
    ],
-   "stock": 126494,
+   "stock": 126244,
    "description": "-25℃~+85℃ 0.3mm 0.5mm 20P 2mm 500mA 50V Bottom Contact Hinged Lid Phosphor bronze Surface Mount, Right Angle Tin SMD,P=0.5mm,卧贴 FFC, FPC (Flat Flexible) Connector Assemblies ROHS"
   }
  ]
