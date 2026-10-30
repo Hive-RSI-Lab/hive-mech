@@ -1,0 +1,1078 @@
+{
+ "source": "/tmp/uf/boards/ultra-front/kicad/ultra-front.kicad_pcb",
+ "thickness": 1.6,
+ "outline": [
+  [
+   108.3473,
+   0.0304
+  ],
+  [
+   108.684,
+   0.1206
+  ],
+  [
+   109.0,
+   0.2679
+  ],
+  [
+   109.2856,
+   0.4679
+  ],
+  [
+   109.5321,
+   0.7144
+  ],
+  [
+   109.732,
+   1.0
+  ],
+  [
+   109.8794,
+   1.316
+  ],
+  [
+   109.9696,
+   1.6527
+  ],
+  [
+   110.0,
+   2.0
+  ],
+  [
+   110.0,
+   38.0
+  ],
+  [
+   109.9696,
+   38.3473
+  ],
+  [
+   109.8794,
+   38.684
+  ],
+  [
+   109.732,
+   39.0
+  ],
+  [
+   109.5321,
+   39.2856
+  ],
+  [
+   109.2856,
+   39.5321
+  ],
+  [
+   109.0,
+   39.7321
+  ],
+  [
+   108.684,
+   39.8794
+  ],
+  [
+   108.3473,
+   39.9696
+  ],
+  [
+   108.0,
+   40.0
+  ],
+  [
+   2.0,
+   40.0
+  ],
+  [
+   1.6527,
+   39.9696
+  ],
+  [
+   1.316,
+   39.8794
+  ],
+  [
+   1.0,
+   39.7321
+  ],
+  [
+   0.7144,
+   39.5321
+  ],
+  [
+   0.4679,
+   39.2856
+  ],
+  [
+   0.2679,
+   39.0
+  ],
+  [
+   0.1206,
+   38.684
+  ],
+  [
+   0.0304,
+   38.3473
+  ],
+  [
+   0.0,
+   38.0
+  ],
+  [
+   0.0,
+   2.0
+  ],
+  [
+   0.0304,
+   1.6527
+  ],
+  [
+   0.1206,
+   1.316
+  ],
+  [
+   0.2679,
+   1.0
+  ],
+  [
+   0.4679,
+   0.7144
+  ],
+  [
+   0.7144,
+   0.4679
+  ],
+  [
+   1.0,
+   0.2679
+  ],
+  [
+   1.316,
+   0.1206
+  ],
+  [
+   1.6527,
+   0.0304
+  ],
+  [
+   2.0,
+   0.0
+  ],
+  [
+   108.0,
+   0.0
+  ]
+ ],
+ "cutouts": [],
+ "size": [
+  110.0,
+  40.0
+ ],
+ "kicad_origin": [
+  -9.945,
+  66.8
+ ],
+ "holes": [
+  {
+   "ref": "H4",
+   "x": 3.05,
+   "y": 3.05,
+   "drill": 2.7,
+   "pad": 5.4,
+   "plated": true
+  },
+  {
+   "ref": "H2",
+   "x": 106.95,
+   "y": 36.95,
+   "drill": 2.7,
+   "pad": 5.4,
+   "plated": true
+  },
+  {
+   "ref": "H1",
+   "x": 3.05,
+   "y": 36.95,
+   "drill": 2.7,
+   "pad": 5.4,
+   "plated": true
+  },
+  {
+   "ref": "H3",
+   "x": 106.95,
+   "y": 3.05,
+   "drill": 2.7,
+   "pad": 5.4,
+   "plated": true
+  }
+ ],
+ "parts": [
+  {
+   "ref": "C7",
+   "value": "10nF",
+   "footprint": "aiee:C0603",
+   "side": "top",
+   "x": 104.6,
+   "y": 28.9,
+   "rot": 0.0,
+   "bbox": [
+    103.25,
+    28.2,
+    105.95,
+    29.6
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R11",
+   "value": "100k",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 4.0,
+   "y": 10.6,
+   "rot": 0.0,
+   "bbox": [
+    2.6,
+    9.92,
+    5.4,
+    11.28
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R6",
+   "value": "10k",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 89.5,
+   "y": 8.0,
+   "rot": 90.0,
+   "bbox": [
+    88.82,
+    6.6,
+    90.18,
+    9.4
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R17",
+   "value": "120R",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 23.2,
+   "y": 5.6,
+   "rot": 90.0,
+   "bbox": [
+    22.52,
+    4.2,
+    23.88,
+    7.0
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R14",
+   "value": "1k",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 101.2,
+   "y": 3.2,
+   "rot": 0.0,
+   "bbox": [
+    99.8,
+    2.52,
+    102.6,
+    3.88
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R3",
+   "value": "10k",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 98.2,
+   "y": 28.9,
+   "rot": 0.0,
+   "bbox": [
+    96.8,
+    28.22,
+    99.6,
+    29.58
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "SW3",
+   "value": "TS-1187A-B-A-B",
+   "footprint": "aiee:SW-SMD_4P-L5.1-W5.1-P3.70-LS6.5-TL_H1.5",
+   "side": "top",
+   "x": 84.0,
+   "y": 8.0,
+   "rot": 0.0,
+   "bbox": [
+    80.25,
+    5.45,
+    87.75,
+    10.55
+   ],
+   "z": [
+    1.6,
+    3.1
+   ],
+   "height_from": "override",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "Q1",
+   "value": "AO3400A",
+   "footprint": "aiee:SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR",
+   "side": "top",
+   "x": 13.0,
+   "y": 13.7,
+   "rot": 0.0,
+   "bbox": [
+    11.25,
+    12.18,
+    14.75,
+    15.22
+   ],
+   "z": [
+    1.6,
+    2.8
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R10",
+   "value": "100R",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 92.3,
+   "y": 37.4,
+   "rot": 0.0,
+   "bbox": [
+    90.9,
+    36.72,
+    93.7,
+    38.08
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "SW2",
+   "value": "TS-1187A-B-A-B",
+   "footprint": "aiee:SW-SMD_4P-L5.1-W5.1-P3.70-LS6.5-TL_H1.5",
+   "side": "top",
+   "x": 84.0,
+   "y": 20.0,
+   "rot": 0.0,
+   "bbox": [
+    80.25,
+    17.45,
+    87.75,
+    22.55
+   ],
+   "z": [
+    1.6,
+    3.1
+   ],
+   "height_from": "override",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "SW4",
+   "value": "EC11E1834403",
+   "footprint": "aiee:SW-TH_EC11E1820402",
+   "side": "top",
+   "x": 99.0,
+   "y": 19.0,
+   "rot": 180.0,
+   "bbox": [
+    91.15,
+    10.6,
+    106.85,
+    27.4
+   ],
+   "z": [
+    1.6,
+    26.1
+   ],
+   "height_from": "override",
+   "tht": true,
+   "model": null,
+   "under": 3.5
+  },
+  {
+   "ref": "R16",
+   "value": "680R",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 94.0,
+   "y": 3.2,
+   "rot": 0.0,
+   "bbox": [
+    92.6,
+    2.52,
+    95.4,
+    3.88
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "C1",
+   "value": "100nF",
+   "footprint": "aiee:C0603",
+   "side": "top",
+   "x": 10.6,
+   "y": 36.0,
+   "rot": 90.0,
+   "bbox": [
+    9.9,
+    34.65,
+    11.3,
+    37.35
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "U1",
+   "value": "TCA9535PWR",
+   "footprint": "aiee:TSSOP-24_L7.8-W4.4-P0.65-LS6.4-BL",
+   "side": "top",
+   "x": 16.0,
+   "y": 35.4,
+   "rot": 0.0,
+   "bbox": [
+    11.98,
+    31.31,
+    20.02,
+    39.49
+   ],
+   "z": [
+    1.6,
+    3.4
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R9",
+   "value": "10k",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 92.3,
+   "y": 33.0,
+   "rot": 0.0,
+   "bbox": [
+    90.9,
+    32.32,
+    93.7,
+    33.68
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R4",
+   "value": "10k",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 89.5,
+   "y": 32.0,
+   "rot": 90.0,
+   "bbox": [
+    88.82,
+    30.6,
+    90.18,
+    33.4
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R2",
+   "value": "10k",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 95.0,
+   "y": 28.9,
+   "rot": 0.0,
+   "bbox": [
+    93.6,
+    28.22,
+    96.4,
+    29.58
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "C4",
+   "value": "100nF",
+   "footprint": "aiee:C0603",
+   "side": "top",
+   "x": 4.0,
+   "y": 13.0,
+   "rot": 0.0,
+   "bbox": [
+    2.65,
+    12.3,
+    5.35,
+    13.7
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "C5",
+   "value": "4.7uF",
+   "footprint": "aiee:C0603",
+   "side": "top",
+   "x": 92.3,
+   "y": 35.2,
+   "rot": 0.0,
+   "bbox": [
+    90.95,
+    34.5,
+    93.65,
+    35.9
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R8",
+   "value": "10k",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 11.0,
+   "y": 26.6,
+   "rot": 0.0,
+   "bbox": [
+    9.6,
+    25.92,
+    12.4,
+    27.28
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "C2",
+   "value": "10uF",
+   "footprint": "aiee:C0805",
+   "side": "top",
+   "x": 10.3,
+   "y": 13.4,
+   "rot": 90.0,
+   "bbox": [
+    9.37,
+    11.44,
+    11.23,
+    15.36
+   ],
+   "z": [
+    1.6,
+    2.9
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R19",
+   "value": "10k",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 10.6,
+   "y": 32.6,
+   "rot": 90.0,
+   "bbox": [
+    9.92,
+    31.2,
+    11.28,
+    34.0
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "J1",
+   "value": "FPC-05F-20PH20",
+   "footprint": "aiee:FPC-SMD_20P-P0.50_XUNPU_FPC-05F-20PH20",
+   "side": "top",
+   "x": 14.0,
+   "y": 4.4,
+   "rot": 0.0,
+   "bbox": [
+    6.31,
+    0.24,
+    21.69,
+    6.57
+   ],
+   "z": [
+    1.6,
+    3.7
+   ],
+   "height_from": "override",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "C3",
+   "value": "10uF",
+   "footprint": "aiee:C0805",
+   "side": "top",
+   "x": 8.3,
+   "y": 13.4,
+   "rot": 90.0,
+   "bbox": [
+    7.37,
+    11.44,
+    9.23,
+    15.36
+   ],
+   "z": [
+    1.6,
+    2.9
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R5",
+   "value": "10k",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 89.5,
+   "y": 20.0,
+   "rot": 90.0,
+   "bbox": [
+    88.82,
+    18.6,
+    90.18,
+    21.4
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R1",
+   "value": "10k",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 91.8,
+   "y": 28.9,
+   "rot": 0.0,
+   "bbox": [
+    90.4,
+    28.22,
+    93.2,
+    29.58
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R15",
+   "value": "680R",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 97.2,
+   "y": 3.2,
+   "rot": 0.0,
+   "bbox": [
+    95.8,
+    2.52,
+    98.6,
+    3.88
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R18",
+   "value": "120R",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 23.2,
+   "y": 2.55,
+   "rot": 90.0,
+   "bbox": [
+    22.52,
+    1.15,
+    23.88,
+    3.95
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R13",
+   "value": "120R",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 23.2,
+   "y": 8.65,
+   "rot": 90.0,
+   "bbox": [
+    22.52,
+    7.25,
+    23.88,
+    10.05
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "U2",
+   "value": "IRM-H638T/TR2",
+   "footprint": "aiee:SENSOR-SMD_IRM-H638T-TR2-TL",
+   "side": "top",
+   "x": 99.0,
+   "y": 34.0,
+   "rot": 0.0,
+   "bbox": [
+    95.05,
+    31.5,
+    102.95,
+    36.5
+   ],
+   "z": [
+    1.6,
+    5.8
+   ],
+   "height_from": "override",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "J2",
+   "value": "FPC-05FB-12PH20",
+   "footprint": "aiee:FPC-SMD_12P-P0.50_XUNPU_FPC-05FB-12PH20",
+   "side": "top",
+   "x": 3.3,
+   "y": 19.8,
+   "rot": 90.0,
+   "bbox": [
+    0.83,
+    14.25,
+    6.84,
+    25.35
+   ],
+   "z": [
+    1.6,
+    3.7
+   ],
+   "height_from": "override",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "D1",
+   "value": "TJ-S1615SW6TGLCCYRGB-A5",
+   "footprint": "aiee:LED-SMD_4P-L1.6-W1.5-TR",
+   "side": "top",
+   "x": 98.0,
+   "y": 6.4,
+   "rot": 0.0,
+   "bbox": [
+    96.5,
+    5.49,
+    99.5,
+    7.31
+   ],
+   "z": [
+    1.6,
+    2.4
+   ],
+   "height_from": "override",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "SW1",
+   "value": "TS-1187A-B-A-B",
+   "footprint": "aiee:SW-SMD_4P-L5.1-W5.1-P3.70-LS6.5-TL_H1.5",
+   "side": "top",
+   "x": 84.0,
+   "y": 32.0,
+   "rot": 0.0,
+   "bbox": [
+    80.25,
+    29.45,
+    87.75,
+    34.55
+   ],
+   "z": [
+    1.6,
+    3.1
+   ],
+   "height_from": "override",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R12",
+   "value": "100R",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 13.0,
+   "y": 11.0,
+   "rot": 0.0,
+   "bbox": [
+    11.6,
+    10.32,
+    14.4,
+    11.68
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "C6",
+   "value": "10nF",
+   "footprint": "aiee:C0603",
+   "side": "top",
+   "x": 101.4,
+   "y": 28.9,
+   "rot": 0.0,
+   "bbox": [
+    100.05,
+    28.2,
+    102.75,
+    29.6
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R7",
+   "value": "10k",
+   "footprint": "aiee:R0603",
+   "side": "top",
+   "x": 22.0,
+   "y": 35.5,
+   "rot": 90.0,
+   "bbox": [
+    21.32,
+    34.1,
+    22.68,
+    36.9
+   ],
+   "z": [
+    1.6,
+    2.5
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  }
+ ],
+ "ports": [
+  {
+   "ref": "J1",
+   "edge": "S",
+   "face": [
+    6.31,
+    21.69,
+    1.6,
+    3.7
+   ],
+   "plane": 0.24,
+   "overhang": -0.24,
+   "side": "top",
+   "kind": "generic"
+  },
+  {
+   "ref": "J2",
+   "edge": "W",
+   "face": [
+    14.25,
+    25.35,
+    1.6,
+    3.7
+   ],
+   "plane": 0.83,
+   "overhang": -0.83,
+   "side": "top",
+   "kind": "generic"
+  }
+ ],
+ "top_access": [
+  "SW3",
+  "SW2",
+  "SW4",
+  "U2",
+  "D1",
+  "SW1"
+ ],
+ "warnings": []
+}

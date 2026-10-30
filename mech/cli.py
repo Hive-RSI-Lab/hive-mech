@@ -6,7 +6,7 @@
                                                  run it, export, fit-check, render
     mech fit <enclosure.py> [--board B]          the fit check alone
     mech pin <clone> [--sha REV]                 pin the product's boards for the score
-    mech score                                   the pinned product's boards, each boxed and checked
+    mech score                                   the pinned product boards, graded by the boxes holding them
     mech onshape ...                             see docs/onshape.md
 
 An enclosure script is plain Python with build123d:
@@ -133,29 +133,42 @@ def cmd_build(a, export=True) -> int:
 
 
 def cmd_score(a) -> int:
-    """The product's boards (examples/product, pinned by `mech pin`), each
-    graded by its enclosure's fit checks passed / fit checks; a board with
-    no enclosure, or one that doesn't build, grades 0. Prints 100 x the
-    mean grade. Higher is better."""
+    """The product (examples/product, pinned by `mech pin`): every product
+    enclosure built on its board and fit-checked, then every pinned board
+    graded by the mean of fit checks passed / fit checks over the enclosures
+    that hold it (else the module's stand-in examples/<name>/enclosure.py;
+    one that doesn't build grades 0, a board nothing holds grades 0). Prints
+    100 x the boards' mean grade. Higher is better."""
     from . import product
     meta = product.load_pin()
     if not meta or not meta.get("boards"):
         print("score: no pinned product boards (mech pin <clone>)", file=sys.stderr)
         return 1
     print(f"product: {meta['repo']} @ {meta['sha'][:12]}")
+    jsons = {n: product.PRODUCT / "boards" / f"{n}.json" for n in meta["boards"]}
+
+    def run(label, script, board):
+        try:
+            ok, n, bad, held = product.grade(script, jsons[board], jsons)
+        except Exception as e:  # a broken enclosure costs its boards, not the score run
+            print(f"{label}: does not build ({script.relative_to(ROOT)} on {board}): {e}")
+            return 0.0, {board}
+        print(f"{label}: {ok}/{n} ({script.relative_to(ROOT)}; holds {', '.join(sorted(held))})"
+              + (f" failing: {', '.join(bad)}" if bad else ""))
+        return (ok / n if n else 0.0), held
+
+    by_board: dict[str, list[float]] = {n: [] for n in meta["boards"]}
+    for name, e in (meta.get("enclosures") or {}).items():
+        g, held = run(name, product.PRODUCT / e["script"], e["board"])
+        for b in held:
+            by_board[b].append(g)
     grades = []
-    for name, (script, whose) in product.enclosures(meta).items():
-        g = 0.0
-        if script is None:
-            print(f"{name}: no enclosure (product or examples/{name}/enclosure.py)")
-        else:
-            try:
-                ok, n, bad = product.grade(script, product.PRODUCT / "boards" / f"{name}.json")
-                g = ok / n if n else 0.0
-                print(f"{name}: {ok}/{n} ({whose} {script.relative_to(ROOT)})"
-                      + (f" failing: {', '.join(bad)}" if bad else ""))
-            except Exception as e:  # a broken enclosure costs its board, not the score run
-                print(f"{name}: does not build ({whose} {script.relative_to(ROOT)}): {e}")
+    for name, gs in by_board.items():
+        if not gs and (s := product.stand_in(name)):
+            g, _ = run(f"{name} stand-in", s, name)
+            gs = [g]
+        g = sum(gs) / len(gs) if gs else 0.0
+        print(f"board {name}: {100 * g:.1f}" + ("" if gs else " (no enclosure holds it)"))
         grades.append(g)
     print(f"{100.0 * sum(grades) / len(grades):.2f}")
     return 0
