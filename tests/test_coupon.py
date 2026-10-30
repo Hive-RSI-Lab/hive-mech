@@ -73,8 +73,8 @@ def test_coupon_features_are_cut_to_size(parts):
             assert solid(x - s / 2 - 1.2, y, top - 1), f  # a post holds each end
     # the plug's lip is the size the sockets are measured against
     px = coupon.X0 + coupon.LIP_W / 2
-    assert parts["plug"].is_inside(Vector(px - 0.03, coupon.Y_LOOSE, 2.4))
-    assert not parts["plug"].is_inside(Vector(px + 0.03, coupon.Y_LOOSE, 2.4))
+    assert parts["plug"].is_inside(Vector(px - 0.03, coupon.Y_LOOSE, 1.2 + coupon.LIP_H / 2))
+    assert not parts["plug"].is_inside(Vector(px + 0.03, coupon.Y_LOOSE, 1.2 + coupon.LIP_H / 2))
 
 
 def test_record_writes_the_sizes_that_fit(tmp_path):
