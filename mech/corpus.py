@@ -39,14 +39,15 @@ from .cli import ROOT, printed_parts, run_script
 
 EXAMPLES = ROOT / "examples"
 # Known good: each passes every fit check, and a review of its build says it
-# should. Ultra (examples/product/enclosure/ultra.py) isn't one: its base
-# fails overhang, bridge and wall as pinned, so it can't tell a false alarm
-# from a real miss.
+# should. The product's own (Lite, Plus, and Ultra with ultra-front behind its
+# front panel) come in with the pin; Ultra passes 55/55 since hifi-receiver
+# 40278fd fixed its overhangs, bridges and walls.
 BASES = {
     "tiny": EXAMPLES / "tiny" / "enclosure.py",
     "lite-main": EXAMPLES / "lite-main" / "enclosure.py",
     "product-lite": EXAMPLES / "product" / "enclosure" / "lite.py",
     "product-plus": EXAMPLES / "product" / "enclosure" / "plus.py",
+    "product-ultra": EXAMPLES / "product" / "enclosure" / "ultra.py",
 }
 
 

@@ -1,5 +1,5 @@
 {
- "source": "enclosure/ultra-front.board.json@7d2a8308ae80",
+ "source": "boards/ultra-front/kicad/ultra-front.kicad_pcb@ac484b192b02",
  "thickness": 1.6,
  "outline": [
   [

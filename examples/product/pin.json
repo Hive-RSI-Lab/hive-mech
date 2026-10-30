@@ -2,7 +2,7 @@
  "_doc": "hifi-receiver's boards and its own mech enclosures at sha, read by `mech pin`; `mech score` grades every board by the enclosures that hold it.",
  "project": "hifi-receiver-2",
  "repo": "Hive-RSI-Lab/hifi-receiver",
- "sha": "7d2a8308ae8024c93afaf30b88067aa993e9cfed",
+ "sha": "ac484b192b02e5b2007f2cb7395134592962bf9e",
  "boards": {
   "core": {
    "pcb": "boards/core/kicad/core.kicad_pcb",
@@ -17,16 +17,16 @@
     120.0,
     100.0
    ],
-   "parts": 278,
+   "parts": 299,
    "ports": [
     "J6@N",
     "J4@N",
     "J10@N",
     "J5@N",
-    "J1@W",
     "J3@S",
     "J11@N",
     "J2@W",
+    "J1@W",
     "J7@N"
    ]
   },
@@ -42,7 +42,7 @@
     100.0,
     90.0
    ],
-   "parts": 134,
+   "parts": 145,
    "ports": [
     "J3@N",
     "J2@N",
@@ -51,8 +51,10 @@
    ]
   },
   "ultra-front": {
-   "read": "enclosure/ultra-front.board.json",
-   "heights": [],
+   "pcb": "boards/ultra-front/kicad/ultra-front.kicad_pcb",
+   "heights": [
+    "enclosure/heights.json"
+   ],
    "enclosures": [],
    "size": [
     110.0,

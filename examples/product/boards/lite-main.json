@@ -1,5 +1,5 @@
 {
- "source": "boards/lite-main/kicad/lite-main.kicad_pcb@7d2a8308ae80",
+ "source": "boards/lite-main/kicad/lite-main.kicad_pcb@ac484b192b02",
  "thickness": 1.6,
  "outline": [
   [
@@ -228,6 +228,29 @@
     59.77,
     35.48,
     61.23
+   ],
+   "z": [
+    1.6,
+    2.4
+   ],
+   "height_from": "model",
+   "tht": false,
+   "model": "C_0603_1608Metric.step",
+   "under": 0.0
+  },
+  {
+   "ref": "C19",
+   "value": "4.7uF",
+   "footprint": "Capacitor_SMD:C_0603_1608Metric",
+   "side": "top",
+   "x": 62.735,
+   "y": 71.193,
+   "rot": 0.0,
+   "bbox": [
+    61.255,
+    70.463,
+    64.215,
+    71.923
    ],
    "z": [
     1.6,
@@ -469,6 +492,29 @@
    "under": 0.0
   },
   {
+   "ref": "C26",
+   "value": "47nF",
+   "footprint": "Capacitor_SMD:C_0603_1608Metric",
+   "side": "top",
+   "x": 75.125,
+   "y": 33.793,
+   "rot": 0.0,
+   "bbox": [
+    73.645,
+    33.063,
+    76.605,
+    34.523
+   ],
+   "z": [
+    1.6,
+    2.4
+   ],
+   "height_from": "model",
+   "tht": false,
+   "model": "C_0603_1608Metric.step",
+   "under": 0.0
+  },
+  {
    "ref": "R10",
    "value": "13k",
    "footprint": "Resistor_SMD:R_0603_1608Metric",
@@ -573,6 +619,29 @@
     67.27,
     39.98,
     68.73
+   ],
+   "z": [
+    1.6,
+    2.4
+   ],
+   "height_from": "model",
+   "tht": false,
+   "model": "C_0603_1608Metric.step",
+   "under": 0.0
+  },
+  {
+   "ref": "C84",
+   "value": "1uF",
+   "footprint": "Capacitor_SMD:C_0603_1608Metric",
+   "side": "top",
+   "x": 29.735,
+   "y": 64.823,
+   "rot": 0.0,
+   "bbox": [
+    28.255,
+    64.093,
+    31.215,
+    65.553
    ],
    "z": [
     1.6,
@@ -746,7 +815,7 @@
   },
   {
    "ref": "C9",
-   "value": "100pF",
+   "value": "47pF",
    "footprint": "Capacitor_SMD:C_0603_1608Metric",
    "side": "top",
    "x": 47.0,
@@ -952,6 +1021,29 @@
    "under": 0.0
   },
   {
+   "ref": "R68",
+   "value": "100k",
+   "footprint": "Resistor_SMD:R_0603_1608Metric",
+   "side": "top",
+   "x": 80.605,
+   "y": 71.303,
+   "rot": 90.0,
+   "bbox": [
+    79.875,
+    69.823,
+    81.335,
+    72.783
+   ],
+   "z": [
+    1.6,
+    2.05
+   ],
+   "height_from": "model",
+   "tht": false,
+   "model": "R_0603_1608Metric.step",
+   "under": 0.0
+  },
+  {
    "ref": "C17",
    "value": "100nF",
    "footprint": "Capacitor_SMD:C_0603_1608Metric",
@@ -1022,7 +1114,7 @@
   },
   {
    "ref": "R30",
-   "value": "10k",
+   "value": "15k",
    "footprint": "Resistor_SMD:R_0603_1608Metric",
    "side": "top",
    "x": 15.5,
@@ -1087,29 +1179,6 @@
    "height_from": "model",
    "tht": false,
    "model": "C_0603_1608Metric.step",
-   "under": 0.0
-  },
-  {
-   "ref": "J1",
-   "value": "USB4105-GF-A-120",
-   "footprint": "aiee:USB-C-SMD_MC-311D",
-   "side": "top",
-   "x": 58.5,
-   "y": 84.93,
-   "rot": 180.0,
-   "bbox": [
-    53.43,
-    81.72,
-    63.57,
-    90.0
-   ],
-   "z": [
-    1.6,
-    5.0
-   ],
-   "height_from": "override",
-   "tht": true,
-   "model": null,
    "under": 0.0
   },
   {
@@ -1205,6 +1274,29 @@
    "under": 0.0
   },
   {
+   "ref": "R66",
+   "value": "100k",
+   "footprint": "Resistor_SMD:R_0603_1608Metric",
+   "side": "top",
+   "x": 61.805,
+   "y": 68.013,
+   "rot": 90.0,
+   "bbox": [
+    61.075,
+    66.533,
+    62.535,
+    69.493
+   ],
+   "z": [
+    1.6,
+    2.05
+   ],
+   "height_from": "model",
+   "tht": false,
+   "model": "R_0603_1608Metric.step",
+   "under": 0.0
+  },
+  {
    "ref": "R24",
    "value": "10k",
    "footprint": "Resistor_SMD:R_0603_1608Metric",
@@ -1229,7 +1321,7 @@
   },
   {
    "ref": "R33",
-   "value": "10k",
+   "value": "15k",
    "footprint": "Resistor_SMD:R_0603_1608Metric",
    "side": "top",
    "x": 21.5,
@@ -1482,7 +1574,7 @@
   },
   {
    "ref": "D1",
-   "value": "SMBJ20A",
+   "value": "SMBJ22A",
    "footprint": "aiee:SMB_L4.6-W3.6-LS5.3-RD",
    "side": "top",
    "x": 62.0,
@@ -1524,6 +1616,29 @@
    "height_from": "table",
    "tht": false,
    "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "R69",
+   "value": "10k",
+   "footprint": "Resistor_SMD:R_0603_1608Metric",
+   "side": "top",
+   "x": 29.735,
+   "y": 68.023,
+   "rot": 0.0,
+   "bbox": [
+    28.255,
+    67.293,
+    31.215,
+    68.753
+   ],
+   "z": [
+    1.6,
+    2.05
+   ],
+   "height_from": "model",
+   "tht": false,
+   "model": "R_0603_1608Metric.step",
    "under": 0.0
   },
   {
@@ -1643,7 +1758,7 @@
   },
   {
    "ref": "R54",
-   "value": "100k",
+   "value": "10k",
    "footprint": "Resistor_SMD:R_0603_1608Metric",
    "side": "top",
    "x": 72.5,
@@ -1803,6 +1918,29 @@
    "under": 0.0
   },
   {
+   "ref": "R67",
+   "value": "10k",
+   "footprint": "Resistor_SMD:R_0603_1608Metric",
+   "side": "top",
+   "x": 26.135,
+   "y": 68.023,
+   "rot": 0.0,
+   "bbox": [
+    24.655,
+    67.293,
+    27.615,
+    68.753
+   ],
+   "z": [
+    1.6,
+    2.05
+   ],
+   "height_from": "model",
+   "tht": false,
+   "model": "R_0603_1608Metric.step",
+   "under": 0.0
+  },
+  {
    "ref": "C51",
    "value": "1uF",
    "footprint": "Capacitor_SMD:C_0805_2012Metric",
@@ -1915,6 +2053,29 @@
    "height_from": "override",
    "tht": false,
    "model": null,
+   "under": 0.0
+  },
+  {
+   "ref": "C81",
+   "value": "470pF",
+   "footprint": "Capacitor_SMD:C_0603_1608Metric",
+   "side": "top",
+   "x": 26.135,
+   "y": 66.423,
+   "rot": 0.0,
+   "bbox": [
+    24.655,
+    65.693,
+    27.615,
+    67.153
+   ],
+   "z": [
+    1.6,
+    2.4
+   ],
+   "height_from": "model",
+   "tht": false,
+   "model": "C_0603_1608Metric.step",
    "under": 0.0
   },
   {
@@ -2309,6 +2470,29 @@
    "under": 0.0
   },
   {
+   "ref": "U6",
+   "value": "CH340B",
+   "footprint": "aiee:SOP-16_L10.0-W3.9-P1.27-LS6.0-BL",
+   "side": "top",
+   "x": 46.0,
+   "y": 28.0,
+   "rot": 90.0,
+   "bbox": [
+    42.01,
+    23.02,
+    49.99,
+    32.98
+   ],
+   "z": [
+    1.6,
+    3.4
+   ],
+   "height_from": "table",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
    "ref": "R52",
    "value": "100k",
    "footprint": "Resistor_SMD:R_0603_1608Metric",
@@ -2539,6 +2723,29 @@
    "under": 0.0
   },
   {
+   "ref": "J1",
+   "value": "TYPE-C-31-M-12",
+   "footprint": "aiee:USB-C_SMD-TYPE-C-31-M-12_1",
+   "side": "top",
+   "x": 58.5,
+   "y": 84.93,
+   "rot": 180.0,
+   "bbox": [
+    53.3,
+    81.53,
+    63.7,
+    90.03
+   ],
+   "z": [
+    1.6,
+    6.6
+   ],
+   "height_from": "guess",
+   "tht": false,
+   "model": null,
+   "under": 0.0
+  },
+  {
    "ref": "C5",
    "value": "100nF",
    "footprint": "Capacitor_SMD:C_0603_1608Metric",
@@ -2631,29 +2838,6 @@
    "under": 0.0
   },
   {
-   "ref": "U6",
-   "value": "CH340C",
-   "footprint": "aiee:SOP-16_L10.0-W3.9-P1.27-LS6.0-BL",
-   "side": "top",
-   "x": 46.0,
-   "y": 28.0,
-   "rot": 90.0,
-   "bbox": [
-    42.01,
-    23.02,
-    49.99,
-    32.98
-   ],
-   "z": [
-    1.6,
-    3.4
-   ],
-   "height_from": "table",
-   "tht": false,
-   "model": null,
-   "under": 0.0
-  },
-  {
    "ref": "C50",
    "value": "1uF",
    "footprint": "Capacitor_SMD:C_0603_1608Metric",
@@ -2723,6 +2907,29 @@
    "under": 0.0
   },
   {
+   "ref": "C83",
+   "value": "470pF",
+   "footprint": "Capacitor_SMD:C_0603_1608Metric",
+   "side": "top",
+   "x": 29.735,
+   "y": 66.423,
+   "rot": 0.0,
+   "bbox": [
+    28.255,
+    65.693,
+    31.215,
+    67.153
+   ],
+   "z": [
+    1.6,
+    2.4
+   ],
+   "height_from": "model",
+   "tht": false,
+   "model": "C_0603_1608Metric.step",
+   "under": 0.0
+  },
+  {
    "ref": "C59",
    "value": "220uF 35V",
    "footprint": "aiee:CAP-SMD_BD8.0-L8.3-W8.3-LS9.3-FD",
@@ -2789,6 +2996,29 @@
    "height_from": "model",
    "tht": false,
    "model": "C_0603_1608Metric.step",
+   "under": 0.0
+  },
+  {
+   "ref": "C25",
+   "value": "22uF",
+   "footprint": "Capacitor_SMD:C_0805_2012Metric",
+   "side": "top",
+   "x": 64.035,
+   "y": 51.323,
+   "rot": 90.0,
+   "bbox": [
+    63.055,
+    49.623,
+    65.015,
+    53.023
+   ],
+   "z": [
+    1.6,
+    2.85
+   ],
+   "height_from": "model",
+   "tht": false,
+   "model": "C_0805_2012Metric.step",
    "under": 0.0
   },
   {
@@ -3091,6 +3321,29 @@
    "under": 0.0
   },
   {
+   "ref": "C82",
+   "value": "1uF",
+   "footprint": "Capacitor_SMD:C_0603_1608Metric",
+   "side": "top",
+   "x": 26.135,
+   "y": 64.823,
+   "rot": 0.0,
+   "bbox": [
+    24.655,
+    64.093,
+    27.615,
+    65.553
+   ],
+   "z": [
+    1.6,
+    2.4
+   ],
+   "height_from": "model",
+   "tht": false,
+   "model": "C_0603_1608Metric.step",
+   "under": 0.0
+  },
+  {
    "ref": "SW1",
    "value": "TS-1187A",
    "footprint": "aiee:SW-SMD_4P-L5.1-W5.1-P3.70-LS6.5-TL_H1.5",
@@ -3276,7 +3529,7 @@
   },
   {
    "ref": "R6",
-   "value": "47k",
+   "value": "220k",
    "footprint": "Resistor_SMD:R_0603_1608Metric",
    "side": "top",
    "x": 67.4,
@@ -3331,13 +3584,13 @@
    "ref": "J1",
    "edge": "N",
    "face": [
-    53.43,
-    63.57,
+    53.3,
+    63.7,
     1.6,
-    5.0
+    6.6
    ],
-   "plane": 90.0,
-   "overhang": -0.0,
+   "plane": 90.03,
+   "overhang": 0.03,
    "side": "top",
    "kind": "usb-c"
   },
@@ -3363,5 +3616,7 @@
   "SW2",
   "SW1"
  ],
- "warnings": []
+ "warnings": [
+  "J1 (USB-C_SMD-TYPE-C-31-M-12_1): no model or known height; guessed 5.0 mm"
+ ]
 }
