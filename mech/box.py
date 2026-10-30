@@ -23,7 +23,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 
-from build123d import (Align, Box, Cylinder, Kind, Part, Polygon, Pos,
+from build123d import (Align, Box, Cone, Cylinder, Kind, Part, Plane, Polygon, Pos,
                        RectangleRounded, Rot, extrude, offset)
 
 from .kicad import Board, Port
@@ -78,6 +78,11 @@ class Tray:
     standoff's outer diameter and screw hole (2.5 for an M3 self-tapper in
     PETG, 4.0 for an M3 heat-set insert). port_margin: added round each
     connector's face. lip: the lid's locating lip (height, thickness, fit gap).
+    roof: the widest flat top an opening in a wall may have; a wider one gets
+    45-degree shoulders, so the base prints upright without long bridges.
+    web: the thinnest wall or lip left between two cuts; two openings closer
+    than that become one, and so does a lip notch near the wall (two nozzle
+    widths and a bit).
     """
     board: Board
     shape: str | None = None
@@ -92,7 +97,13 @@ class Tray:
     pilot_d: float = 2.5
     port_margin: float = 0.5
     lip: tuple = (3.0, 1.2, 0.25)
+    roof: float = 12.0
+    web: float = 1.0
     ports: list[Port] = field(default=None)
+    # What was cut so far: the base's openings and the lid's lip notches,
+    # so a new one next to an old one merges with it (see web).
+    _cuts: list = field(default_factory=list, init=False, repr=False)
+    _notches: list = field(default_factory=list, init=False, repr=False)
 
     def __post_init__(self):
         if self.corner is None:
@@ -165,12 +176,34 @@ class Tray:
         ring = self.plan(-lg, self.z_top - lh, self.z_top)
         ring -= self.plan(-lg - lt, self.z_top - lh - 1, self.z_top + 1)
         lid = plate + ring
+        self._notches = []
         # The lip mustn't land on a tall part or a connector near the wall.
         for p in self.board.parts:
             if p.side == "top" and p.z[1] > self.z_top - lh:
-                lid -= block(p.bbox[0] - 0.5, p.bbox[1] - 0.5, self.z_top - lh - 1,
-                             p.bbox[2] + 0.5, p.bbox[3] + 0.5, self.z_top)
+                lid = self.clear_lip(lid, p.bbox[0] - 0.5, p.bbox[1] - 0.5, p.bbox[2] + 0.5, p.bbox[3] + 0.5)
         return lid
+
+    def clear_lip(self, lid: Part, x0: float, y0: float, x1: float, y1: float) -> Part:
+        """Cut the lid's lip away over (x0, y0, x1, y1). Where that would
+        leave less than `web` of lip against the wall, the cut runs on
+        through the wall's line, and one within `web` of a notch already
+        cut is cut as one with it: no sliver too thin to print is left."""
+        lh, lt, lg = self.lip
+        ix0, iy0, ix1, iy1 = self.inner
+        near = lt + lg + self.web
+        r = [ix0 - 1 if x0 - ix0 < near else x0, iy0 - 1 if y0 - iy0 < near else y0,
+             ix1 + 1 if ix1 - x1 < near else x1, iy1 + 1 if iy1 - y1 < near else y1]
+        merged = True
+        while merged:
+            merged = False
+            for i, o in enumerate(self._notches):
+                if max(r[0], o[0]) - min(r[2], o[2]) < self.web and max(r[1], o[1]) - min(r[3], o[3]) < self.web:
+                    r = [min(r[0], o[0]), min(r[1], o[1]), max(r[2], o[2]), max(r[3], o[3])]
+                    del self._notches[i]
+                    merged = True
+                    break
+        self._notches.append(r)
+        return lid - block(r[0], r[1], self.z_top - lh - 1, r[2], r[3], self.z_top)
 
     def screws_from_below(self, base: Part, lid: Part, clear: float = 3.4, head: float = 6.2,
                           head_depth: float = 3.0, pillar_d: float = 6.0, pilot: float = 2.5,
@@ -190,10 +223,10 @@ class Tray:
             lid -= cylinder(h.x, h.y, top, zt + self.lid_t - 0.8, pilot)
         return base, lid
 
-    def port_box(self, port: Port, margin: float | None = None) -> Part:
-        """The solid a port's opening removes: the mating plug's outline
-        (Port.opening) grown by margin, run from just inside the
-        connector's face out past the wall."""
+    def opening(self, port: Port, margin: float | None = None) -> tuple:
+        """What port_box cuts, as numbers: (edge, u0, u1, z0, z1, a, b), the
+        plug's outline grown by margin along the wall (u) and up (z), and
+        a..b across the wall."""
         m = self.port_margin if margin is None else margin
         u0, u1, z0, z1 = port.opening()
         u0, u1, z0, z1 = u0 - m, u1 + m, z0 - m, z1 + m
@@ -204,27 +237,70 @@ class Tray:
         # past the wall: a connector that overhangs the board's edge passes
         # through the wall, not only its plug.
         if port.edge == "W":
-            return block(min(ox0, p) - 1, u0, z0, max(ix0, p) + 1, u1, z1)
-        if port.edge == "E":
-            return block(min(ix1, p) - 1, u0, z0, max(ox1, p) + 1, u1, z1)
-        if port.edge == "S":
-            return block(u0, min(oy0, p) - 1, z0, u1, max(iy0, p) + 1, z1)
-        return block(u0, min(iy1, p) - 1, z0, u1, max(oy1, p) + 1, z1)
+            a, b = min(ox0, p) - 1, max(ix0, p) + 1
+        elif port.edge == "E":
+            a, b = min(ix1, p) - 1, max(ox1, p) + 1
+        elif port.edge == "S":
+            a, b = min(oy0, p) - 1, max(iy0, p) + 1
+        else:
+            a, b = min(iy1, p) - 1, max(oy1, p) + 1
+        return (port.edge, u0, u1, z0, z1, a, b)
+
+    def cut_box(self, edge: str, u0: float, u1: float, z0: float, z1: float, a: float, b: float) -> Part:
+        """An opening's solid (see opening): a block, and over one wider than
+        roof, 45-degree shoulders up to a flat top roof wide, so the wall
+        above it prints upright without a long bridge."""
+        cut = block(a, u0, z0, b, u1, z1) if edge in "WE" else block(u0, a, z0, u1, b, z1)
+        if u1 - u0 <= self.roof:
+            return cut
+        h = (u1 - u0 - self.roof) / 2
+        if edge in "WE":
+            pl = Plane(origin=((a + b) / 2, 0, 0), x_dir=(0, 1, 0), z_dir=(1, 0, 0))
+        else:
+            pl = Plane(origin=(0, (a + b) / 2, 0), x_dir=(1, 0, 0), z_dir=(0, -1, 0))
+        face = pl * Polygon((u0, z1 - 0.01), (u1, z1 - 0.01), (u1 - h, z1 + h), (u0 + h, z1 + h), align=None)
+        return cut + extrude(face, amount=(b - a) / 2, both=True)
+
+    def port_box(self, port: Port, margin: float | None = None) -> Part:
+        """The solid a port's opening removes: the mating plug's outline
+        (Port.opening) grown by margin, run from just inside the
+        connector's face out past the wall, roofed (cut_box)."""
+        return self.cut_box(*self.opening(port, margin))
 
     def cut_ports(self, part: Part, refs: list[str] | None = None, margin: float | None = None) -> Part:
+        """Every port's opening (port_box), through open_wall."""
         for p in self.ports:
             if refs is None or p.ref in refs:
-                part -= self.port_box(p, margin)
+                part = self.open_wall(part, self.opening(p, margin))
         return part
+
+    def open_wall(self, part: Part, cut: tuple) -> Part:
+        """Cut an opening (see opening) out of part. One that would leave
+        less than `web` of wall to an opening already cut on that wall is
+        cut as one opening round both: a thinner web doesn't print."""
+        merged = True
+        while merged:
+            merged = False
+            for i, d in enumerate(self._cuts):
+                gap = max(cut[1], d[1]) - min(cut[2], d[2])
+                if cut[0] == d[0] and gap < self.web and min(cut[4], d[4]) > max(cut[3], d[3]):
+                    cut = (cut[0], min(cut[1], d[1]), max(cut[2], d[2]), min(cut[3], d[3]), max(cut[4], d[4]),
+                           min(cut[5], d[5]), max(cut[6], d[6]))
+                    del self._cuts[i]
+                    merged = True
+                    break
+        self._cuts.append(cut)
+        return part - self.cut_box(*cut)
 
     def cut_top(self, lid: Part, ref: str, d: float | None = None, margin: float = 0.5) -> Part:
         """A hole through the lid over a part: round with diameter d, else its box grown by margin."""
         p = self.board.part(ref)
         z0, z1 = self.z_top - self.lip[0] - 1, self.z_top + self.lid_t + 1
         if d:
-            return lid - cylinder(p.x, p.y, z0, z1, d)
+            return self.clear_lip(lid - cylinder(p.x, p.y, z0, z1, d), p.x - d / 2, p.y - d / 2, p.x + d / 2, p.y + d / 2)
         b = p.bbox
-        return lid - block(b[0] - margin, b[1] - margin, z0, b[2] + margin, b[3] + margin, z1)
+        x0, y0, x1, y1 = b[0] - margin, b[1] - margin, b[2] + margin, b[3] + margin
+        return self.clear_lip(lid - block(x0, y0, z0, x1, y1, z1), x0, y0, x1, y1)
 
     def window(self, part: Part, ref: str, edge: str, margin: float = 0.5) -> Part:
         """An opening in the wall on `edge` (W E S N) in front of a part that
@@ -233,19 +309,25 @@ class Tray:
         b = p.bbox
         port = Port(ref, edge, [b[1], b[3], p.z[0], p.z[1]] if edge in "WE" else [b[0], b[2], p.z[0], p.z[1]],
                     {"W": b[0], "E": b[2], "S": b[1], "N": b[3]}[edge], 0.0, p.side)
-        return part - self.port_box(port, margin)
+        return self.open_wall(part, self.opening(port, margin))
 
     def pocket(self, base: Part, ref: str, margin: float = 0.5, skin: float = 1.2) -> Part:
         """Room in the wall for a part that overhangs the board's edge (a
         module's antenna end, a connector body): its box grown by margin is
         cut out of the walls, and where that leaves less than `skin` of
-        wall a pad is added outside it, the wall's full height."""
+        wall a pad is added outside it, the wall's full height. Inside the
+        lid's outline the cut runs up to the wall's top (no ceiling to
+        print in the air)."""
         p = self.board.part(ref)
         b = p.bbox
         x0, y0, x1, y1 = b[0] - margin, b[1] - margin, b[2] + margin, b[3] + margin
         z0, z1 = max(self.z_floor, p.z[0] - margin), min(self.z_top, p.z[1] + margin)
-        base = base - block(x0, y0, z0, x1, y1, z1)
         ox0, oy0, ox1, oy1 = self.outer
+        if ox0 <= x0 and oy0 <= y0 and x1 <= ox1 and y1 <= oy1:
+            # Under the lid: open to the wall's top, so the pocket has no
+            # ceiling to print in the air.
+            z1 = self.z_top + 1
+        base = base - block(x0, y0, z0, x1, y1, z1)
         ix0, iy0, ix1, iy1 = self.inner
         zb, zt = self.z_bottom, self.z_top
         if x1 + skin > ox1:
@@ -270,10 +352,16 @@ class Tray:
         zt = self.z_top
         lid = lid - cylinder(cx, cy, zt - 1, zt + self.lid_t + 1, d + 2 * clear)
         cap = cylinder(cx, cy, zt - flange, zt + self.lid_t + 1.0, d)
-        under = zt - flange - 0.2  # the flange, just below the lid's underside
-        cap += cylinder(cx, cy, under - 1.2, under, d + 2 * rim)
+        under = zt - flange  # the flange, under the cap, below the lid's underside
+        # Its face toward the cap is a 45-degree cone, so printed on the cap
+        # the flange isn't a ledge in the air.
+        cone = min(rim, 1.2)
+        cap += cylinder(cx, cy, under - 1.2, under - cone, d + 2 * rim)
+        cap += Pos(cx, cy, under - cone) * Cone(d / 2 + rim, d / 2, cone, align=(Align.CENTER, Align.CENTER, Align.MIN))
         # Room for the flange where the lid's lip would be.
-        lid = lid - cylinder(cx, cy, under - 1.2 - clear, zt, d + 2 * rim + 2 * clear)
+        room = d / 2 + rim + clear
+        lid = lid - cylinder(cx, cy, under - 1.2 - clear, zt, 2 * room)
+        lid = self.clear_lip(lid, cx - room, cy - room, cx + room, cy + room)
         stem_top = under - 1.2
         stem_bot = p.z[1] + travel
         if stem_top > stem_bot:

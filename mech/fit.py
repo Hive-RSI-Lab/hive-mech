@@ -27,6 +27,13 @@ Each check is a name, ok, and what it measured; `ok` is all of them.
   (an annulus round the hole, just below the board).
 - bed_<name>: each printed part fits the printer's bed (default 220 x 220 x
   250 mm), turned as `mech build` prints it.
+- overhang_<name>, bridge_<name>, wall_<name>: each printed part, turned as
+  it prints, prints without support: no surface steeper than 45 degrees
+  from upright, every flat downward face held by wall (a bridge at most
+  max_bridge across, a ledge at most a nozzle width out), no wall thinner
+  than two nozzle widths (mech.printable). Only when the printed parts are
+  given (`mech build`, `mech fit` and `mech score` give them); FIT's
+  `printing` passes printable.check's keyword args (nozzle, max_bridge, ...).
 
 It also lists, without judging, which top_access parts (switches, LEDs, IR
 receivers) have an opening above them, and each part's volume and mass.
@@ -166,9 +173,11 @@ def _vol_area(shape) -> float:
 
 
 def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: float | dict | None = None,
-          printed: dict | None = None, lid: str = "lid", base: str = "base") -> dict:
-    """parts: name -> build123d Part, assembled. printed: name -> Part as printed (for the bed check).
-    lid, base: which parts lid_covers weighs."""
+          printed: dict | None = None, lid: str = "lid", base: str = "base",
+          printing: dict | None = None) -> dict:
+    """parts: name -> build123d Part, assembled. printed: name -> Part as printed (for the bed
+    and printability checks). lid, base: which parts lid_covers weighs. printing:
+    mech.printable.check's keyword args."""
     checks = []
 
     def add(name, ok, **info):
@@ -252,6 +261,12 @@ def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: floa
         fits = size[0] <= min(bed[:2]) and size[1] <= max(bed[:2]) and bb.size.Z <= bed[2]
         add(f"bed_{name}", fits, size_mm=[round(bb.size.X, 1), round(bb.size.Y, 1), round(bb.size.Z, 1)],
             bed_mm=list(bed))
+
+    if printed:
+        from . import printable
+        for name, part in printed.items():
+            for kind, r in printable.check(part, **(printing or {})).items():
+                add(f"{kind}_{name}", r.pop("ok"), **r)
 
     top = []
     for ref in board.top_access:

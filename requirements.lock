@@ -75,6 +75,7 @@ numpy==2.5.4
     #   ocp-gordon
     #   scikit-learn
     #   scipy
+    #   shapely
     #   svgpathtools
     #   threejs-materials
 ocp-gordon==0.3.1
@@ -133,6 +134,8 @@ scipy==1.18.1
     #   ocp-gordon
     #   scikit-learn
     #   svgpathtools
+shapely==2.2.0
+    # via -r requirements.in
 six==1.17.0
     # via python-dateutil
 stack-data==0.6.3
