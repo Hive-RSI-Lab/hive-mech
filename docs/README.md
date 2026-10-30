@@ -175,15 +175,20 @@ the STLs.
   against a fake server, and every example's fit. It prints its peak RSS
   and fails over 800 MB (`MECH_TEST_MB` moves the ceiling); it peaks near
   430 MB, most of it build123d/OCP itself.
-- `mech score` grades the real product: hifi-receiver's committed boards,
-  pinned in `examples/product/` (pin.json says the sha; boards/<name>.json
-  is each board as `mech board` read it there, with the product's
-  enclosure/heights.json). Each board is graded by its enclosure's fit
-  checks passed / fit checks: the product's own mech script when the pin
-  found one (an `enclosure/**/*.py` that imports mech, defines build() and
-  names the board in BOARD or its path), else the module's stand-in
-  `examples/<name>/enclosure.py`, else 0. The score is 100 x the mean.
-  The score's sandbox sees only this checkout, hence the pin.
+- `mech score` grades the real product: hifi-receiver's boards and its own
+  enclosures, pinned in `examples/product/` (pin.json says the sha;
+  boards/<name>.json is each committed KiCad board as `mech board` read it
+  there, with the product's enclosure/heights.json, or the product's own
+  enclosure/<name>.board.json for a board it commits only that way, as
+  Ultra's ultra-front). Every product mech script (an `enclosure/**/*.py`
+  that defines build() and imports mech, itself or through a helper next
+  to it, as plus.py and ultra.py do through core_box.py) is built on the
+  board its BOARD names and fit-checked; it holds that board and every
+  other pinned board whose board.json it reads. A board's grade is the
+  mean of fit checks passed / fit checks over the enclosures holding it
+  (core: Plus and Ultra; ultra-front: Ultra), else the module's stand-in
+  `examples/<name>/enclosure.py`, else 0. The score is 100 x the boards'
+  mean. The score's sandbox sees only this checkout, hence the pin.
 - `mech pin $HIVE_PROJECTS/hifi-receiver-2 [--sha REV]` re-pins (default:
   the clone's HEAD; pass `--sha main`). Bump it on purpose, in a commit of
   its own: a new board scores 0 until it has a box that fits, which is the

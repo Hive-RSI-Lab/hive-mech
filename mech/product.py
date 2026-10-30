@@ -1,19 +1,24 @@
-"""The product mech is scored on: hifi-receiver's committed boards, pinned.
+"""The product mech is scored on: hifi-receiver's boards and its own enclosures, pinned.
 
 The score's sandbox sees only this checkout, so the product comes in as a
-pin: `mech pin <clone> [--sha REV]` reads every committed board at REV
+pin: `mech pin <clone> [--sha REV]` reads every board at REV into
+examples/product/boards/<name>.json: each committed KiCad board
 (boards/<name>/kicad/<name>.kicad_pcb, with the product's
-enclosure/heights.json and enclosure/<name>.heights.json) into
-examples/product/boards/<name>.json, copies the product's own mech
-enclosure scripts (enclosure/**/*.py that define build() and use mech) into
-examples/product/enclosure/, and writes examples/product/pin.json.
+enclosure/heights.json and enclosure/<name>.heights.json), and each board
+the product only commits as a `mech board` read (enclosure/<name>.board.json,
+as Ultra's ultra-front). It copies the product's mech enclosure scripts with
+their helpers and data (enclosure/**/*.py and *.json, boards/*/parts/*.json)
+into examples/product/ and writes examples/product/pin.json, whose
+"enclosures" names each script and the board its BOARD boxes.
 
-`mech score` then grades each pinned board by its enclosure: the product's
-own script when the pin found one, else the module's stand-in
-examples/<name>/enclosure.py, else none (0 for that board). A board's
-grade is its fit checks passed over its fit checks; the score is 100 x
-their mean, so a new board the pin brings in costs until it has a box that
-fits. Bump the pin on purpose, in its own commit: it changes what is measured.
+`mech score` builds every product enclosure on its pinned board and records
+which pinned boards it holds: its own, and any other whose board.json it
+reads (Ultra holds ultra-front behind its front panel). A board's grade is
+the mean, over the enclosures holding it, of fit checks passed / fit checks;
+a board none holds is graded by the module's stand-in
+examples/<name>/enclosure.py, else 0. The score is 100 x the boards' mean,
+so a new board the pin brings in costs until a box holds it and fits. Bump
+the pin on purpose, in its own commit: it changes what is measured.
 """
 from __future__ import annotations
 
@@ -48,8 +53,23 @@ def board_names(clone: Path, sha: str) -> list[str]:
     return sorted(names)
 
 
-def is_mech_script(text: str) -> bool:
-    return bool(re.search(r"^\s*def build\(", text, re.M)) and bool(re.search(r"^\s*(from|import) mech\b", text, re.M))
+_IMPORT = re.compile(r"^\s*(?:from|import)\s+([A-Za-z_]\w*)", re.M)
+
+
+def is_mech_script(text: str, helpers: dict[str, str] | None = None) -> bool:
+    """Defines build() and imports mech, itself or through a helper module next to it
+    (helpers: module name -> its text), as hifi-receiver's plus.py does through core_box."""
+    if not re.search(r"^\s*def build\(", text, re.M):
+        return False
+    helpers, seen, todo = helpers or {}, set(), [text]
+    while todo:
+        for mod in _IMPORT.findall(todo.pop()):
+            if mod == "mech":
+                return True
+            if mod in helpers and mod not in seen:
+                seen.add(mod)
+                todo.append(helpers[mod])
+    return False
 
 
 def script_board(rel: str, text: str, names: list[str]) -> str | None:
@@ -63,59 +83,74 @@ def script_board(rel: str, text: str, names: list[str]) -> str | None:
 
 
 def pin(clone: Path, sha: str = "HEAD", out: Path = PRODUCT) -> dict:
-    from .kicad import read_board, read_heights
+    from .kicad import load, read_board, read_heights
     clone = Path(clone).resolve()
     sha = _git(clone, "rev-parse", f"{sha}^{{commit}}").strip()
-    names = board_names(clone, sha)
-    if not names:
-        raise SystemExit(f"{clone}@{sha[:7]}: no boards/<name>/kicad/<name>.kicad_pcb")
+    pcbs = board_names(clone, sha)
     has_enc = bool(_git(clone, "ls-tree", "--name-only", sha, "--", "enclosure"))
-    paths = [f"boards/{n}" for n in names] + (["enclosure"] if has_enc else [])
+    has_boards = bool(_git(clone, "ls-tree", "--name-only", sha, "--", "boards"))
+    paths = (["boards"] if has_boards else []) + (["enclosure"] if has_enc else [])
+    if not paths:
+        raise SystemExit(f"{clone}@{sha[:7]}: no boards/ or enclosure/")
     tar = _git(clone, "archive", "--format=tar", sha, "--", *paths, binary=True)
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         with tarfile.open(fileobj=BytesIO(tar)) as tf:
             tf.extractall(tmp, filter="data")
+        enc = tmp / "enclosure"
+        reads = sorted(f.name[:-len(".board.json")] for f in enc.glob("*.board.json")) if enc.is_dir() else []
+        names = sorted(set(pcbs) | set(reads))
+        if not names:
+            raise SystemExit(f"{clone}@{sha[:7]}: no boards/<name>/kicad/<name>.kicad_pcb or enclosure/<name>.board.json")
         if out.exists():
             shutil.rmtree(out)
         (out / "boards").mkdir(parents=True)
+        pys = [] if not enc.is_dir() else [py for py in sorted(enc.rglob("*.py"))
+                                           if "out" not in py.relative_to(enc).parts]
+        helpers = {py.stem: py.read_text(encoding="utf-8", errors="replace") for py in pys}
         scripts = {}
-        enc = tmp / "enclosure"
-        for py in sorted(enc.rglob("*.py")) if enc.is_dir() else []:
+        for py in pys:
             rel = py.relative_to(tmp).as_posix()
-            if "/out/" in rel:
-                continue
-            text = py.read_text(encoding="utf-8", errors="replace")
-            if is_mech_script(text):
+            text = helpers[py.stem] if py.parent == enc else py.read_text(encoding="utf-8", errors="replace")
+            if is_mech_script(text, helpers):
                 b = script_board(rel, text, names)
-                if b and b not in scripts:
-                    scripts[b] = rel
+                if b:
+                    scripts[py.stem if py.stem not in scripts else rel] = {"script": rel, "board": b}
         if scripts:  # the scripts with their helpers and data, not their outputs
-            for f in enc.rglob("*"):
-                rel = f.relative_to(tmp)
-                if f.is_file() and "out" not in rel.parts and f.suffix in (".py", ".json"):
+            data = [f for f in enc.rglob("*") if "out" not in f.relative_to(enc).parts and f.suffix in (".py", ".json")]
+            data += sorted(tmp.glob("boards/*/parts/*.json"))
+            for f in data:
+                if f.is_file():
+                    rel = f.relative_to(tmp)
                     (out / rel).parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy2(f, out / rel)
         boards = {}
         for n in names:
             heights, used = {}, []
-            for h in ("enclosure/heights.json", f"enclosure/{n}.heights.json"):
-                if (tmp / h).is_file():
-                    heights.update(read_heights(tmp / h))
-                    used.append(h)
-            pcb = f"boards/{n}/kicad/{n}.kicad_pcb"
-            b = read_board(tmp / pcb, heights=heights)
-            b.source = f"{pcb}@{sha[:12]}"
+            if n in pcbs:
+                for h in ("enclosure/heights.json", f"enclosure/{n}.heights.json"):
+                    if (tmp / h).is_file():
+                        heights.update(read_heights(tmp / h))
+                        used.append(h)
+                src = f"boards/{n}/kicad/{n}.kicad_pcb"
+                b = read_board(tmp / src, heights=heights)
+            else:  # the product commits only mech's read of it
+                src = f"enclosure/{n}.board.json"
+                b = load(tmp / src)
+            b.source = f"{src}@{sha[:12]}"
             (out / "boards" / f"{n}.json").write_text(b.to_json() + "\n", encoding="utf-8")
-            boards[n] = {"pcb": pcb, "heights": used, "enclosure": scripts.get(n),
+            held = sorted(e for e, s in scripts.items() if s["board"] == n)
+            boards[n] = {"pcb" if n in pcbs else "read": src, "heights": used, "enclosures": held,
                          "size": b.size, "parts": len(b.parts), "ports": [f"{p.ref}@{p.edge}" for p in b.ports]}
             print(f"{n}: {b.size[0]} x {b.size[1]} mm, {len(b.parts)} parts, ports "
-                  f"{', '.join(boards[n]['ports']) or '-'}; enclosure: {scripts.get(n) or 'none in the product'}",
+                  f"{', '.join(boards[n]['ports']) or '-'}; from {src}; boxed by: {', '.join(held) or '-'}",
                   file=sys.stderr)
             for w in b.warnings:
                 print(f"  warning: {w}", file=sys.stderr)
-    meta = {"_doc": "hifi-receiver's committed boards at sha, read by `mech pin`; `mech score` grades an enclosure for each.",
-            "project": "hifi-receiver-2", "repo": "Hive-RSI-Lab/hifi-receiver", "sha": sha, "boards": boards}
+    meta = {"_doc": "hifi-receiver's boards and its own mech enclosures at sha, read by `mech pin`; "
+                    "`mech score` grades every board by the enclosures that hold it.",
+            "project": "hifi-receiver-2", "repo": "Hive-RSI-Lab/hifi-receiver", "sha": sha,
+            "boards": boards, "enclosures": scripts}
     (out / "pin.json").write_text(json.dumps(meta, indent=1) + "\n", encoding="utf-8")
     return meta
 
@@ -125,23 +160,38 @@ def load_pin(root: Path = PRODUCT) -> dict | None:
     return json.loads(f.read_text(encoding="utf-8")) if f.is_file() else None
 
 
-def enclosures(meta: dict, root: Path = PRODUCT, examples: Path = ROOT / "examples") -> dict:
-    """board -> (script, whose) for every pinned board; script None when it has none."""
-    out = {}
-    for n, b in meta["boards"].items():
-        if b.get("enclosure") and (root / b["enclosure"]).is_file():
-            out[n] = (root / b["enclosure"], "product")
-        elif (examples / n / "enclosure.py").is_file():
-            out[n] = (examples / n / "enclosure.py", "stand-in")
-        else:
-            out[n] = (None, None)
-    return out
+def stand_in(name: str, examples: Path = ROOT / "examples") -> Path | None:
+    """The module's own box for a board no product enclosure holds."""
+    f = examples / name / "enclosure.py"
+    return f if f.is_file() else None
 
 
-def grade(script: Path, board_json: Path) -> tuple[int, int, list[str]]:
-    """(passed, checks, failing names) for one enclosure on one pinned board."""
+def grade(script: Path, board_json: Path, boards: dict[str, Path] | None = None) -> tuple[int, int, list[str], set[str]]:
+    """(passed, checks, failing names, boards held) for one enclosure on one pinned board.
+    Held: board_json's board, and every other of `boards` (name -> pinned json) whose
+    <name>.board.json or pinned json the build reads."""
     from . import fit
     from .cli import printed_parts, run_script
-    mod, board, parts = run_script(script, str(board_json))
-    r = fit.check(board, parts, printed=printed_parts(mod, parts), **getattr(mod, "FIT", {}))
-    return sum(c["ok"] for c in r["checks"]), len(r["checks"]), [c["name"] for c in r["checks"] if not c["ok"]]
+    opened: list[str] = []
+    _OPENS.append(opened)
+    try:
+        mod, board, parts = run_script(script, str(board_json))
+        r = fit.check(board, parts, printed=printed_parts(mod, parts), **getattr(mod, "FIT", {}))
+    finally:
+        _OPENS.remove(opened)
+    read = {Path(o).name for o in opened}
+    own = Path(board_json).resolve()
+    held = {n for n, j in (boards or {}).items() if Path(j).resolve() == own or f"{n}.board.json" in read}
+    return sum(c["ok"] for c in r["checks"]), len(r["checks"]), [c["name"] for c in r["checks"] if not c["ok"]], held
+
+
+_OPENS: list[list[str]] = []   # grade()'s open() logs, fed by one audit hook
+
+
+def _audit(event, args):
+    if event == "open" and _OPENS and isinstance(args[0], (str, Path)):
+        for log in _OPENS:
+            log.append(str(args[0]))
+
+
+sys.addaudithook(_audit)
