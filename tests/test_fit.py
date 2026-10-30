@@ -203,3 +203,17 @@ def test_teardrop_has_a_point_on_top():
         bb = d.bounding_box()
         assert abs(bb.max.Z - 2.0 * 2 ** 0.5) < 0.01 and abs(bb.min.Z + 2.0) < 0.01
         assert abs(d.volume - (3.14159 * 4 + 2.0 ** 2 - 3.14159 * 4 / 4) * 10) < 1.0
+
+
+def test_fit_md_has_a_pass_or_fail_row_per_check(board):
+    import copy
+    b = copy.deepcopy(board)
+    t = Tray(b)
+    b.add_box("HS1", 33, 13, 10, 37, 17, 14, "heatsink over C1")
+    r = fit.check(b, {"base": t.cut_ports(t.base()), "lid": t.lid()})
+    md = fit.markdown(r, "tiny")
+    rows = [line.strip().strip("|").split("|") for line in md.splitlines() if line.startswith("| ")]
+    got = {c[0].strip(): c[1].strip() for c in rows[1:]}
+    assert got == {c["name"]: "pass" if c["ok"] else "fail" for c in r["checks"]}
+    assert got["added_parts_clear"] == "fail" and all(len(c) == 3 for c in rows)
+    assert any(n.startswith("hole_") for n in got) and "some fail" in md
