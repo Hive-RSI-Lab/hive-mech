@@ -173,8 +173,10 @@ the STLs.
 - `mech test` runs the module's tests: the KiCad reader on a hand-written
   board, every fit check made to fail the way it should, the Onshape client
   against a fake server, and every example's fit. It prints its peak RSS
-  and fails over 800 MB (`MECH_TEST_MB` moves the ceiling); it peaks near
-  430 MB, most of it build123d/OCP itself.
+  and fails over 800 MB (`MECH_TEST_MB` moves the ceiling); a watcher stops
+  the run the moment any of its processes crosses it, rather than letting it
+  swap. It peaks near 450 MB (test_product alone 470 MB, 30 s), most of it
+  build123d/OCP itself.
 - `mech score` grades the real product: hifi-receiver's boards and its own
   enclosures, pinned in `examples/product/` (pin.json says the sha;
   boards/<name>.json is each committed KiCad board as `mech board` read it
