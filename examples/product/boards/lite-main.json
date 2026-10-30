@@ -1,5 +1,5 @@
 {
- "source": "boards/lite-main/kicad/lite-main.kicad_pcb@18ceb297b956",
+ "source": "boards/lite-main/kicad/lite-main.kicad_pcb@a7f32da6ed6b",
  "thickness": 1.6,
  "outline": [
   [
@@ -668,9 +668,9 @@
    ],
    "z": [
     1.6,
-    6.6
+    2.4
    ],
-   "height_from": "guess",
+   "height_from": "override",
    "tht": false,
    "model": null,
    "under": 0.0
@@ -3363,7 +3363,5 @@
   "SW2",
   "SW1"
  ],
- "warnings": [
-  "D2 (LED-SMD_L1.6-W0.8-R-RD): no model or known height; guessed 5.0 mm"
- ]
+ "warnings": []
 }

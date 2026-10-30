@@ -1,15 +1,18 @@
 {
- "_doc": "hifi-receiver's committed boards at sha, read by `mech pin`; `mech score` grades an enclosure for each.",
+ "_doc": "hifi-receiver's boards and its own mech enclosures at sha, read by `mech pin`; `mech score` grades every board by the enclosures that hold it.",
  "project": "hifi-receiver-2",
  "repo": "Hive-RSI-Lab/hifi-receiver",
- "sha": "18ceb297b956460234aecd901208e6d9b6e50a48",
+ "sha": "a7f32da6ed6b28a6d4da7d493ef4244b23c80431",
  "boards": {
   "core": {
    "pcb": "boards/core/kicad/core.kicad_pcb",
    "heights": [
     "enclosure/heights.json"
    ],
-   "enclosure": null,
+   "enclosures": [
+    "plus",
+    "ultra"
+   ],
    "size": [
     120.0,
     100.0
@@ -32,7 +35,9 @@
    "heights": [
     "enclosure/heights.json"
    ],
-   "enclosure": null,
+   "enclosures": [
+    "lite"
+   ],
    "size": [
     100.0,
     90.0
@@ -44,6 +49,34 @@
     "J1@N",
     "J4@N"
    ]
+  },
+  "ultra-front": {
+   "read": "enclosure/ultra-front.board.json",
+   "heights": [],
+   "enclosures": [],
+   "size": [
+    110.0,
+    40.0
+   ],
+   "parts": 36,
+   "ports": [
+    "J1@S",
+    "J2@W"
+   ]
+  }
+ },
+ "enclosures": {
+  "lite": {
+   "script": "enclosure/lite.py",
+   "board": "lite-main"
+  },
+  "plus": {
+   "script": "enclosure/plus.py",
+   "board": "core"
+  },
+  "ultra": {
+   "script": "enclosure/ultra.py",
+   "board": "core"
   }
  }
 }

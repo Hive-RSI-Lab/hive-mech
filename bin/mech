@@ -9,7 +9,7 @@
 #   mech onshape check|upload ...             the Onshape handoff (docs/onshape.md)
 #   mech test [args]                          the module's tests
 #   mech pin <clone> [--sha REV]              pin hifi-receiver's committed boards
-#   mech score                                each pinned board's enclosure, fit-checked
+#   mech score                                each pinned board, graded by the boxes that hold it
 #   mech python [args]                        the venv's python, mech importable
 #   mech env                                  print the exports
 #
