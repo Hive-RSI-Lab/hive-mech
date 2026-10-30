@@ -1,0 +1,9 @@
+{
+ "calibrated": null,
+ "lip_gap": 0.25,
+ "button_clear": 0.3,
+ "clear_d": 3.4,
+ "pilot_d": 2.5,
+ "insert_d": 4.0,
+ "max_bridge": 15.0
+}

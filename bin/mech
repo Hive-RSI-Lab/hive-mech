@@ -7,6 +7,7 @@
 #   mech build <enclosure.py> [-o DIR]        export STL/STEP, fit-check, render
 #   mech fit <enclosure.py>                   the fit check alone
 #   mech slice <part.stl ...> [--install]     PrusaSlicer: filament g, support, print time
+#   mech coupon [-o DIR] [--record t=n ...]   the test print that calibrates mech/fits.json
 #   mech onshape check|upload ...             the Onshape handoff (docs/onshape.md)
 #   mech test [args]                          the module's tests
 #   mech pin <clone> [--sha REV]              pin hifi-receiver's committed boards
@@ -124,11 +125,11 @@ python)
 	exec "$py" "$@"
 	;;
 "" | -h | --help)
-	sed -n '2,31p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '2,32p' "$0" | sed 's/^# \{0,1\}//'
 	;;
 *)
 	case $1 in
-	build | fit | score | slice) heavy="mech $1" ;;
+	build | fit | score | slice | coupon) heavy="mech $1" ;;
 	esac
 	x "$py" -m mech.cli "$@"
 	;;

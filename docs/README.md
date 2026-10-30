@@ -190,8 +190,8 @@ Look at them: the checks only catch what they measure.
 ## Things to know
 
 - Use PETG or ASA, not PLA, near anything warm (an amplifier's heatsink
-  reaches 60-80 °C). Walls of 2 mm and a 5 mm standoff print well. Leave a
-  0.25 mm gap on press fits.
+  reaches 60-80 °C). Walls of 2 mm and a 5 mm standoff print well. Press fits
+  and screw holes take their sizes from `FITS` (below), not numbers of your own.
 - Port openings follow the plug, not the receptacle. A USB-C opening is at
   least 12.4 x 6.6 mm, so the overmold fits. A connector set back from the
   board edge adds that set-back to the recess. Tell the board's worker to
@@ -209,6 +209,33 @@ Look at them: the checks only catch what they measure.
   embossed labels out or give it a font file path.
 - The machine is often loaded. One CAD build at a time, at `nice 19`, takes
   about 1 min for the Lite box.
+
+## Clearances: the test-print coupon
+
+Every clearance the bricks use comes from `mech/fits.json` (`from mech.fits
+import FITS`): the lid lip's gap to the wall (`lip_gap`, per side), a
+button's clearance in its hole (`button_clear`), an M3 screw's clearance
+hole (`clear_d`), an M3 self-tapper's pilot (`pilot_d`), an M3 heat-set
+insert's hole (`insert_d`: `Tray(board, pilot_d=FITS["insert_d"])`), and
+the longest bridge the fit check passes (`max_bridge`). While
+`"calibrated"` is `null` they are guesses no printer has checked.
+
+`mech coupon [-o DIR]` makes the print that checks them: one 70 x 41 mm
+plate, a plug (a lid's corner with its lip) and a pin (a button's cap),
+about 20 minutes on the receiver's profile with no support. Each clearance
+is cut at three to five sizes round the guess, smallest first, a dot
+behind the smallest. It writes `coupon.stl`, `coupon.png` (a labelled map),
+`coupon.md` (what to try and what to report, for the person) and the
+slicer's time and grams. Printing it is the person's; hand them the folder.
+When they say what fit (`lip 4, pilot 2, ...`), record it and commit
+`mech/fits.json`:
+
+    mech coupon --record lip=4 button=3 clear=2 pilot=2 insert=2 bridge=3 --note "MK4, PETG"
+
+A test they didn't try stays as it was. If the loosest size was still
+tight, or the tightest still loose, move that test's sizes in
+`mech/coupon.py` and print it again. `MECH_FITS` names another fits file
+for a second printer or material.
 
 ## Handing it to the person: Onshape
 

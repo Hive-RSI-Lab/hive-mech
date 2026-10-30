@@ -6,6 +6,9 @@
                                                  run it, export, fit-check, slice, render
     mech slice <part.stl ...> [--install]        PrusaSlicer's grams, support and time
     mech fit <enclosure.py> [--board B]          the fit check alone
+    mech coupon [-o DIR] [--no-slice]            the test print that calibrates mech/fits.json
+    mech coupon --record lip=4 pilot=2 ... [--note N]
+                                                 write back what fit on it (mech.coupon)
     mech pin <clone> [--sha REV]                 pin the product's boards for the score
     mech score [--corpus|--product]              mean of planted faults caught on known-good boxes
                                                  (mech.corpus) and the pinned product boards' fit
@@ -178,6 +181,33 @@ def cmd_slice(a) -> int:
     return 0 if all("error" not in s for s in sliced.values()) else 1
 
 
+def cmd_coupon(a) -> int:
+    from . import coupon
+    if a.record:
+        picks = {}
+        for kv in a.record:
+            k, _, v = kv.partition("=")
+            if not v.strip().isdigit():
+                print(f"mech coupon --record: {kv!r}: want test=number, e.g. lip=4", file=sys.stderr)
+                return 2
+            picks[k.strip()] = int(v)
+        try:
+            fits = coupon.record(picks, a.note)
+        except ValueError as e:
+            print(e, file=sys.stderr)
+            return 2
+        from .fits import path
+        print(f"wrote {path()}: " + ", ".join(f"{coupon.TESTS[t][0]} {fits[coupon.TESTS[t][0]]:g}" for t in picks))
+        return 0
+    out = Path(a.output) if a.output else Path("coupon")
+    sliced = coupon.make(out, slice_it=not a.no_slice and os.environ.get("MECH_SLICE", "1") != "0",
+                         log=lambda m: print(m, file=sys.stderr))
+    if sliced:
+        print(slicer.summary(sliced))
+    print(f"wrote {out}: print coupon.stl, then follow coupon.md")
+    return 0
+
+
 def cmd_score(a) -> int:
     """mech's score, higher is better: the mean of two halves, each 0-100.
     The corpus (mech.corpus): enclosure faults planted on known-good boxes,
@@ -272,6 +302,12 @@ def main(argv=None) -> int:
     g = s.add_mutually_exclusive_group()
     g.add_argument("--product", action="store_true", help="the pinned product's fit-check pass ratio alone")
     g.add_argument("--corpus", action="store_true", help="the planted-fault corpus alone")
+    s = sub.add_parser("coupon", help="the test print that calibrates mech's clearances (mech/fits.json)")
+    s.add_argument("-o", "--output", help="where to write it (default: ./coupon)")
+    s.add_argument("--no-slice", action="store_true", help="skip PrusaSlicer")
+    s.add_argument("--record", nargs="+", metavar="TEST=N",
+                   help="what fit, by its number in its test (1 the smallest), e.g. lip=4 pilot=2")
+    s.add_argument("--note", default="", help="with --record: the printer and filament")
     s = sub.add_parser("pin", help="pin the product's committed boards for the score")
     s.add_argument("clone", help="a hifi-receiver clone, e.g. $HIVE_PROJECTS/hifi-receiver-2")
     s.add_argument("--sha", default="HEAD")
@@ -288,6 +324,8 @@ def main(argv=None) -> int:
         return cmd_slice(a)
     if a.cmd == "score":
         return cmd_score(a)
+    if a.cmd == "coupon":
+        return cmd_coupon(a)
     if a.cmd == "pin":
         return cmd_pin(a)
     if a.cmd == "onshape":
