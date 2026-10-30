@@ -123,12 +123,14 @@ alone. The checks:
 | check | what it means |
 |---|---|
 | board_clear | the board slab touches nothing |
+| board_gap | nothing comes within 0.1 mm of the board's edge (`FIT = {"min_gap": ...}`): a wall that only touches it passes board_clear, but a printed box won't take the board |
 | parts_apart | base, lid and buttons don't overlap as assembled |
 | lid_covers | from above, the lid's outline and the base's wall tops cover the base's whole plan: no strip left open over the cavity (holes cut into the lid don't count, nor a fit gap under 1 mm round a lid that drops inside the walls). Only with a `base` and a `lid` part; `FIT = {"lid": ..., "base": ...}` names others |
 | added_parts_clear | what the script added with `board.add_box` doesn't sit inside one of the board's own parts or its leads. Only when something was added |
 | parts_clear | no part's box, and no through-hole lead under the board, runs into the enclosure |
 | port_<ref> | the plug's opening is clear straight out through the wall, and the face isn't recessed deeper than the plug can reach |
 | hole_<ref> | the board is held under each mounting hole |
+| screw_<ref> | a screw can go through each mounting hole: the axis under the board is open 2 mm down (a pilot or clearance hole), or a peg fills the hole |
 | bed_<part> | the part as printed fits the bed (default 220 x 220 x 250 mm; `FIT = {"bed": (...)}`) |
 | overhang_<part> | turned as it prints (`PRINT`), no downward surface is steeper than 45 degrees from upright. A teardrop's 45-degree point passes; a horizontal round hole up to 7 mm across doesn't count |
 | bridge_<part> | turned as it prints, every flat downward face (a port's top, a flange's underside) has wall going down from its edges: across a gap at most 15 mm (`max_bridge`), held from one side at most 1 mm out (`max_ledge`), and never from no side (it would start in mid-air) |
@@ -219,7 +221,24 @@ the STLs.
   the run the moment any of its processes crosses it, rather than letting it
   swap. It peaks near 450 MB (test_product alone 470 MB, 30 s), most of it
   build123d/OCP itself.
-- `mech score` grades the real product: hifi-receiver's boards and its own
+- `mech score` measures mech itself: how many real enclosure mistakes its
+  fit check catches (mech/corpus.py). The corpus is four known-good boxes
+  (examples/tiny on the tests' board, the lite-main stand-in, and the
+  product's own Lite and Plus as pinned), and about twenty faults planted
+  on each in code at run time: a port closed or at the bottom of a deep
+  collar, a standoff short or off its hole, the screw hole left out, the
+  lid short, a wall tight on the board, a rib into the board, the lid or
+  floor into a part, two parts in each other, an added heatsink on a part,
+  a switch sealed under the lid, a part longer than the bed, and beside a
+  printed part on the bed an overhang, a long bridge, a ledge, an island in
+  the air and a thin fin. Each names the check meant to catch it; it is
+  caught when that check fails planted and passed clean. Every check
+  failing on a clean base is a false alarm. The score is 100 x (caught -
+  false alarms) / planted: a fault class with no check yet (the sealed
+  switch) is missed, so a new check raises it, and one that cries wolf
+  lowers it. New faults and bases go in mech/corpus.py (FAULTS, BASES); a
+  base must be good by review, not only by passing.
+- `mech score --product` grades the real product: hifi-receiver's boards and its own
   enclosures, pinned in `examples/product/` (pin.json says the sha;
   boards/<name>.json is each committed KiCad board as `mech board` read it
   there, with the product's enclosure/heights.json, or the product's own

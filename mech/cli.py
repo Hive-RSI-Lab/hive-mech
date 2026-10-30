@@ -7,7 +7,8 @@
     mech slice <part.stl ...> [--install]        PrusaSlicer's grams, support and time
     mech fit <enclosure.py> [--board B]          the fit check alone
     mech pin <clone> [--sha REV]                 pin the product's boards for the score
-    mech score                                   the pinned product boards, graded by the boxes holding them
+    mech score [--product]                       planted faults caught on known-good boxes (mech.corpus);
+                                                 --product: the pinned product boards, graded by their boxes
     mech onshape ...                             see docs/onshape.md
 
 An enclosure script is plain Python with build123d:
@@ -178,6 +179,18 @@ def cmd_slice(a) -> int:
 
 
 def cmd_score(a) -> int:
+    """mech's score (mech.corpus): enclosure faults planted on known-good
+    boxes, 100 x (caught - false alarms) / planted. Higher is better.
+    --product: the product's pass ratio instead (cmd_product)."""
+    if a.product:
+        return cmd_product(a)
+    from . import corpus
+    r = corpus.run()
+    print(f"{corpus.score(r):.2f}")
+    return 0
+
+
+def cmd_product(a) -> int:
     """The product (examples/product, pinned by `mech pin`): every product
     enclosure built on its board and fit-checked, then every pinned board
     graded by the mean of fit checks passed / fit checks over the enclosures
@@ -244,7 +257,8 @@ def main(argv=None) -> int:
     s = sub.add_parser("slice", help="slice STLs with PrusaSlicer: grams, support, print time")
     s.add_argument("stl", nargs="*")
     s.add_argument("--install", action="store_true", help="fetch the pinned PrusaSlicer first")
-    sub.add_parser("score")
+    s = sub.add_parser("score", help="planted enclosure faults caught (mech.corpus)")
+    s.add_argument("--product", action="store_true", help="the pinned product's fit-check pass ratio instead")
     s = sub.add_parser("pin", help="pin the product's committed boards for the score")
     s.add_argument("clone", help="a hifi-receiver clone, e.g. $HIVE_PROJECTS/hifi-receiver-2")
     s.add_argument("--sha", default="HEAD")

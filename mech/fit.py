@@ -6,6 +6,10 @@
 Each check is a name, ok, and what it measured; `ok` is all of them.
 
 - board_clear: the board's outline slab touches no part of the enclosure.
+- board_gap: the board drops in: nothing of the enclosure within min_gap
+  (default 0.1 mm) of its outline's edge, through its thickness. A wall
+  that only touches the board passes board_clear but won't take a printed
+  part's tolerance.
 - parts_clear: no part's box (courtyard x height, as mech.kicad read it),
   nor the box of a through-hole part's leads under the board, runs into the
   enclosure.
@@ -25,6 +29,10 @@ Each check is a name, ok, and what it measured; `ok` is all of them.
   max_recess overrides that: a number for every port, or {ref: mm, "*": mm}.
 - hole_<ref>: something solid holds the board under each mounting hole
   (an annulus round the hole, just below the board).
+- screw_<ref>: something can go through each mounting hole: under the board
+  its axis is open (a pilot or clearance hole for the screw, 2 mm down),
+  or a peg fills the hole in the board. A boss left solid under the hole
+  holds the board up but can't fix it.
 - bed_<name>: each printed part fits the printer's bed (default 220 x 220 x
   250 mm), turned as `mech build` prints it.
 - overhang_<name>, bridge_<name>, wall_<name>: each printed part, turned as
@@ -68,6 +76,12 @@ def _overlap(a, b) -> float:
 
 def board_solid(board: Board) -> Part:
     return extrude(Polygon(*[tuple(p) for p in board.outline], align=None), amount=board.thickness)
+
+
+def board_ring(board: Board, gap: float) -> Part:
+    """The band gap wide round the board's outline, through its thickness."""
+    face = Polygon(*[tuple(p) for p in board.outline], align=None)
+    return extrude(offset(face, amount=gap, kind=Kind.INTERSECTION), amount=board.thickness) - board_solid(board)
 
 
 def part_box(p) -> Part:
@@ -174,37 +188,50 @@ def _vol_area(shape) -> float:
 
 def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: float | dict | None = None,
           printed: dict | None = None, lid: str = "lid", base: str = "base",
-          printing: dict | None = None) -> dict:
+          printing: dict | None = None, min_gap: float = 0.1, only: set | None = None) -> dict:
     """parts: name -> build123d Part, assembled. printed: name -> Part as printed (for the bed
     and printability checks). lid, base: which parts lid_covers weighs. printing:
-    mech.printable.check's keyword args."""
+    mech.printable.check's keyword args. min_gap: board_gap's clearance. only: run just
+    the checks of these names (mech score's planted faults each need one)."""
     checks = []
 
     def add(name, ok, **info):
         checks.append({"name": name, "ok": bool(ok), **info})
+
+    def w(name) -> bool:
+        return only is None or name in only
     enc = list(parts.values())
     whole = enc[0] if len(enc) == 1 else Compound(children=enc)
     outer = whole.bounding_box()
 
-    ov = sum(_overlap(board_solid(board), e) for e in enc)
-    add("board_clear", ov < EPS, overlap_mm3=round(ov, 3))
+    if w("board_clear"):
+        ov = sum(_overlap(board_solid(board), e) for e in enc)
+        add("board_clear", ov < EPS, overlap_mm3=round(ov, 3))
 
-    if lid in parts and base in parts:
+    if w("board_gap"):
+        edge = board_ring(board, min_gap)
+        se = _span(edge)
+        v = sum(_overlap(edge, e) for e in enc if _boxes_meet(se, _span(e), tol=0.0))
+        add("board_gap", v < EPS, min_gap_mm=min_gap, within_mm3=round(v, 3))
+
+    if lid in parts and base in parts and w("lid_covers"):
         g = lid_gap(parts[base], parts[lid])
         add("lid_covers", not g["where"], **g)
 
     clash = []
-    names = list(parts)
+    names = list(parts) if w("parts_apart") else []
     for i, a in enumerate(names):
         for b in names[i + 1:]:
             v = _overlap(parts[a], parts[b])
             if v >= EPS:
                 clash.append({"parts": [a, b], "overlap_mm3": round(v, 3)})
-    add("parts_apart", not clash, clashes=clash)
+    if w("parts_apart"):
+        add("parts_apart", not clash, clashes=clash)
 
     hits = []
-    boxes = [(p, part_box(p)) for p in board.parts if p.z[1] - p.z[0] > 0]
-    leads = [(p, lead_box(p, board.size)) for p in board.parts if p.under > 0]
+    pc = w("parts_clear")
+    boxes = [(p, part_box(p)) for p in board.parts if p.z[1] - p.z[0] > 0 and pc]
+    leads = [(p, lead_box(p, board.size)) for p in board.parts if p.under > 0 and pc]
     boxes += [(p, b) for p, b in leads if b is not None]
     # One box against one part at a time, and only where their bounding boxes
     # meet: a Compound of all of them in one boolean took the core board's
@@ -215,9 +242,10 @@ def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: floa
         v = sum(_overlap(b, e) for e, se in zip(enc, spans) if _boxes_meet(sb, se, tol=0.0))
         if v >= EPS:
             hits.append({"ref": p.ref, "overlap_mm3": round(v, 3)})
-    add("parts_clear", not hits, hits=hits)
+    if pc:
+        add("parts_clear", not hits, hits=hits)
 
-    added = [p for p in board.parts if p.footprint.startswith(ADDED)]
+    added = [p for p in board.parts if p.footprint.startswith(ADDED)] if w("added_parts_clear") else []
     if added:
         own = [(p.ref, _box(p)) for p in board.parts if not p.footprint.startswith(ADDED) and p.z[1] > p.z[0]]
         own += [(p.ref, _lead_span(p)) for p in board.parts if not p.footprint.startswith(ADDED) and p.under > 0]
@@ -225,6 +253,8 @@ def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: floa
         add("added_parts_clear", not clash, added=len(added), clashes=[list(c) for c in clash])
 
     for port in board.ports:
+        if not w(f"port_{port.ref}"):
+            continue
         u0, u1, z0, z1 = port.opening()
         lim = max_recess.get(port.ref, max_recess.get("*", port.max_recess())) if isinstance(max_recess, dict) \
             else (max_recess if max_recess is not None else port.max_recess())
@@ -249,13 +279,22 @@ def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: floa
             blocked_mm3=round(v, 3), recess_mm=round(recess, 2), max_recess_mm=lim)
 
     for h in board.holes:
-        r0, r1 = h.drill / 2 + 0.2, max(h.pad / 2, h.drill / 2 + 1.0)
-        ring = cylinder(h.x, h.y, -0.3, 0.0, 2 * r1) - cylinder(h.x, h.y, -0.4, 0.1, 2 * r0)
-        want = math.pi * (r1 * r1 - r0 * r0) * 0.3
-        got = sum(_overlap(ring, e) for e in enc)
-        add(f"hole_{h.ref}", got >= 0.8 * want, supported=round(got / want, 2) if want else 0)
+        if w(f"hole_{h.ref}"):
+            r0, r1 = h.drill / 2 + 0.2, max(h.pad / 2, h.drill / 2 + 1.0)
+            ring = cylinder(h.x, h.y, -0.3, 0.0, 2 * r1) - cylinder(h.x, h.y, -0.4, 0.1, 2 * r0)
+            want = math.pi * (r1 * r1 - r0 * r0) * 0.3
+            got = sum(_overlap(ring, e) for e in enc)
+            add(f"hole_{h.ref}", got >= 0.8 * want, supported=round(got / want, 2) if want else 0)
+        if not w(f"screw_{h.ref}"):
+            continue
+        d = min(1.0, 0.5 * h.drill)
+        axis = sum(_overlap(cylinder(h.x, h.y, -2.0, -0.1, d), e) for e in enc)
+        peg = sum(_overlap(cylinder(h.x, h.y, 0.1, board.thickness - 0.1, d), e) for e in enc)
+        add(f"screw_{h.ref}", axis < EPS or peg >= EPS, axis_blocked_mm3=round(axis, 3), peg=peg >= EPS)
 
     for name, part in (printed or parts).items():
+        if not w(f"bed_{name}"):
+            continue
         bb = part.bounding_box()
         size = sorted([bb.size.X, bb.size.Y])
         fits = size[0] <= min(bed[:2]) and size[1] <= max(bed[:2]) and bb.size.Z <= bed[2]
@@ -265,11 +304,13 @@ def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: floa
     if printed:
         from . import printable
         for name, part in printed.items():
+            if only is not None and not {f"{k}_{name}" for k in ("overhang", "bridge", "wall")} & only:
+                continue
             for kind, r in printable.check(part, **(printing or {})).items():
                 add(f"{kind}_{name}", r.pop("ok"), **r)
 
     top = []
-    for ref in board.top_access:
+    for ref in board.top_access if only is None else []:
         p = board.part(ref)
         cx, cy = (p.bbox[0] + p.bbox[2]) / 2, (p.bbox[1] + p.bbox[3]) / 2
         col = cylinder(cx, cy, p.z[1] + 0.01, outer.max.Z + 1, 1.0)

@@ -72,8 +72,8 @@ class Tray:
     `inner`, the outline's box grown by gap). The default is "outline",
     or "box" for a subclass that overrides `inner` (a gap per side, say):
     the outline's plan can't follow an overridden `inner`. gap: board edge to inner wall. corner: the box
-    cavity's corner radius (default: the most that clears a square board
-    corner; "outline" rounds each corner by gap instead). standoff: floor top to board bottom.
+    cavity's corner radius (default: the most that leaves half the gap at a
+    square board corner; "outline" rounds each corner by gap instead). standoff: floor top to board bottom.
     top_clear: tallest top part to the lid's underside. boss_d, pilot_d: the
     standoff's outer diameter and screw hole (2.5 for an M3 self-tapper in
     PETG, 4.0 for an M3 heat-set insert). port_margin: added round each
@@ -107,9 +107,11 @@ class Tray:
 
     def __post_init__(self):
         if self.corner is None:
-            # The cavity's corner radius that still clears a square board
-            # corner at `gap`: sqrt(2) * (r - gap) <= r.
-            self.corner = round(min(3.0, 3.4 * self.gap), 2)
+            # The cavity's corner radius that still leaves half the gap at
+            # a square board corner: r - sqrt(2) * (r - gap) >= gap / 2.
+            # (3.4 x gap, the most that clears it at all, left 0.004 mm:
+            # board_gap caught it.)
+            self.corner = round(min(3.0, 2.2 * self.gap), 2)
         if self.ports is None:
             self.ports = list(self.board.ports)
         custom = type(self).inner is not Tray.inner and type(self).plan is Tray.plan

@@ -11,7 +11,7 @@ their helpers and data (enclosure/**/*.py and *.json, boards/*/parts/*.json)
 into examples/product/ and writes examples/product/pin.json, whose
 "enclosures" names each script and the board its BOARD boxes.
 
-`mech score` builds every product enclosure on its pinned board and records
+`mech score --product` builds every product enclosure on its pinned board and records
 which pinned boards it holds: its own, and any other whose board.json it
 reads (Ultra holds ultra-front behind its front panel). A board's grade is
 the mean, over the enclosures holding it, of fit checks passed / fit checks;

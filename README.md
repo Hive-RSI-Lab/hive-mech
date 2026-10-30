@@ -18,4 +18,5 @@ every fit check on the board it holds; the module's stand-ins
 box a board the product has no enclosure for.
 
     bin/mech test     # the module's tests
-    bin/mech score    # every pinned product board, graded by the enclosures that hold it; higher is better
+    bin/mech score    # planted enclosure faults the fit check catches, minus false alarms; higher is better
+    bin/mech score --product  # every pinned product board, graded by the enclosures that hold it
