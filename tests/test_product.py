@@ -12,6 +12,7 @@ from mech.box import Tray
 
 SCRIPT = '''from mech.box import Tray
 BOARD = "../boards/{board}/kicad/{board}.kicad_pcb"
+PRINT = {{"lid": "flip", "btn": "flip"}}
 def build(board):
     t = Tray(board)
     lid, btn = t.button(t.lid(), "SW1")

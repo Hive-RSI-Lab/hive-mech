@@ -128,6 +128,16 @@ alone. The checks:
 | port_<ref> | the plug's opening is clear straight out through the wall, and the face isn't recessed deeper than the plug can reach |
 | hole_<ref> | the board is held under each mounting hole |
 | bed_<part> | the part as printed fits the bed (default 220 x 220 x 250 mm; `FIT = {"bed": (...)}`) |
+| overhang_<part> | turned as it prints (`PRINT`), no downward surface is steeper than 45 degrees from upright. A teardrop's 45-degree point passes; a horizontal round hole up to 7 mm across doesn't count |
+| bridge_<part> | turned as it prints, every flat downward face (a port's top, a flange's underside) has wall going down from its edges: across a gap at most 15 mm (`max_bridge`), held from one side at most 1 mm out (`max_ledge`), and never from no side (it would start in mid-air) |
+| wall_<part> | cut across every mm of height, no wall, rib or lip is thinner than two nozzle widths (0.8 mm for a 0.4 nozzle) |
+
+The three print checks take `FIT = {"printing": {"nozzle": 0.6, "max_bridge": 20, ...}}`
+(mech.printable.check's arguments). The `Tray` bricks print without
+support as they come: an opening wider than `roof` (12 mm) gets 45-degree
+shoulders over it, two openings or lip notches closer than `web` (1 mm) are
+cut as one, a `pocket` inside the lid's outline runs up to the wall's top,
+and a button's flange meets its cap on a 45-degree cone.
 
 It also lists what is above each top-access part (open, lid, a button) and
 each part's volume and solid PETG mass, which gives a material cost (PETG is
