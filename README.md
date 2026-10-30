@@ -8,6 +8,7 @@ A Hive module for mechanical design. Agents use it to make parametric,
 - build the enclosure in build123d with a few bricks (`mech.box`)
 - export STL and STEP, render it, and check the fit (`mech build`)
 - hand the STEP to Onshape once the person gives a key (`mech onshape`)
+- calibrate its clearances with one 20-minute test print (`mech coupon`)
 
 How agents use it: [docs/README.md](docs/README.md). Onshape:
 [docs/onshape.md](docs/onshape.md). Proof: the hifi receiver's own

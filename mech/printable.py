@@ -26,6 +26,8 @@ import math
 
 from build123d import Axis, Face, GeomType, Part, Vector
 
+from .fits import FITS
+
 
 FIRST_LAYER = 0.2  # mm: surface this close to the bed is the first layer's business
 
@@ -189,8 +191,9 @@ def thin(part: Part, min_wall: float, step: float = 1.0, levels: int = 40) -> li
     return rows
 
 
-def check(part: Part, nozzle: float = 0.4, overhang: float = 45.0, max_bridge: float = 15.0,
-          max_ledge: float = 1.0, hole_ok: float = 7.0, wall_step: float = 1.0) -> dict:
+def check(part: Part, nozzle: float = 0.4, overhang: float = 45.0,
+          max_bridge: float = FITS["max_bridge"], max_ledge: float = 1.0, hole_ok: float = 7.0,
+          wall_step: float = 1.0) -> dict:
     """{"overhang": {...}, "bridge": {...}, "wall": {...}} for a part as printed."""
     limit_z = -math.sin(math.radians(overhang + 1.0))  # a degree's slack: teardrops are exactly 45
     steep, flats = [], []

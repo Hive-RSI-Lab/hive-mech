@@ -26,6 +26,7 @@ from dataclasses import dataclass, field
 from build123d import (Align, Box, Cone, Cylinder, Kind, Part, Plane, Polygon, Pos,
                        RectangleRounded, Rot, extrude, offset)
 
+from .fits import FITS
 from .kicad import Board, Port
 
 MIN = (Align.MIN, Align.MIN, Align.MIN)
@@ -75,8 +76,9 @@ class Tray:
     cavity's corner radius (default: the most that leaves half the gap at a
     square board corner; "outline" rounds each corner by gap instead). standoff: floor top to board bottom.
     top_clear: tallest top part to the lid's underside. boss_d, pilot_d: the
-    standoff's outer diameter and screw hole (2.5 for an M3 self-tapper in
-    PETG, 4.0 for an M3 heat-set insert). port_margin: added round each
+    standoff's outer diameter and screw hole (an M3 self-tapper's pilot,
+    FITS["pilot_d"]; FITS["insert_d"] for an M3 heat-set insert). The fits
+    are mech/fits.json's, which the test-print coupon calibrates (mech.coupon). port_margin: added round each
     connector's face. lip: the lid's locating lip (height, thickness, fit gap).
     roof: the widest flat top an opening in a wall may have; a wider one gets
     45-degree shoulders, so the base prints upright without long bridges.
@@ -94,9 +96,9 @@ class Tray:
     top_clear: float = 2.0
     corner: float | None = None
     boss_d: float = 7.0
-    pilot_d: float = 2.5
+    pilot_d: float = FITS["pilot_d"]
     port_margin: float = 0.5
-    lip: tuple = (3.0, 1.2, 0.25)
+    lip: tuple = (3.0, 1.2, FITS["lip_gap"])
     roof: float = 12.0
     web: float = 1.0
     ports: list[Port] = field(default=None)
@@ -207,8 +209,8 @@ class Tray:
         self._notches.append(r)
         return lid - block(r[0], r[1], self.z_top - lh - 1, r[2], r[3], self.z_top)
 
-    def screws_from_below(self, base: Part, lid: Part, clear: float = 3.4, head: float = 6.2,
-                          head_depth: float = 3.0, pillar_d: float = 6.0, pilot: float = 2.5,
+    def screws_from_below(self, base: Part, lid: Part, clear: float = FITS["clear_d"], head: float = 6.2,
+                          head_depth: float = 3.0, pillar_d: float = 6.0, pilot: float = FITS["pilot_d"],
                           short: float = 0.2) -> tuple[Part, Part]:
         """One screw per mounting hole, from under the base through the board
         into a pillar hanging from the lid: it clamps the board and holds the
@@ -342,8 +344,8 @@ class Tray:
             base += rounded(x0 - skin, y0 - skin, x1 + skin, iy0, zb, zt, skin)
         return base - block(x0, y0, z0, x1, y1, z1)
 
-    def button(self, lid: Part, ref: str, d: float = 5.0, clear: float = 0.3, flange: float = 1.5,
-               rim: float = 1.0, travel: float = 0.3) -> tuple[Part, Part]:
+    def button(self, lid: Part, ref: str, d: float = 5.0, clear: float = FITS["button_clear"],
+               flange: float = 1.5, rim: float = 1.0, travel: float = 0.3) -> tuple[Part, Part]:
         """A printed push button for a top-actuated switch under the lid.
 
         Returns (lid with a hole, the button): a cap of diameter d through
