@@ -118,3 +118,19 @@ def test_profile_overrides_in_place():
     keys = [ln.partition("=")[0].strip() for ln in text.splitlines() if "=" in ln and not ln.startswith("#")]
     assert len(keys) == len(set(keys))
     assert "perimeters = 3" in text and "support_material = 0" in text and "ironing = 1" in text
+
+
+def test_find_falls_back_to_the_shared_environment(tmp_path, monkeypatch):
+    monkeypatch.delenv("MECH_SLICER", raising=False)
+    monkeypatch.setenv("MECH_HOME", str(tmp_path / "home"))
+    shared = tmp_path / "shared"
+    monkeypatch.setenv("MECH_SHARED", str(shared))
+    assert slicer.find() is None
+    w = shared / f"prusaslicer-{slicer.VERSION}" / "prusa-slicer"
+    w.parent.mkdir(parents=True)
+    w.write_text("#!/bin/sh\n")
+    assert slicer.find() == w
+    own = tmp_path / "home" / f"prusaslicer-{slicer.VERSION}" / "prusa-slicer"
+    own.parent.mkdir(parents=True)
+    own.write_text("#!/bin/sh\n")
+    assert slicer.find() == own

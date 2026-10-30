@@ -67,3 +67,39 @@ def test_inside_a_lease_it_runs_bare(tmp_path):
 def test_a_hive_without_the_op_runs_it_bare(tmp_path):
     lines = _run(tmp_path, ["build", "enc.py"], heavy_op=False)
     assert len(lines) == 1 and lines[0].startswith("python held=1 "), lines
+
+
+def _fake_py(path, log, name):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(f'#!/bin/sh\necho "{name} shared=$MECH_SHARED $*" >>"{log}"\n')
+    path.chmod(0o755)
+
+
+def _env_run(tmp_path, lock_text):
+    """bin/mech python with a shared environment pinning lock_text and a
+    built venv in MECH_HOME: which python ran."""
+    log = tmp_path / "log"
+    shared = tmp_path / "tools" / "mech"
+    _fake_py(shared / "python" / "cpython-3.12.9-linux-x86_64-gnu" / "bin" / "python3.12", log, "shared")
+    (shared / "requirements.lock").write_text(lock_text)
+    state = tmp_path / "state"
+    _fake_py(state / "venv" / "bin" / "python", log, "venv")
+    (state / "venv" / ".mech-lock").touch()
+    env = {k: v for k, v in os.environ.items() if k not in ("MECH_VENV", "MECH_SHARED")}
+    env.update(HIVE_TOOLS=str(tmp_path / "tools"), MECH_HOME=str(state))
+    out = subprocess.run([str(ROOT / "bin" / "mech"), "python", "-c", "1"], env=env, cwd=tmp_path,
+                         capture_output=True, text=True, timeout=60)
+    assert out.returncode == 0, out.stderr
+    return log.read_text().splitlines()
+
+
+def test_shared_environment_with_the_same_lock_is_used(tmp_path):
+    """A check's HOME is new each time: the tools folder's environment saves
+    it installing build123d again."""
+    lines = _env_run(tmp_path, (ROOT / "requirements.lock").read_text())
+    assert lines == [f"shared shared={tmp_path / 'tools' / 'mech'} -c 1"], lines
+
+
+def test_shared_environment_with_another_lock_is_not(tmp_path):
+    lines = _env_run(tmp_path, "build123d==0.0.1\n")
+    assert lines == ["venv shared= -c 1"], lines
