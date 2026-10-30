@@ -19,7 +19,8 @@ An enclosure script is plain Python with build123d:
 
 `build` writes into DIR (default: out/ beside the script): <part>.stl as
 printed, enclosure.step (the assembly with the board as a slab, for
-Onshape or any CAD), board.json, fit.json and the renders.
+Onshape or any CAD), board.json, fit.json, fit.md (the same report as a
+table, one pass/fail row per check) and the renders.
 """
 from __future__ import annotations
 
@@ -123,6 +124,7 @@ def cmd_build(a, export=True) -> int:
         export_step(Compound(children=asm), str(out / "enclosure.step"))
         (out / "board.json").write_text(board.to_json() + "\n", encoding="utf-8")
         (out / "fit.json").write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
+        (out / "fit.md").write_text(fit.markdown(report, script.parent.name), encoding="utf-8")
         if not a.no_render:
             from .render import render
             render(board, parts, out, title=script.parent.name)

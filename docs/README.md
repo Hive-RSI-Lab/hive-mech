@@ -72,11 +72,24 @@ def build(board):
     return {"base": base, "lid": lid, "btn_SW1": btn}
 ```
 
+Something that isn't on the board but must fit inside the box (a heatsink,
+a binding post's nut and lug, a second board and its parts) goes in as
+`board.add_box(ref, x0, y0, z0, x1, y1, z1, what)` before you build round
+it. The fit check then holds the plastic clear of it (`parts_clear`) and
+it clear of the board's own parts (`added_parts_clear`). A part you make
+yourself counts as added when its footprint starts with `enclosure:`
+(`mech.kicad.ADDED`), as `add_box`'s do.
+
 Return the parts **assembled**, in the board's frame; `mech build` turns
 them for printing. `Tray` is one way to build the box: two parts, the board
 screwed to bosses (pilot 2.5 mm for an M3 self-tapper in PETG, 4.0 for a
 heat-set insert), walls that follow the board's outline, and a lid with a
 locating lip that steps round tall parts.
+`t.screws_from_below(base, lid)` swaps the self-tapper bosses for screws up
+through the base and the board into pillars hanging from the lid, so four
+screws clamp the board and hold the lid. `mech.box.teardrop(x, y, z, d,
+length, axis)` is a horizontal hole with a 45° point on top, for a round
+hole in a wall (a binding post, a round jack) that prints without support.
 For a different shape (a sloped front, a panel-mount, a clamshell), use
 `mech.box.block/rounded/cylinder` or plain build123d, and keep whatever
 `Tray` helpers still fit. `examples/lite-main/enclosure.py` and
@@ -97,7 +110,9 @@ next to the script:
 - `<part>.stl`, each part as printed.
 - `enclosure.step`, the assembly plus the board as a slab, for Onshape or
   any other CAD.
-- `board.json` and `fit.json`.
+- `board.json`, `fit.json`, and `fit.md`: the same report as a table, one
+  row per check whose second cell is `pass` or `fail`, for a project's own
+  tests to read.
 - PNG renders.
 
 It exits 1 if a fit check fails. `mech fit <enclosure.py>` runs the check
@@ -107,6 +122,8 @@ alone. The checks:
 |---|---|
 | board_clear | the board slab touches nothing |
 | parts_apart | base, lid and buttons don't overlap as assembled |
+| lid_covers | from above, the lid's outline and the base's wall tops cover the base's whole plan: no strip left open over the cavity (holes cut into the lid don't count, nor a fit gap under 1 mm round a lid that drops inside the walls). Only with a `base` and a `lid` part; `FIT = {"lid": ..., "base": ...}` names others |
+| added_parts_clear | what the script added with `board.add_box` doesn't sit inside one of the board's own parts or its leads. Only when something was added |
 | parts_clear | no part's box, and no through-hole lead under the board, runs into the enclosure |
 | port_<ref> | the plug's opening is clear straight out through the wall, and the face isn't recessed deeper than the plug can reach |
 | hole_<ref> | the board is held under each mounting hole |
@@ -134,7 +151,9 @@ Look at them: the checks only catch what they measure.
   shaped board sits in a box of the same shape. Each wall, the lid and its lip
   are offsets of that plan. Convex corners round by the offset; concave ones
   stay sharp. `Tray(board, shape="box")` gives the old rounded rectangle round
-  the outline's box, with `corner` as its radius. The board's internal cutouts
+  the outline's box, with `corner` as its radius. A `Tray` subclass that
+  overrides `inner` (a gap per side) is a box by default, since the outline's
+  plan can't follow it; asking it for `shape="outline"` is an error. The board's internal cutouts
   aren't in the plan. A part overhanging a shaped edge that isn't a port
   shows up in `parts_clear`.
 - build123d's `Text()` can hang for minutes looking for fonts, so leave

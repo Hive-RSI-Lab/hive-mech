@@ -9,8 +9,15 @@ Each check is a name, ok, and what it measured; `ok` is all of them.
 - parts_clear: no part's box (courtyard x height, as mech.kicad read it),
   nor the box of a through-hole part's leads under the board, runs into the
   enclosure.
+- added_parts_clear: what the script added to the board (Board.add_box: a
+  heatsink, a binding post's nut, a second board) doesn't sit inside the
+  board's own parts or their leads. Only when something was added.
 - parts_apart: the enclosure's own parts (base, lid, buttons) don't run
   into each other as assembled.
+- lid_covers: seen from above, the lid and the base's wall tops together
+  cover the base's whole outer plan, so nothing is left open over the
+  cavity but the holes cut into the lid. Only when there is a "base" and a
+  "lid" (lid=, base= name others).
 - port_<ref>: the opening the mating plug needs (the connector's face,
   grown to the plug's body for the port's kind: mech.kicad.PLUGS), carried
   straight out through the wall, is open; and the face sits no deeper
@@ -26,12 +33,13 @@ receivers) have an opening above them, and each part's volume and mass.
 """
 from __future__ import annotations
 
+import json
 import math
 
-from build123d import Compound, Part, Polygon, extrude
+from build123d import Axis, Compound, Face, Kind, Part, Polygon, Pos, extrude, offset
 
 from .box import block, cylinder
-from .kicad import Board
+from .kicad import ADDED, Board
 
 EPS = 0.01  # mm^3: an overlap smaller than this is touching, not hitting
 PETG = 1.27  # g/cm^3
@@ -72,9 +80,89 @@ def lead_box(p, size=(1e9, 1e9)) -> Part | None:
     return block(x0, y0, p.z[1], x1, y1, p.z[1] + p.under)
 
 
+def _box(p) -> tuple:
+    return (p.bbox[0], p.bbox[1], p.z[0], p.bbox[2], p.bbox[3], p.z[1])
+
+
+def _lead_span(p) -> tuple:
+    """lead_box's corners, as numbers."""
+    z = (-p.under, 0.0) if p.side == "top" else (p.z[1], p.z[1] + p.under)
+    return (p.bbox[0], p.bbox[1], z[0], p.bbox[2], p.bbox[3], z[1])
+
+
+def _boxes_meet(a, b, tol=0.01) -> bool:
+    """Two boxes (x0, y0, z0, x1, y1, z1) overlap by more than tol on every axis."""
+    return all(min(a[i + 3], b[i + 3]) - max(a[i], b[i]) > tol for i in range(3))
+
+
+def _section(part, z: float, fill: bool) -> list:
+    """The faces where the plane at z cuts part, laid down at z = 0; fill: each with its holes filled in."""
+    bb = part.bounding_box()
+    slab = block(bb.min.X - 1, bb.min.Y - 1, z, bb.max.X + 1, bb.max.Y + 1, z + 0.02)
+    try:
+        cut = part & slab
+    except Exception:
+        return []
+    out = []
+    for f in cut.faces().filter_by(Axis.Z):
+        if abs(f.center().Z - z) < 1e-3:
+            out.append(Pos(0, 0, -z) * (Face(f.outer_wire()) if fill else f))
+    return out
+
+
+def _plan(part, levels: int = 8, fill: bool = True) -> list:
+    """part seen from above, as faces: its sections at `levels` heights through it."""
+    bb = part.bounding_box()
+    z0, z1 = bb.min.Z + 0.05, bb.max.Z - 0.05
+    if z1 <= z0:
+        return []
+    return [f for i in range(levels) for f in _section(part, z0 + (z1 - z0) * i / (levels - 1), fill)]
+
+
+def _fuse(faces: list):
+    if not faces:
+        return None
+    out = faces[0]
+    for f in faces[1:]:
+        out = out + f
+    return out
+
+
+def lid_gap(base, lid, sliver: float = 0.5) -> dict:
+    """What of the base's outer plan neither the lid's outline nor the base's
+    wall tops cover, from above. Slivers narrower than 2 x sliver (a lid
+    dropped inside the walls with a fit gap) don't count."""
+    need = _fuse(_plan(base))
+    bb = base.bounding_box()
+    have = _fuse(_plan(lid) + _section(base, bb.max.Z - 0.05, fill=False))
+    if need is None:
+        return {"open_mm2": 0.0, "where": []}
+    rest = need - have if have is not None else need
+    area, where = 0.0, []
+    for f in rest.faces():
+        try:
+            core = offset(f, amount=-sliver, kind=Kind.INTERSECTION)
+            if core is None or _vol_area(core) < 1e-3:
+                continue
+        except Exception:  # shrunk away to nothing
+            continue
+        area += f.area
+        b = f.bounding_box()
+        where.append([round(b.min.X, 1), round(b.min.Y, 1), round(b.max.X, 1), round(b.max.Y, 1)])
+    return {"open_mm2": round(area, 1), "where": where}
+
+
+def _vol_area(shape) -> float:
+    try:
+        return abs(shape.area)
+    except Exception:
+        return 0.0
+
+
 def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: float | dict | None = None,
-          printed: dict | None = None) -> dict:
-    """parts: name -> build123d Part, assembled. printed: name -> Part as printed (for the bed check)."""
+          printed: dict | None = None, lid: str = "lid", base: str = "base") -> dict:
+    """parts: name -> build123d Part, assembled. printed: name -> Part as printed (for the bed check).
+    lid, base: which parts lid_covers weighs."""
     checks = []
 
     def add(name, ok, **info):
@@ -85,6 +173,10 @@ def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: floa
 
     ov = sum(_overlap(board_solid(board), e) for e in enc)
     add("board_clear", ov < EPS, overlap_mm3=round(ov, 3))
+
+    if lid in parts and base in parts:
+        g = lid_gap(parts[base], parts[lid])
+        add("lid_covers", not g["where"], **g)
 
     clash = []
     names = list(parts)
@@ -106,6 +198,13 @@ def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: floa
             if v >= EPS:
                 hits.append({"ref": p.ref, "overlap_mm3": round(v, 3)})
     add("parts_clear", not hits, hits=hits)
+
+    added = [p for p in board.parts if p.footprint.startswith(ADDED)]
+    if added:
+        own = [(p.ref, _box(p)) for p in board.parts if not p.footprint.startswith(ADDED) and p.z[1] > p.z[0]]
+        own += [(p.ref, _lead_span(p)) for p in board.parts if not p.footprint.startswith(ADDED) and p.under > 0]
+        clash = sorted({(a.ref, ref) for a in added for ref, b in own if _boxes_meet(_box(a), b)})
+        add("added_parts_clear", not clash, added=len(added), clashes=[list(c) for c in clash])
 
     for port in board.ports:
         u0, u1, z0, z1 = port.opening()
@@ -172,3 +271,29 @@ def summary(report: dict) -> str:
     passed = sum(c["ok"] for c in report["checks"])
     lines.append(f"fit: {passed}/{len(report['checks'])} checks pass")
     return "\n".join(lines)
+
+
+def _cell(v) -> str:
+    return (json.dumps(v) if isinstance(v, (list, dict)) else str(v)).replace("|", "\\|")
+
+
+def markdown(report: dict, title: str = "") -> str:
+    """The report as fit.md: a table with one row per check, its second cell
+    pass or fail (what a project's own tests can read), then the parts
+    reached from above and the material."""
+    passed = sum(c["ok"] for c in report["checks"])
+    lines = [f"# Fit{': ' + title if title else ''}", "",
+             f"{passed}/{len(report['checks'])} checks pass" + ("." if report["ok"] else ", some fail."), "",
+             "| check | result | measured |", "|---|---|---|"]
+    for c in report["checks"]:
+        info = ", ".join(f"{k}={_cell(v)}" for k, v in c.items() if k not in ("name", "ok"))
+        lines.append(f"| {c['name']} | {'pass' if c['ok'] else 'fail'} | {info} |")
+    if report.get("top_access"):
+        lines += ["", "## Reached from above", ""]
+        for t in report["top_access"]:
+            lines.append(f"- {t['ref']}: " + ("open above" if t["open_above"] else "under " + ", ".join(t["under"])))
+    if report.get("material"):
+        lines += ["", "## Material", ""]
+        for n, m in report["material"].items():
+            lines.append(f"- {n}: {m['volume_cm3']} cm3, {m['solid_petg_g']} g PETG if solid")
+    return "\n".join(lines) + "\n"
