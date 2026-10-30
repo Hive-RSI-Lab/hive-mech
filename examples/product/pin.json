@@ -2,7 +2,7 @@
  "_doc": "hifi-receiver's boards and its own mech enclosures at sha, read by `mech pin`; `mech score` grades every board by the enclosures that hold it.",
  "project": "hifi-receiver-2",
  "repo": "Hive-RSI-Lab/hifi-receiver",
- "sha": "a7f32da6ed6b28a6d4da7d493ef4244b23c80431",
+ "sha": "7d2a8308ae8024c93afaf30b88067aa993e9cfed",
  "boards": {
   "core": {
    "pcb": "boards/core/kicad/core.kicad_pcb",

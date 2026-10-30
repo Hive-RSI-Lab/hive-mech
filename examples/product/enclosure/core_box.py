@@ -51,11 +51,15 @@ SCREW_CLEAR = 3.4   # M3 through the floor, standoff and board
 SCREW_HEAD = 6.2    # counterbore for an M3 socket or pan head
 HEAD_DEPTH = 3.0
 STANDOFF_OD = 7.0
+RING = 0.8          # two 0.4 nozzle lines round the counterbore where it rises into the standoff: a foot
+                    # SCREW_HEAD + 2 RING wide, to RING over the counterbore (under the boards' leads)
 PILLAR_OD = 6.0
 PILLAR_PILOT = 2.5  # M3 thread-forming into PETG
 PILLAR_SHORT = 0.2  # pillar ends this far above the board, so the screw pulls the lid onto the walls
 
 RCA_HOLE = 12.0     # passes a plug's outer shell onto the 8.3 mm barrel
+RCA_CAP = 7.0       # its teardrop point is cut off 1 mm over the hole: a 3 mm bridge, and the upper one
+                    # stays under Plus's wall top (30.6)
 RCA_BARREL = 8.3
 RCA_AXES = (6.5, 20.5)   # barrel axes above the board top (Lite's corrected model; same part)
 POST_HOLE = 4.3     # M4-thread 4 mm binding posts
@@ -80,11 +84,15 @@ def box_part(ref, x0, y0, z0, x1, y1, z1, what="") -> Part:
                 [x0, y0, x1, y1], [z0, z1], "override", False, None, 0.0)
 
 
-def teardrop_y(x, y, z, d, length) -> object:
-    """A hole along y with a 45-degree point on top, so a vertical wall prints it without support."""
+def teardrop_y(x, y, z, d, length, cap=None) -> object:
+    """A hole along y with a 45-degree point on top, so a vertical wall prints it without support.
+    cap: cut the point off this far above the axis; the flat top is then a short bridge
+    (2 * (r * sqrt(2) - cap) wide), for a big hole whose point would reach too high."""
     r = d / 2
     hole = Pos(x, y, z) * Rot(90, 0, 0) * Cylinder(r, length)
     tip = Pos(x, y, z + r / math.sqrt(2)) * Rot(0, 45, 0) * Box(r, length, r)
+    if cap is not None:
+        tip &= block(x - r, y - length, z, x + r, y + length, z + cap)
     return hole + tip
 
 
@@ -186,6 +194,16 @@ def base(t: CoreTray, feats: dict, ports=("J1", "J2", "U19")):
     b -= rounded(ix0, iy0, ix1, iy1, t.z_floor, t.z_top + 1, t.corner)
     for h in t.board.holes:
         b += cylinder(h.x, h.y, t.z_floor - 0.01, 0.0, max(STANDOFF_OD, h.pad))
+        top = t.z_bottom + HEAD_DEPTH + RING
+        r = SCREW_HEAD / 2 + RING
+        b += cylinder(h.x, h.y, t.z_floor - 0.01, top, 2 * r)
+        # a foot closer than 1 mm to a wall joins it, so no thin slot is left between them
+        for near, rib in ((h.x - r - ix0, (ix0, h.y - r, h.x, h.y + r)),
+                          (ix1 - h.x - r, (h.x, h.y - r, ix1, h.y + r)),
+                          (h.y - r - iy0, (h.x - r, iy0, h.x + r, h.y)),
+                          (iy1 - h.y - r, (h.x - r, h.y, h.x + r, iy1))):
+            if near < 1.0:
+                b += block(rib[0], rib[1], t.z_floor - 0.01, rib[2], rib[3], top)
         b -= cylinder(h.x, h.y, t.z_bottom - 1, 1.0, SCREW_CLEAR)
         b -= cylinder(h.x, h.y, t.z_bottom - 1, t.z_bottom + HEAD_DEPTH, SCREW_HEAD)
     # feet recesses
@@ -195,7 +213,7 @@ def base(t: CoreTray, feats: dict, ports=("J1", "J2", "U19")):
     cut = t.wall + 2
     yn = y1 - t.wall / 2
     for _, x, z in feats.get("rca", []):
-        b -= Pos(x, yn, z) * Rot(90, 0, 0) * Cylinder(RCA_HOLE / 2, cut)
+        b -= teardrop_y(x, yn, z, RCA_HOLE, cut, cap=RCA_CAP)
     for _, x, z in feats.get("posts", []):
         b -= teardrop_y(x, yn, z, POST_HOLE, cut)
     for _, hx0, hy0, hx1, hy1, _ in feats.get("heatsinks", []):
@@ -212,6 +230,16 @@ def lid(t: CoreTray, feats: dict):
     for _, hx0, hy0, hx1, hy1, _ in feats.get("heatsinks", []):
         l = t.vents(l, (hx0, hy0 - 2, hx1, hy1 + 2), along="y")
     return l
+
+
+def button(t: CoreTray, lid_part, ref, d=4.6, rim=0.8, flange=1.5):
+    """mech's Tray.button, made one solid: mech ends the cap `flange` under the lid and starts the
+    flange 0.2 mm lower, so the flange (and the stem) would print floating over the cap."""
+    lid_part, cap = t.button(lid_part, ref, d=d, rim=rim, flange=flange)
+    p = t.board.part(ref)
+    cx, cy = (p.bbox[0] + p.bbox[2]) / 2, (p.bbox[1] + p.bbox[3]) / 2
+    cap += cylinder(cx, cy, t.z_top - flange - 0.3, t.z_top - flange + 0.1, d)
+    return lid_part, cap
 
 
 def tray(board: Board, variant: str, gaps: dict, z_top: float) -> CoreTray:
@@ -280,7 +308,7 @@ def build_plus(board: Board) -> dict:
     l = light_pipe(t, l, "D3", dy=0.4)
     parts = {"base": b}
     for sw in ("SW2", "SW3"):
-        l, btn = t.button(l, sw, d=4.6, rim=0.8)
+        l, btn = button(t, l, sw)
         parts[f"btn_{sw}"] = btn
     parts["knob"] = knob
     parts["lid"] = l
@@ -387,8 +415,9 @@ def ultra_buttons(front: Board) -> dict:
         p = front.part(ref)
         x, _, z = fb_point(p.x, p.y, 0)
         act = FB_FACE - (p.z[1] - T_PCB)            # the actuator's front, y
-        cap = Pos(x, yi + 0.01, z) * Rot(90, 0, 0) * Cylinder(BTN_CAP / 2, WALL + 1.0, align=(_C, _C, _MIN))
         fl0, fl1 = yi + 0.05, act - 0.3
+        # the cap runs 0.1 into the flange, so the button is one solid (its front stays at yi - WALL - 0.99)
+        cap = Pos(x, fl0 + 0.1, z) * Rot(90, 0, 0) * Cylinder(BTN_CAP / 2, WALL + 1.14, align=(_C, _C, _MIN))
         cap += Pos(x, fl1, z) * Rot(90, 0, 0) * Cylinder(BTN_FLANGE / 2, fl1 - fl0, align=(_C, _C, _MIN))
         out[f"btn_F{ref}"] = cap
     return out
