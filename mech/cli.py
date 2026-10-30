@@ -10,8 +10,8 @@
     mech coupon --record lip=4 pilot=2 ... [--note N]
                                                  write back what fit on it (mech.coupon)
     mech pin <clone> [--sha REV]                 pin the product's boards for the score
-    mech score [--product]                       planted faults caught on known-good boxes (mech.corpus);
-                                                 --product: the pinned product boards, graded by their boxes
+    mech score [--corpus|--product]              mean of planted faults caught on known-good boxes
+                                                 (mech.corpus) and the pinned product boards' fit
     mech onshape ...                             see docs/onshape.md
 
 An enclosure script is plain Python with build123d:
@@ -209,40 +209,50 @@ def cmd_coupon(a) -> int:
 
 
 def cmd_score(a) -> int:
-    """mech's score (mech.corpus): enclosure faults planted on known-good
-    boxes, 100 x (caught - false alarms) / planted. Higher is better.
-    --product: the product's pass ratio instead (cmd_product)."""
+    """mech's score, higher is better: the mean of two halves, each 0-100.
+    The corpus (mech.corpus): enclosure faults planted on known-good boxes,
+    100 x (caught - false alarms) / planted, which measures the checks. The
+    product (product_score): the pinned product boards' fit pass ratio,
+    which keeps the real product in view: a re-pin that brings a board
+    nothing fits, or a tool change that breaks a product box, moves it.
+    --corpus or --product prints that half alone."""
     if a.product:
-        return cmd_product(a)
+        return 0 if product_score() is not None else 1
     from . import corpus
-    r = corpus.run()
-    print(f"{corpus.score(r):.2f}")
+    c = corpus.score(corpus.run())
+    if a.corpus:
+        print(f"{c:.2f}")
+        return 0
+    p = product_score()
+    print(f"corpus: {c:.2f}")
+    print(f"product: {p:.2f}" if p is not None else "product: 0 (no pinned product boards)")
+    print(f"{(c + (p or 0.0)) / 2:.2f}")
     return 0
 
 
-def cmd_product(a) -> int:
+def product_score(out=sys.stdout):
     """The product (examples/product, pinned by `mech pin`): every product
     enclosure built on its board and fit-checked, then every pinned board
     graded by the mean of fit checks passed / fit checks over the enclosures
     that hold it (else the module's stand-in examples/<name>/enclosure.py;
     one that doesn't build grades 0, a board nothing holds grades 0). Prints
-    100 x the boards' mean grade. Higher is better."""
+    and returns 100 x the boards' mean grade, or None with no pin."""
     from . import product
     meta = product.load_pin()
     if not meta or not meta.get("boards"):
         print("score: no pinned product boards (mech pin <clone>)", file=sys.stderr)
-        return 1
-    print(f"product: {meta['repo']} @ {meta['sha'][:12]}")
+        return None
+    print(f"product: {meta['repo']} @ {meta['sha'][:12]}", file=out)
     jsons = {n: product.PRODUCT / "boards" / f"{n}.json" for n in meta["boards"]}
 
     def run(label, script, board):
         try:
             ok, n, bad, held = product.grade(script, jsons[board], jsons)
         except Exception as e:  # a broken enclosure costs its boards, not the score run
-            print(f"{label}: does not build ({script.relative_to(ROOT)} on {board}): {e}")
+            print(f"{label}: does not build ({script.relative_to(ROOT)} on {board}): {e}", file=out)
             return 0.0, {board}
         print(f"{label}: {ok}/{n} ({script.relative_to(ROOT)}; holds {', '.join(sorted(held))})"
-              + (f" failing: {', '.join(bad)}" if bad else ""))
+              + (f" failing: {', '.join(bad)}" if bad else ""), file=out)
         return (ok / n if n else 0.0), held
 
     by_board: dict[str, list[float]] = {n: [] for n in meta["boards"]}
@@ -256,10 +266,11 @@ def cmd_product(a) -> int:
             g, _ = run(f"{name} stand-in", s, name)
             gs = [g]
         g = sum(gs) / len(gs) if gs else 0.0
-        print(f"board {name}: {100 * g:.1f}" + ("" if gs else " (no enclosure holds it)"))
+        print(f"board {name}: {100 * g:.1f}" + ("" if gs else " (no enclosure holds it)"), file=out)
         grades.append(g)
-    print(f"{100.0 * sum(grades) / len(grades):.2f}")
-    return 0
+    p = 100.0 * sum(grades) / len(grades)
+    print(f"{p:.2f}", file=out)
+    return p
 
 
 def cmd_pin(a) -> int:
@@ -287,12 +298,15 @@ def main(argv=None) -> int:
     s = sub.add_parser("slice", help="slice STLs with PrusaSlicer: grams, support, print time")
     s.add_argument("stl", nargs="*")
     s.add_argument("--install", action="store_true", help="fetch the pinned PrusaSlicer first")
-    s = sub.add_parser("score", help="planted enclosure faults caught (mech.corpus)")
-    s.add_argument("--product", action="store_true", help="the pinned product's fit-check pass ratio instead")
+    s = sub.add_parser("score", help="mean of planted faults caught (mech.corpus) and the product's fit")
+    g = s.add_mutually_exclusive_group()
+    g.add_argument("--product", action="store_true", help="the pinned product's fit-check pass ratio alone")
+    g.add_argument("--corpus", action="store_true", help="the planted-fault corpus alone")
     s = sub.add_parser("coupon", help="the test print that calibrates mech's clearances (mech/fits.json)")
     s.add_argument("-o", "--output", help="where to write it (default: ./coupon)")
     s.add_argument("--no-slice", action="store_true", help="skip PrusaSlicer")
-    s.add_argument("--record", nargs="+", metavar="TEST=N", help="what fit, by its number in its test (1 the smallest), e.g. lip=4 pilot=2")
+    s.add_argument("--record", nargs="+", metavar="TEST=N",
+                   help="what fit, by its number in its test (1 the smallest), e.g. lip=4 pilot=2")
     s.add_argument("--note", default="", help="with --record: the printer and filament")
     s = sub.add_parser("pin", help="pin the product's committed boards for the score")
     s.add_argument("clone", help="a hifi-receiver clone, e.g. $HIVE_PROJECTS/hifi-receiver-2")
