@@ -1,4 +1,4 @@
-# Fit: hifi-lite
+# Fit: lite-main
 
 17/17 checks pass.
 
@@ -9,8 +9,8 @@
 | parts_apart | pass | clashes=[] |
 | parts_clear | pass | hits=[] |
 | port_J3 | pass | edge=N, kind=generic, blocked_mm3=0, recess_mm=2.6, max_recess_mm=3.0 |
-| port_J1 | pass | edge=N, kind=usb-c, blocked_mm3=0, recess_mm=2.6, max_recess_mm=3.0 |
 | port_J2 | pass | edge=N, kind=generic, blocked_mm3=0, recess_mm=2.6, max_recess_mm=3.0 |
+| port_J1 | pass | edge=N, kind=usb-c, blocked_mm3=0, recess_mm=2.6, max_recess_mm=3.0 |
 | port_J4 | pass | edge=N, kind=terminal, blocked_mm3=0, recess_mm=3.2, max_recess_mm=6.0 |
 | hole_H2 | pass | supported=1.0 |
 | hole_H1 | pass | supported=1.0 |
@@ -24,15 +24,15 @@
 
 ## Reached from above
 
+- D2: open above
+- U9: under lid
 - SW3: under btn_SW3
 - SW2: under btn_SW2
 - SW1: under btn_SW1
-- U9: under lid
-- D2: open above
 
 ## Material
 
-- base: 44.8 cm3, 56.8 g PETG if solid
+- base: 44.7 cm3, 56.8 g PETG if solid
 - btn_SW1: 0.3 cm3, 0.4 g PETG if solid
 - btn_SW2: 0.3 cm3, 0.4 g PETG if solid
 - btn_SW3: 0.3 cm3, 0.4 g PETG if solid

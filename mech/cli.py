@@ -5,7 +5,8 @@
     mech build <enclosure.py> [-o DIR] [--no-render] [--board B]
                                                  run it, export, fit-check, render
     mech fit <enclosure.py> [--board B]          the fit check alone
-    mech score                                   every example, built and checked
+    mech pin <clone> [--sha REV]                 pin the product's boards for the score
+    mech score                                   the pinned product's boards, each boxed and checked
     mech onshape ...                             see docs/onshape.md
 
 An enclosure script is plain Python with build123d:
@@ -132,27 +133,38 @@ def cmd_build(a, export=True) -> int:
 
 
 def cmd_score(a) -> int:
-    """100 x fit checks passed / fit checks, over every example; an example
-    that doesn't build counts as one failed check. Higher is better."""
-    from . import fit
-    total = passed = 0
-    for script in sorted((ROOT / "examples").glob("*/enclosure.py")):
-        name = script.parent.name
-        try:
-            mod, board, parts = run_script(script)
-            r = fit.check(board, parts, printed=printed_parts(mod, parts), **getattr(mod, "FIT", {}))
-            n, ok = len(r["checks"]), sum(c["ok"] for c in r["checks"])
-            bad = [c["name"] for c in r["checks"] if not c["ok"]]
-            print(f"{name}: {ok}/{n}" + (f" (failing: {', '.join(bad)})" if bad else ""))
-        except Exception as e:  # a broken example costs its check, not the score run
-            n, ok = 1, 0
-            print(f"{name}: does not build: {e}")
-        total += n
-        passed += ok
-    if not total:
-        print("score: no examples", file=sys.stderr)
+    """The product's boards (examples/product, pinned by `mech pin`), each
+    graded by its enclosure's fit checks passed / fit checks; a board with
+    no enclosure, or one that doesn't build, grades 0. Prints 100 x the
+    mean grade. Higher is better."""
+    from . import product
+    meta = product.load_pin()
+    if not meta or not meta.get("boards"):
+        print("score: no pinned product boards (mech pin <clone>)", file=sys.stderr)
         return 1
-    print(f"{100.0 * passed / total:.2f}")
+    print(f"product: {meta['repo']} @ {meta['sha'][:12]}")
+    grades = []
+    for name, (script, whose) in product.enclosures(meta).items():
+        g = 0.0
+        if script is None:
+            print(f"{name}: no enclosure (product or examples/{name}/enclosure.py)")
+        else:
+            try:
+                ok, n, bad = product.grade(script, product.PRODUCT / "boards" / f"{name}.json")
+                g = ok / n if n else 0.0
+                print(f"{name}: {ok}/{n} ({whose} {script.relative_to(ROOT)})"
+                      + (f" failing: {', '.join(bad)}" if bad else ""))
+            except Exception as e:  # a broken enclosure costs its board, not the score run
+                print(f"{name}: does not build ({whose} {script.relative_to(ROOT)}): {e}")
+        grades.append(g)
+    print(f"{100.0 * sum(grades) / len(grades):.2f}")
+    return 0
+
+
+def cmd_pin(a) -> int:
+    from .product import pin
+    meta = pin(Path(a.clone), a.sha)
+    print(f"pinned {meta['repo']} @ {meta['sha'][:12]}: {', '.join(meta['boards'])}")
     return 0
 
 
@@ -171,6 +183,9 @@ def main(argv=None) -> int:
             s.add_argument("-o", "--output")
             s.add_argument("--no-render", action="store_true")
     sub.add_parser("score")
+    s = sub.add_parser("pin", help="pin the product's committed boards for the score")
+    s.add_argument("clone", help="a hifi-receiver clone, e.g. $HIVE_PROJECTS/hifi-receiver-2")
+    s.add_argument("--sha", default="HEAD")
     s = sub.add_parser("onshape", help="hand a STEP to Onshape (docs/onshape.md)")
     s.add_argument("rest", nargs=argparse.REMAINDER)
     a = ap.parse_args(argv)
@@ -182,6 +197,8 @@ def main(argv=None) -> int:
         return cmd_build(a, export=False)
     if a.cmd == "score":
         return cmd_score(a)
+    if a.cmd == "pin":
+        return cmd_pin(a)
     if a.cmd == "onshape":
         from .onshape import main as om
         return om(a.rest)

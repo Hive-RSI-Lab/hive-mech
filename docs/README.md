@@ -92,8 +92,10 @@ length, axis)` is a horizontal hole with a 45° point on top, for a round
 hole in a wall (a binding post, a round jack) that prints without support.
 For a different shape (a sloped front, a panel-mount, a clamshell), use
 `mech.box.block/rounded/cylinder` or plain build123d, and keep whatever
-`Tray` helpers still fit. `examples/hifi-lite/enclosure.py` is a complete
-script.
+`Tray` helpers still fit. `examples/lite-main/enclosure.py` and
+`examples/core/enclosure.py` are complete scripts. A part that overhangs
+the board's edge (a module's antenna end) gets room with `t.pocket(base, ref)`;
+a connector that does passes through the wall with `cut_ports` as it is.
 
 ## 3. Build and check: `mech build`
 
@@ -171,10 +173,19 @@ the STLs.
 - `mech test` runs the module's tests: the KiCad reader on a hand-written
   board, every fit check made to fail the way it should, the Onshape client
   against a fake server, and every example's fit.
-- `mech score` gives 100 x fit checks passed / fit checks over
-  `examples/*/enclosure.py`; higher is better. An example that doesn't
-  build counts as a failed check. Add an example (a board.json and its
-  enclosure) when a real board teaches mech something new.
+- `mech score` grades the real product: hifi-receiver's committed boards,
+  pinned in `examples/product/` (pin.json says the sha; boards/<name>.json
+  is each board as `mech board` read it there, with the product's
+  enclosure/heights.json). Each board is graded by its enclosure's fit
+  checks passed / fit checks: the product's own mech script when the pin
+  found one (an `enclosure/**/*.py` that imports mech, defines build() and
+  names the board in BOARD or its path), else the module's stand-in
+  `examples/<name>/enclosure.py`, else 0. The score is 100 x the mean.
+  The score's sandbox sees only this checkout, hence the pin.
+- `mech pin $HIVE_PROJECTS/hifi-receiver-2 [--sha REV]` re-pins (default:
+  the clone's HEAD; pass `--sha main`). Bump it on purpose, in a commit of
+  its own: a new board scores 0 until it has a box that fits, which is the
+  point. After a bump, fix the stand-ins or the tools until it is back.
 
 ## Be critical of the tools
 

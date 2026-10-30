@@ -67,11 +67,17 @@ def part_box(p) -> Part:
     return block(p.bbox[0], p.bbox[1], p.z[0], p.bbox[2], p.bbox[3], p.z[1])
 
 
-def lead_box(p) -> Part:
-    """Where a through-hole part's leads stick out past the board's other face."""
+def lead_box(p, size=(1e9, 1e9)) -> Part | None:
+    """Where a through-hole part's leads stick out past the board's other
+    face: its box, but only over the board (leads go through it), so a
+    connector that overhangs the edge doesn't claim the wall under it."""
+    x0, y0 = max(p.bbox[0], 0.0), max(p.bbox[1], 0.0)
+    x1, y1 = min(p.bbox[2], size[0]), min(p.bbox[3], size[1])
+    if x1 - x0 < 0.01 or y1 - y0 < 0.01:
+        return None
     if p.side == "top":
-        return block(p.bbox[0], p.bbox[1], -p.under, p.bbox[2], p.bbox[3], 0.0)
-    return block(p.bbox[0], p.bbox[1], p.z[1], p.bbox[2], p.bbox[3], p.z[1] + p.under)
+        return block(x0, y0, -p.under, x1, y1, 0.0)
+    return block(x0, y0, p.z[1], x1, y1, p.z[1] + p.under)
 
 
 def _box(p) -> tuple:
@@ -183,7 +189,8 @@ def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: floa
 
     hits = []
     boxes = [(p, part_box(p)) for p in board.parts if p.z[1] - p.z[0] > 0]
-    boxes += [(p, lead_box(p)) for p in board.parts if p.under > 0]
+    leads = [(p, lead_box(p, board.size)) for p in board.parts if p.under > 0]
+    boxes += [(p, b) for p, b in leads if b is not None]
     allboxes = Compound(children=[b for _, b in boxes]) if boxes else None
     if allboxes is not None and any(_overlap(allboxes, e) >= EPS for e in enc):
         for p, b in boxes:
