@@ -17,10 +17,9 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from mech.box import block  # noqa: E402
 from mech.kicad import Port  # noqa: E402
 
-from core_box import GAP, T_PCB, base, light_pipe, lid, post_ports, rca_ports, tray  # noqa: E402
+from core_box import GAP, T_PCB, base, button, light_pipe, lid, post_ports, rca_ports, tray  # noqa: E402
 
 BOARD = "lite-main.board.json"   # mech board ../boards/lite-main/kicad/lite-main.kicad_pcb --heights heights.json
 PRINT = {"lid": "flip", "btn_SW1": "flip", "btn_SW2": "flip", "btn_SW3": "flip"}
@@ -32,7 +31,6 @@ POST_X = (16.0, 35.0, 65.0, 84.0)         # 19 mm within a pair (dual banana plu
 POST_Z = T_PCB + 31.5                     # over the RCA bodies
 IR_WINDOW = (9.0, 8.0)                    # w x h round the IRM-3638T's lens
 IR_LENS_Z = T_PCB + 5.0
-LABEL = (40.0, 22.0, 0.8)                 # underside recess for a printed sticker
 
 
 def build(board):
@@ -49,13 +47,11 @@ def build(board):
                             u.bbox[1], 0.0, "top"))
     t = tray(board, "lite", GAPS, z_top)
     b = base(t, feats, ports=("J1", "U9"))
-    # vents over and under the amplifier (U8) and its inductors; the label recess underneath
+    # vents over and under the amplifier (U8) and its inductors. No label recess underneath: the base
+    # prints on its floor, so a recess's roof is a 22 mm bridge off the bed; a sticker goes on flat.
     a = board.part("U8")
     vent = (a.x - 15, 39.0, a.x + 15, 65.0)
     b = t.vents(b, vent, along="y", where="floor")
-    w, h, d = LABEL
-    cx, cy = board.size[0] / 2 - 20, board.size[1] / 2 - 2
-    b -= block(cx - w / 2, cy - h / 2, t.z_bottom - 1, cx + w / 2, cy + h / 2, t.z_bottom + d)
     l = lid(t, feats)
     l = t.vents(l, vent, along="y")
     # status LED: a light pipe, pulled back from the front wall where the LED sits at the edge
@@ -65,7 +61,7 @@ def build(board):
     l = light_pipe(t, l, "D2", od=od, idd=2.6, dy=dy)
     parts = {"base": b}
     for sw in ("SW1", "SW2", "SW3"):
-        l, btn = t.button(l, sw, d=4.6, rim=0.8)
+        l, btn = button(t, l, sw)
         parts[f"btn_{sw}"] = btn
     parts["lid"] = l
     return parts
