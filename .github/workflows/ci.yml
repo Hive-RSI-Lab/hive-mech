@@ -26,11 +26,17 @@ jobs:
           persist-credentials: false
       # bin/mech builds its venv from requirements.lock with uv on first use.
       - uses: astral-sh/setup-uv@v6
+      # PrusaSlicer for mech.slicer (pinned in mech/slicer.py), unpacked once and kept.
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/mech/prusaslicer-2.8.1
+          key: prusaslicer-2.8.1-${{ runner.os }}
       - name: the suite (bin/mech test)
         shell: bash
         run: bin/mech test 2>&1 | tee "$RUNNER_TEMP/suite.log"; test "${PIPESTATUS[0]}" = 0
         env:
           MECH_HOME: ${{ runner.temp }}/mech
+          MECH_NEED_SLICER: "1"
       # Job logs need a login; annotations don't, so the Hive can read what failed.
       - name: name the failing tests
         if: failure()

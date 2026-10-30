@@ -104,7 +104,7 @@ heavy`'s lease (the machine is shared; at most 10 minutes, then they run
 anyway), so give the shell command a timeout to match. Where the hive has no
 `heavy` op yet they run at once.
 
-`mech build <enclosure.py> [-o DIR] [--no-render]` writes these to `out/`
+`mech build <enclosure.py> [-o DIR] [--no-render] [--no-slice]` writes these to `out/`
 next to the script:
 
 - `<part>.stl`, each part as printed.
@@ -113,6 +113,8 @@ next to the script:
 - `board.json`, `fit.json`, and `fit.md`: the same report as a table, one
   row per check whose second cell is `pass` or `fail`, for a project's own
   tests to read.
+- `slice.json`: each printed part sliced by a real slicer (below), also a
+  table at the end of `fit.md`.
 - PNG renders.
 
 It exits 1 if a fit check fails. `mech fit <enclosure.py>` runs the check
@@ -143,7 +145,35 @@ and a button's flange meets its cap on a 45-degree cone.
 
 It also lists what is above each top-access part (open, lid, a button) and
 each part's volume and solid PETG mass, which gives a material cost (PETG is
-about $20/kg).
+about $20/kg). The slicer's figures below are the real ones.
+
+### What printing it costs: the slicer
+
+`mech build` slices every printed STL with PrusaSlicer's CLI and reports,
+per part and in total, the filament (grams, metres, cm3, cost at $25/kg),
+the support material it had to add (`support_g`, `support_cm3`,
+`support_share`) and the print time PrusaSlicer estimates. Support is
+measured from the G-code itself (its support and support interface
+extrusions), so `support_g = 0` means the part prints as it lies with none.
+The geometry checks above are a fast guess; the slicer is the word: on
+hifi-receiver's Lite enclosure every print check passes, and PrusaSlicer
+still adds 3.5 g of support under the base and 0.2 g under each button.
+
+The settings are `mech/slicer.ini`: the receiver's own (PETG, 0.4 mm nozzle,
+0.2 mm layers, 4 perimeters, 20 % gyroid, auto support at 45 degrees) on an
+MK4-sized machine's speeds and limits. An enclosure changes them with
+PrusaSlicer's own option names, for every part or one:
+
+```python
+SLICE = {"fill_density": "15%", "lid": {"perimeters": 3}}
+```
+
+The slicer is PrusaSlicer 2.8.1 (its last Linux build), pinned by sha256 and
+unpacked into `$MECH_HOME/prusaslicer-2.8.1` the first time it's needed
+(about 100 MB to fetch, 120 MB kept; `mech slice --install` does it ahead).
+`mech slice <part.stl ...>` slices STLs alone and prints the JSON.
+`--no-slice` or `MECH_SLICE=0` skips it; with no network the build says it
+skipped and goes on. A part takes from seconds to a minute.
 
 The renders are hidden-line drawings. `iso.png` shows the assembly with the
 lid lifted, `top.png` the top view, and `port-<edge>.png` one view per edge
@@ -184,7 +214,9 @@ the STLs.
 
 - `mech test` runs the module's tests: the KiCad reader on a hand-written
   board, every fit check made to fail the way it should, the Onshape client
-  against a fake server, and every example's fit. It prints its peak RSS
+  against a fake server, every example's fit, the slicer's G-code reading,
+  and PrusaSlicer itself on parts with and without support (those skip
+  where no slicer is installed; CI installs it and sets MECH_NEED_SLICER). It prints its peak RSS
   and fails over 800 MB (`MECH_TEST_MB` moves the ceiling); a watcher stops
   the run the moment any of its processes crosses it, rather than letting it
   swap. It peaks near 450 MB (test_product alone 470 MB, 30 s), most of it

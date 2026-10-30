@@ -2,8 +2,9 @@
 
     mech board <file.kicad_pcb> [-o board.json] [--heights heights.json]
                                                  what the enclosure needs, as JSON
-    mech build <enclosure.py> [-o DIR] [--no-render] [--board B]
-                                                 run it, export, fit-check, render
+    mech build <enclosure.py> [-o DIR] [--no-render] [--no-slice] [--board B]
+                                                 run it, export, fit-check, slice, render
+    mech slice <part.stl ...> [--install]        PrusaSlicer's grams, support and time
     mech fit <enclosure.py> [--board B]          the fit check alone
     mech pin <clone> [--sha REV]                 pin the product's boards for the score
     mech score [--product]                       planted faults caught on known-good boxes (mech.corpus);
@@ -15,22 +16,29 @@ An enclosure script is plain Python with build123d:
     BOARD = "board.json"                # or a .kicad_pcb; relative to the script
     PRINT = {"lid": "flip"}             # optional: parts turned for the bed
     FIT = {"max_recess": 3.0}           # optional: fit.check's keyword args
+    SLICE = {"fill_density": "15%",     # optional: PrusaSlicer options over
+             "lid": {"perimeters": 3}}  # mech/slicer.ini, all parts or one
     def build(board):                   # board: mech.kicad.Board
         return {"base": ..., "lid": ...}  # assembled, in the board's frame
 
 `build` writes into DIR (default: out/ beside the script): <part>.stl as
 printed, enclosure.step (the assembly with the board as a slab, for
 Onshape or any CAD), board.json, fit.json, fit.md (the same report as a
-table, one pass/fail row per check) and the renders.
+table, one pass/fail row per check), slice.json (each part sliced by
+PrusaSlicer, mech.slicer: filament grams, support volume, print time; also
+a table in fit.md) and the renders. --no-slice or MECH_SLICE=0 skips it.
 """
 from __future__ import annotations
 
 import argparse
 import importlib.util
 import json
+import os
 import sys
 import time
 from pathlib import Path
+
+from . import slicer
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -125,12 +133,49 @@ def cmd_build(a, export=True) -> int:
         export_step(Compound(children=asm), str(out / "enclosure.step"))
         (out / "board.json").write_text(board.to_json() + "\n", encoding="utf-8")
         (out / "fit.json").write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
-        (out / "fit.md").write_text(fit.markdown(report, script.parent.name), encoding="utf-8")
+        md = fit.markdown(report, script.parent.name)
+        if not a.no_slice and os.environ.get("MECH_SLICE", "1") != "0":
+            sliced = slice_printed(mod, {n: out / f"{n}.stl" for n in printed})
+            if sliced is not None:
+                (out / "slice.json").write_text(json.dumps(sliced, indent=1) + "\n", encoding="utf-8")
+                md += slicer.markdown(sliced)
+                print(slicer.summary(sliced))
+        (out / "fit.md").write_text(md, encoding="utf-8")
         if not a.no_render:
             from .render import render
             render(board, parts, out, title=script.parent.name)
         print(f"wrote {out}")
     return 0 if report["ok"] else 1
+
+
+def slice_printed(mod, stls: dict) -> dict | None:
+    """Each printed STL sliced, with the script's SLICE options (a dict
+    value is one part's own); None when there is no slicer to be had."""
+    opts = getattr(mod, "SLICE", {}) or {}
+    common = {k: v for k, v in opts.items() if not isinstance(v, dict)}
+    try:
+        slicer.ensure(log=lambda m: print(m, file=sys.stderr))
+    except Exception as e:
+        print(f"slice: skipped, no slicer ({e}); `mech slice --install` to retry", file=sys.stderr)
+        return None
+    per = {n: {**common, **opts.get(n, {})} for n in stls}
+    if all(v == common for v in per.values()):
+        return slicer.slice_parts(stls, common)
+    return {n: slicer.slice_parts({n: p}, per[n])[n] for n, p in stls.items()}
+
+
+def cmd_slice(a) -> int:
+    if a.install:
+        print(slicer.ensure())
+        if not a.stl:
+            return 0
+    if not a.stl:
+        print("mech slice: give STL files (or --install)", file=sys.stderr)
+        return 2
+    sliced = slicer.slice_parts({Path(p).stem: Path(p) for p in a.stl})
+    print(json.dumps(sliced, indent=1))
+    print(slicer.summary(sliced), file=sys.stderr)
+    return 0 if all("error" not in s for s in sliced.values()) else 1
 
 
 def cmd_score(a) -> int:
@@ -208,6 +253,10 @@ def main(argv=None) -> int:
         if name == "build":
             s.add_argument("-o", "--output")
             s.add_argument("--no-render", action="store_true")
+            s.add_argument("--no-slice", action="store_true", help="skip PrusaSlicer")
+    s = sub.add_parser("slice", help="slice STLs with PrusaSlicer: grams, support, print time")
+    s.add_argument("stl", nargs="*")
+    s.add_argument("--install", action="store_true", help="fetch the pinned PrusaSlicer first")
     s = sub.add_parser("score", help="planted enclosure faults caught (mech.corpus)")
     s.add_argument("--product", action="store_true", help="the pinned product's fit-check pass ratio instead")
     s = sub.add_parser("pin", help="pin the product's committed boards for the score")
@@ -222,6 +271,8 @@ def main(argv=None) -> int:
         return cmd_build(a)
     if a.cmd == "fit":
         return cmd_build(a, export=False)
+    if a.cmd == "slice":
+        return cmd_slice(a)
     if a.cmd == "score":
         return cmd_score(a)
     if a.cmd == "pin":

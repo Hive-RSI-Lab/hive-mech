@@ -6,6 +6,7 @@
 #   mech board <x.kicad_pcb> [-o board.json]  outline, holes, parts, ports
 #   mech build <enclosure.py> [-o DIR]        export STL/STEP, fit-check, render
 #   mech fit <enclosure.py>                   the fit check alone
+#   mech slice <part.stl ...> [--install]     PrusaSlicer: filament g, support, print time
 #   mech onshape check|upload ...             the Onshape handoff (docs/onshape.md)
 #   mech test [args]                          the module's tests
 #   mech pin <clone> [--sha REV]              pin hifi-receiver's committed boards
@@ -69,11 +70,11 @@ python)
 	exec "$venv/bin/python" "$@"
 	;;
 "" | -h | --help)
-	sed -n '2,21p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '2,22p' "$0" | sed 's/^# \{0,1\}//'
 	;;
 *)
 	case $1 in
-	build | fit | score) heavy="mech $1" ;;
+	build | fit | score | slice) heavy="mech $1" ;;
 	esac
 	x "$venv/bin/python" -m mech.cli "$@"
 	;;
