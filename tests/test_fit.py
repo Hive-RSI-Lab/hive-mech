@@ -4,7 +4,7 @@ import pytest
 
 from conftest import FIXTURES
 from mech import fit
-from mech.box import Tray, block
+from mech.box import Tray, block, cylinder
 from mech.kicad import read_board
 
 
@@ -217,3 +217,32 @@ def test_fit_md_has_a_pass_or_fail_row_per_check(board):
     assert got == {c["name"]: "pass" if c["ok"] else "fail" for c in r["checks"]}
     assert got["added_parts_clear"] == "fail" and all(len(c) == 3 for c in rows)
     assert any(n.startswith("hole_") for n in got) and "some fail" in md
+
+
+def test_wall_tight_on_the_board_fails_board_gap(board):
+    t = Tray(board)
+    base = t.cut_ports(t.base())
+    w = max(p[0] for p in board.outline)
+    pad = block(w, 8, 0.0, w + 3, 12, board.thickness)  # touches the E edge: no overlap, no gap
+    r = fit.check(board, {"base": base + pad, "lid": t.lid()})
+    assert names_failing(r) == ["board_gap"], fit.summary(r)
+    r = fit.check(board, {"base": base + pad, "lid": t.lid()}, min_gap=0.0)
+    assert "board_gap" not in names_failing(r)
+
+
+def test_boss_without_a_screw_hole_fails_screw(board):
+    t = Tray(board)
+    base = t.cut_ports(t.base())
+    h = board.holes[0]
+    r = fit.check(board, {"base": base + cylinder(h.x, h.y, -4, 0, 2.0), "lid": t.lid()})
+    assert names_failing(r) == [f"screw_{h.ref}"], fit.summary(r)
+    peg = cylinder(h.x, h.y, -4, board.thickness + 1, 2.0)  # a locating peg through the hole
+    r = fit.check(board, {"base": base + peg, "lid": t.lid()})
+    assert f"screw_{h.ref}" not in names_failing(r), fit.summary(r)
+
+
+def test_only_runs_the_named_checks(board):
+    t = Tray(board)
+    r = fit.check(board, {"base": t.base(), "lid": t.lid()}, only={"port_J1", "lid_covers"})
+    assert sorted(c["name"] for c in r["checks"]) == ["lid_covers", "port_J1"]
+    assert names_failing(r) == ["port_J1"]
