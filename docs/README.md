@@ -228,7 +228,14 @@ the STLs.
   the run the moment any of its processes crosses it, rather than letting it
   swap. It peaks near 450 MB (test_product alone 470 MB, 30 s), most of it
   build123d/OCP itself.
-- `mech score` measures mech itself: how many real enclosure mistakes its
+- `mech score` is the mean of two halves, each 0-100: the corpus (`--corpus`
+  alone), which measures the checks, and the product (`--product` alone),
+  which keeps the real product in view. The corpus alone sat near its
+  ceiling, written by mech's own authors, and the pin went ten commits
+  stale without it moving; with the product half, a re-pin that brings a
+  board nothing fits yet, or a tool change that breaks a product box, moves
+  the score, and fixing either raises it. No pin counts the product as 0.
+- `mech score --corpus` measures mech itself: how many real enclosure mistakes its
   fit check catches (mech/corpus.py). The corpus is five known-good boxes
   (examples/tiny on the tests' board, the lite-main stand-in, and the
   product's own Lite, Plus and Ultra as pinned, Ultra with ultra-front
