@@ -79,6 +79,14 @@ def build(board):
     return {"base": base, "lid": lid, "btn_SW1": btn}
 ```
 
+**Keep-outs.** A radar, IR or light sensor (or a camera, a PIR's lens) needs
+its field of view left open: `board.add_cone("fov", ref="U7", half_angle=40)`
+in `build` (apex on the part's top, along +z; `axis="N"` for a side looker,
+`length=` to stop it short, `through=["window"]` for a part printed clear),
+or `board.add_keepout_box(...)`. `t.clear_keepout(lid, "fov")` cuts the
+cone through a part, and the fit check's `keepout_fov` fails while any
+other enclosure part is in it.
+
 Something that isn't on the board but must fit inside the box (a heatsink,
 a binding post's nut and lug, a second board and its parts) goes in as
 `board.add_box(ref, x0, y0, z0, x1, y1, z1, what)` before you build round

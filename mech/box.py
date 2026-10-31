@@ -59,6 +59,20 @@ def cylinder(x, y, z0, z1, d) -> Part:
     return Pos(x, y, z0) * Cylinder(d / 2, z1 - z0, align=(Align.CENTER, Align.CENTER, Align.MIN))
 
 
+def keepout_solid(k, reach: float) -> Part:
+    """A Keepout as a solid; a cone without a length runs `reach` mm."""
+    if k.kind == "box":
+        return block(*k.box)
+    if k.kind != "cone":
+        raise ValueError(f"keepout {k.name}: kind {k.kind!r}, want 'cone' or 'box'")
+    length = k.length if k.length else reach
+    r1 = k.r0 + length * math.tan(math.radians(k.half_angle))
+    plane = Plane(origin=tuple(k.apex), z_dir=tuple(k.axis))
+    # a hair off the apex, so the face of the part it looks out of isn't counted
+    return plane * Pos(0, 0, 0.01) * Cone(max(k.r0, 0.01), max(r1, 0.02), length,
+                                          align=(Align.CENTER, Align.CENTER, Align.MIN))
+
+
 def teardrop(x, y, z, d, length, axis="y") -> Part:
     """A horizontal hole of diameter d along axis ("x" or "y"), centred at
     (x, y, z), with a 45-degree point on top, so a wall printed upright
@@ -257,6 +271,16 @@ class Tray:
             lid += cylinder(h.x, h.y, top + short, zt + 0.01, max(pillar_d, pilot * k + 3.5))
             lid -= cylinder(h.x, h.y, top, zt + self.lid_t - 0.8, pilot * k)
         return base, lid
+
+    def clear_keepout(self, part: Part, name: str) -> Part:
+        """Cut the board's keep-out `name` (Board.add_cone, add_keepout_box)
+        out of a part: a field of view's cone through the lid or a wall."""
+        k = next((k for k in self.board.keepouts if k.name == name), None)
+        if k is None:
+            raise KeyError(f"no keep-out {name!r} on the board (Board.add_cone)")
+        x0, y0, x1, y1 = self.outer
+        reach = 2.0 + math.dist((x0, y0, self.z_bottom), (x1, y1, self.z_top + self.lid_t))
+        return part - keepout_solid(k, reach)
 
     def opening(self, port: Port, margin: float | None = None) -> tuple:
         """What port_box cuts, as numbers: (edge, u0, u1, z0, z1, a, b), the
