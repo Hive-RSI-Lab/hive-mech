@@ -15,10 +15,14 @@ What it reads, all from the .kicad_pcb itself (no KiCad needed):
   (read_heights) overrides any of them: models are often of another part.
 - ports: connectors that sit at the board's edge (within edge_tol of the
   outline's box, or overhanging it), each with the edge it faces and the
-  rectangle of its face on that edge.
+  rectangle of its face on that edge. A connector that mates from above
+  (mates_from_above: a pin header, socket or IDC header not named
+  horizontal or right-angle, or any connector named Vertical) is no port
+  wherever it sits: it goes to top_access, with a warning when it is at an
+  edge.
 - top_access: parts a person reaches or sees through the lid (switches,
-  LEDs, IR receivers, displays, encoders); the enclosure decides which get a
-  hole, light pipe or window.
+  LEDs, IR receivers, displays, encoders, connectors that mate from above);
+  the enclosure decides which get a hole, light pipe, window or slot.
 
 The frame: millimetres, X right and Y up (KiCad's Y is flipped), origin at
 the outline box's lower-left corner, z = 0 the board's bottom face. Top-side
@@ -43,6 +47,12 @@ _CONN_REF = re.compile(r"^(J|P|CN|X|USB|XS|XP)\d", re.I)
 _CONN_FP = re.compile(r"conn|usb|jack|rca|header|terminal|barrel|hdmi|rj45|dc[-_]?jack|socket|banana|xlr|audio", re.I)
 _TOP_REF = re.compile(r"^(SW|S|BTN|LED|DS|ENC|RV|DISP|LCD|IR)\d", re.I)
 _TOP_FP = re.compile(r"\bsw[-_]|switch|button|tact|led|encoder|irm|ir[-_]?recv|display|oled|lcd|pot", re.I)
+# Connectors whose plug comes down from above, not in through a wall: pin
+# headers and sockets unless named sideways, and anything named upright
+# (KiCad's _Vertical, EasyEDA's -V-).
+_PIN_FP = re.compile(r"pin[-_]?header|pin[-_]?socket|pin[-_]?strip|\bhdr|header|\bidc", re.I)
+_UPRIGHT_FP = re.compile(r"vertical|top[-_]?entry|(?:^|[-_])V(?=[-_]|$)", re.I)
+_SIDEWAYS_FP = re.compile(r"horizontal|right[-_ ]?angle|angled|(?:^|[-_])(?:RA|H|R)(?=[-_]|$)", re.I)
 _HOLE_FP = re.compile(r"mountinghole", re.I)
 _HOLE_REF = re.compile(r"^(H|MH)\d", re.I)
 _H_HINT = re.compile(r"(?:^|[-_])H(\d+(?:\.\d+)?)(?=[-_.]|$)")
@@ -458,6 +468,15 @@ def _table_height(name: str) -> tuple[float, str]:
 
 # --- the board ----------------------------------------------------------------
 
+def mates_from_above(name: str) -> bool:
+    """A connector footprint whose plug comes down onto the board (a
+    vertical pin header, socket or IDC header; any connector named
+    Vertical), so it isn't a port in a wall even at the edge."""
+    if _SIDEWAYS_FP.search(name):
+        return False
+    return bool(_UPRIGHT_FP.search(name) or _PIN_FP.search(name))
+
+
 def read_heights(path: str | os.PathLike) -> dict:
     """A heights file: {key: {"above": mm, "below": mm, "note": ...}}, key a
     reference (J2) or a footprint name with or without its library
@@ -615,7 +634,13 @@ def read_board(path: str | os.PathLike, edge_tol: float = EDGE_TOL, heights: dic
         if is_conn:
             gaps = {"W": bbox[0], "E": size[0] - bbox[2], "S": bbox[1], "N": size[1] - bbox[3]}
             edge = min(gaps, key=gaps.get)
-            if gaps[edge] <= edge_tol:
+            if mates_from_above(name):
+                if side == "top":
+                    top_access.append(ref)
+                if gaps[edge] <= edge_tol:
+                    warnings.append(f"{ref} ({name}) at the {edge} edge mates from above: not a port "
+                                    "(a lid slot if a cable goes in; Board.ports to force one)")
+            elif gaps[edge] <= edge_tol:
                 u0, u1 = (bbox[1], bbox[3]) if edge in "WE" else (bbox[0], bbox[2])
                 plane = {"W": bbox[0], "E": bbox[2], "S": bbox[1], "N": bbox[3]}[edge]
                 kind = next((k for rx, k in _KINDS if rx.search(name) or rx.search(val)), "generic")

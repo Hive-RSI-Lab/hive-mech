@@ -110,3 +110,38 @@ def test_heights_override_models_and_names(tmp_path):
     assert b.part("J1").z == [1.6, 4.9]
     assert b.part("R1").height_from == "table"  # "default" doesn't override
     assert not any("J1" in w for w in b.warnings)
+
+
+def test_mates_from_above_names():
+    from mech.kicad import mates_from_above
+    up = ["PinHeader_1x04_P2.54mm_Vertical", "PinSocket_2x05_P2.54mm_Vertical", "PinHeader_1x06_P2.54mm",
+          "IDC-Header_2x05_P2.54mm_Vertical", "JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical", "HDR-TH_4P-P2.54-V-M",
+          "SMA_Amphenol_132134_Vertical"]
+    side = ["PinHeader_1x04_P2.54mm_Horizontal", "PinSocket_1x04_P2.54mm_Horizontal", "HDR-TH_4P-P2.54-H-M",
+            "JST_XH_S4B-XH-A_1x04_P2.50mm_Horizontal", "USB-C-SMD_TEST", "CONN-TH_XDJK-0271-1650",
+            "CONN-TH_P5.00_KF301-5.0-2P", "RJ45-TH_HR911105A", "Header_RA_1x04"]
+    assert [n for n in up if not mates_from_above(n)] == []
+    assert [n for n in side if mates_from_above(n)] == []
+
+
+def test_vertical_header_at_an_edge_is_not_a_port(tmp_path):
+    src = (FIXTURES / "tiny.kicad_pcb").read_text()
+    fp = '''	(footprint "Connector_PinHeader_2.54mm:{name}"
+		(layer "F.Cu")
+		(at {x} 104 0)
+		(property "Reference" "{ref}" (at 0 0) (layer "F.SilkS"))
+		(property "Value" "Conn" (at 0 0) (layer "F.Fab"))
+		(attr through_hole)
+		(fp_rect (start -1.5 -5.5) (end 1.5 5.5) (stroke (width 0.05) (type default)) (fill no) (layer "F.CrtYd"))
+	)
+'''
+    added = fp.format(name="PinHeader_1x04_P2.54mm_Vertical", ref="J8", x=103) + \
+        fp.format(name="PinHeader_1x04_P2.54mm_Horizontal", ref="J9", x=106)
+    i = src.index("\t(footprint")
+    p = tmp_path / "hdr.kicad_pcb"
+    p.write_text(src[:i] + added + src[i:])
+    b = read_board(p)
+    assert b.part("J8") and b.part("J9")
+    assert sorted(x.ref for x in b.ports) == ["J1", "J9"]
+    assert "J8" in b.top_access and "J9" not in b.top_access
+    assert any(w.startswith("J8 ") and "mates from above" in w for w in b.warnings)
