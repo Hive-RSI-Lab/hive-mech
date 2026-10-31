@@ -343,9 +343,10 @@ def _clean(script: Path) -> tuple[float, "set | str"]:
     """A base built and checked clean: (seconds, the checks it fails, or why it doesn't build)."""
     t0 = time.time()
     try:
-        return time.time() - t0, _failing(_base(script).check())
+        clean = _failing(_base(script).check())
     except Exception as e:
-        return time.time() - t0, str(e)
+        clean = str(e)
+    return time.time() - t0, clean
 
 
 def _plant(task: "tuple[str, Path, set, str, Plant]") -> tuple[str, dict | None]:
