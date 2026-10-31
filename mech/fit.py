@@ -33,6 +33,10 @@ Each check is a name, ok, and what it measured; `ok` is all of them.
   its axis is open (a pilot or clearance hole for the screw, 2 mm down),
   or a peg fills the hole in the board. A boss left solid under the hole
   holds the board up but can't fix it.
+- keepout_<name>: each keep-out volume on the board (Board.add_cone: a
+  radar, IR or light sensor's field-of-view cone; Board.add_keepout_box)
+  is empty of every enclosure part but the ones it lets through (a clear
+  window). A cone with no length runs out past the enclosure.
 - bed_<name>: each printed part fits the printer's bed (default 220 x 220 x
   250 mm), turned as `mech build` prints it.
 - overhang_<name>, bridge_<name>, wall_<name>: each printed part, turned as
@@ -53,7 +57,7 @@ import math
 
 from build123d import Axis, Compound, Face, Kind, Part, Polygon, Pos, extrude, offset
 
-from .box import block, cylinder
+from .box import block, cylinder, keepout_solid
 from .kicad import ADDED, Board
 
 EPS = 0.01  # mm^3: an overlap smaller than this is touching, not hitting
@@ -300,6 +304,23 @@ def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: floa
         fits = size[0] <= min(bed[:2]) and size[1] <= max(bed[:2]) and bb.size.Z <= bed[2]
         add(f"bed_{name}", fits, size_mm=[round(bb.size.X, 1), round(bb.size.Y, 1), round(bb.size.Z, 1)],
             bed_mm=list(bed))
+
+    keepouts = getattr(board, "keepouts", None) or []
+    reach = 2.0 + math.dist((outer.min.X, outer.min.Y, outer.min.Z), (outer.max.X, outer.max.Y, outer.max.Z))
+    for k in keepouts:
+        if not w(f"keepout_{k.name}"):
+            continue
+        vol = keepout_solid(k, reach)
+        sk = _span(vol)
+        hit = {}
+        for n, e in parts.items():
+            if n in k.through or not _boxes_meet(sk, _span(e), tol=0.0):
+                continue
+            v = _overlap(vol, e)
+            if v >= EPS:
+                hit[n] = round(v, 3)
+        add(f"keepout_{k.name}", not hit, kind=k.kind, blocked_by=hit, through=list(k.through),
+            **({"half_angle": k.half_angle} if k.kind == "cone" else {}))
 
     if printed:
         from . import printable

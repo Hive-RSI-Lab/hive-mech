@@ -144,6 +144,30 @@ class Port:
 
 
 @dataclass
+class Keepout:
+    """A volume the enclosure must leave empty: a sensor's field of view (a
+    cone from apex along axis, half_angle degrees off it, r0 wide at the
+    apex, length long; None runs it out past the enclosure) or a box
+    (box = [x0, y0, z0, x1, y1, z1]). through: the enclosure parts allowed
+    in it (a window or lens printed clear, a radome). The fit check's
+    keepout_<name> says whether anything else is."""
+    name: str
+    kind: str = "cone"  # cone | box
+    apex: list = field(default_factory=lambda: [0.0, 0.0, 0.0])
+    axis: list = field(default_factory=lambda: [0.0, 0.0, 1.0])
+    half_angle: float = 30.0
+    r0: float = 0.0
+    length: float | None = None
+    box: list | None = None
+    through: list = field(default_factory=list)
+    note: str = ""
+
+
+AXES = {"+z": [0, 0, 1], "-z": [0, 0, -1], "+x": [1, 0, 0], "-x": [-1, 0, 0], "+y": [0, 1, 0], "-y": [0, -1, 0],
+        "N": [0, 1, 0], "S": [0, -1, 0], "E": [1, 0, 0], "W": [-1, 0, 0], "up": [0, 0, 1], "down": [0, 0, -1]}
+
+
+@dataclass
 class Board:
     source: str
     thickness: float
@@ -156,6 +180,7 @@ class Board:
     ports: list[Port] = field(default_factory=list)
     top_access: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
+    keepouts: list[Keepout] = field(default_factory=list)
 
     def part(self, ref: str) -> Part:
         for p in self.parts:
@@ -173,6 +198,46 @@ class Board:
                  [min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1)], [min(z0, z1), max(z0, z1)], "added", False)
         self.parts.append(p)
         return p
+
+    def add_cone(self, name: str, ref: str | None = None, half_angle: float = 30.0, axis="+z",
+                 apex: tuple | None = None, r0: float | None = None, length: float | None = None,
+                 through=(), note: str = "") -> Keepout:
+        """A field-of-view cone the enclosure must leave open (a radar, IR
+        or light sensor, a camera, a PIR's lens). From part `ref`: the apex
+        at the middle of its face that axis points out of (top: +z; a side
+        looker: "N", "+x", ...), r0 half its smaller courtyard side unless
+        given. Or give apex = (x, y, z) in the board's frame. axis: a name
+        (+z, -z, +x, ..., N/S/E/W) or a vector. through: parts allowed in
+        it (a clear window). The fit check's keepout_<name> judges it."""
+        a = list(AXES[axis]) if isinstance(axis, str) else [float(v) for v in axis]
+        if apex is None:
+            if ref is None:
+                raise ValueError("add_cone: give ref or apex")
+            p = self.part(ref)
+            x0, y0, x1, y1 = p.bbox
+            c = [(x0 + x1) / 2, (y0 + y1) / 2, (p.z[0] + p.z[1]) / 2]
+            half = [(x1 - x0) / 2, (y1 - y0) / 2, (p.z[1] - p.z[0]) / 2]
+            n = math.sqrt(sum(v * v for v in a)) or 1.0
+            # the face the axis leaves through: the box's support point along it
+            t = min(half[i] / abs(a[i] / n) for i in range(3) if abs(a[i]) > 1e-9)
+            apex = [c[i] + a[i] / n * t for i in range(3)]
+            if r0 is None:   # half the smaller side of the face it looks out of
+                dims = [x1 - x0, y1 - y0, p.z[1] - p.z[0]]
+                main = max(range(3), key=lambda i: abs(a[i]))
+                r0 = min(d for i, d in enumerate(dims) if i != main) / 2
+        k = Keepout(name, "cone", [round(float(v), 4) for v in apex], a, float(half_angle), float(r0 or 0.0),
+                    length, None, list(through), note or (f"{ref}'s field of view" if ref else ""))
+        self.keepouts.append(k)
+        return k
+
+    def add_keepout_box(self, name: str, x0: float, y0: float, z0: float, x1: float, y1: float, z1: float,
+                        through=(), note: str = "") -> Keepout:
+        """A box the enclosure must leave empty (a beam's path, a heat
+        plume, where a finger reaches), corner to corner in the board's frame."""
+        k = Keepout(name, "box", box=[min(x0, x1), min(y0, y1), min(z0, z1), max(x0, x1), max(y0, y1), max(z0, z1)],
+                    through=list(through), note=note)
+        self.keepouts.append(k)
+        return k
 
     def port(self, ref: str) -> Port:
         for p in self.ports:
@@ -200,6 +265,7 @@ class Board:
         d["holes"] = [Hole(**h) for h in d.get("holes", [])]
         d["parts"] = [Part(**p) for p in d.get("parts", [])]
         d["ports"] = [Port(**p) for p in d.get("ports", [])]
+        d["keepouts"] = [Keepout(**k) for k in d.get("keepouts", [])]
         return cls(**d)
 
 

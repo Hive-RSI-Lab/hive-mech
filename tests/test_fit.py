@@ -277,3 +277,44 @@ def test_pilot_follows_the_holes_screw(board):
 def screw_for_m3(h):
     from mech.box import screw_for
     return screw_for(h.drill) == 3.0
+
+
+def test_keepout_cone_through_the_lid(board):
+    import copy
+    b = copy.deepcopy(board)
+    k = b.add_cone("c1_fov", ref="C1", half_angle=20)
+    c1 = b.part("C1")
+    assert k.apex[2] == pytest.approx(c1.z[1]) and k.axis == [0, 0, 1] and k.r0 > 0
+    t = Tray(b)
+    base, lid = t.cut_ports(t.base()), t.lid()
+    r = fit.check(b, {"base": base, "lid": lid})
+    assert names_failing(r) == ["keepout_c1_fov"]
+    ko = next(c for c in r["checks"] if c["name"] == "keepout_c1_fov")
+    assert list(ko["blocked_by"]) == ["lid"]
+    # a clear window may sit in it; or the lid gets the cone cut through it
+    b.keepouts[0].through = ["lid"]
+    assert names_failing(fit.check(b, {"base": base, "lid": lid})) == []
+    b.keepouts[0].through = []
+    lid = t.clear_keepout(lid, "c1_fov")
+    assert names_failing(fit.check(b, {"base": base, "lid": lid})) == []
+    # a narrower hole than the cone fans out to is still in its way
+    narrow = t.lid() - cylinder(c1.x, c1.y, t.z_top - 5, t.z_top + 5, 2 * k.r0)
+    assert names_failing(fit.check(b, {"base": base, "lid": narrow})) == ["keepout_c1_fov"]
+
+
+def test_keepout_side_cone_and_box_round_trip(board, tmp_path):
+    import copy
+    from mech.kicad import load
+    b = copy.deepcopy(board)
+    j1 = b.part("J1")
+    b.add_cone("j1_out", ref="J1", axis="N", half_angle=5, length=10)
+    assert b.keepouts[0].apex[1] == pytest.approx(j1.bbox[3])
+    b.add_keepout_box("finger", 0, 0, 20, 5, 5, 30, note="reach")
+    t = Tray(b)
+    base = t.base()   # no port cut: the wall in front of J1 blocks its cone
+    r = fit.check(b, {"base": base, "lid": t.lid()}, only={"keepout_j1_out", "keepout_finger"})
+    assert names_failing(r) == ["keepout_j1_out"]
+    p = tmp_path / "b.json"
+    p.write_text(b.to_json())
+    back = load(p)
+    assert [k.name for k in back.keepouts] == ["j1_out", "finger"] and back.keepouts[1].box[2] == 20
