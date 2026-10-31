@@ -19,8 +19,8 @@
 #                                             folder, so checks and turns reuse one)
 #
 # test, score, build and fit (OCP models, renders, a whole suite) wait for
-# `hive agent heavy`'s lease inside a Hive turn (at most 10 minutes, then run
-# anyway): give the shell command a timeout to match.
+# `hive heavy`'s machine-wide lock inside a Hive turn (at most 10 minutes,
+# then run anyway): give the shell command a timeout to match.
 #
 # The Python environment (build123d with OCP, matplotlib, pytest, shapely):
 # the shared one in the Hive's tools folder ($HIVE_TOOLS/mech, made by
@@ -94,17 +94,17 @@ fi
 export PYTHONPATH="$here${PYTHONPATH:+:$PYTHONPATH}"
 export MPLBACKEND=Agg
 
-# A heavy command runs under `hive agent heavy`, which waits while the machine
-# is strained and others run one: on 10-28 ten hwde suites, freerouting and a
-# mech build at once took a 20-core load to 137. Not when it is already
-# inside one (a test that runs mech) or the hive at hand has no heavy op yet:
-# then it runs bare.
+# A heavy command runs under `hive heavy`, which runs one heavy command at a
+# time on the machine: on 10-28 ten hwde suites, freerouting and a mech build
+# at once took a 20-core load to 137. Not when it is already inside one (a
+# test that runs mech) or the hive at hand has no `hive heavy` (it replaced
+# `hive agent heavy` on 10-30): then it runs bare.
 heavy=
 x() {
 	if [ -n "$heavy" ] && [ -z "${MECH_HEAVY_HELD:-}" ] && command -v hive >/dev/null 2>&1 &&
-		hive agent help 2>/dev/null | grep -q '^  heavy '; then
+		hive heavy </dev/null 2>&1 | grep -q '^usage: hive heavy'; then
 		export MECH_HEAVY_HELD=1
-		exec hive agent heavy --what "$heavy" -- "$@"
+		exec hive heavy --what "$heavy" --patience 10m -- "$@"
 	fi
 	[ -n "$heavy" ] && export MECH_HEAVY_HELD=1
 	exec "$@"
