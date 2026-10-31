@@ -27,6 +27,8 @@ Each check is a name, ok, and what it measured; `ok` is all of them.
   straight out through the wall, is open; and the face sits no deeper
   behind the outside than the kind allows (a plug has to reach it).
   max_recess overrides that: a number for every port, or {ref: mm, "*": mm}.
+  A round plug (SMA, BNC: kicad.ROUND) needs a round column, its plug's
+  diameter across, so a round hole of that size passes.
 - hole_<ref>: something solid holds the board under each mounting hole
   (an annulus round the hole, just below the board).
 - screw_<ref>: something can go through each mounting hole: under the board
@@ -55,10 +57,10 @@ from __future__ import annotations
 import json
 import math
 
-from build123d import Axis, Compound, Face, Kind, Part, Polygon, Pos, extrude, offset
+from build123d import Axis, Compound, Cylinder, Face, Kind, Part, Polygon, Pos, Rot, extrude, offset
 
 from .box import block, cylinder, keepout_solid
-from .kicad import ADDED, Board
+from .kicad import ADDED, ROUND, Board
 
 EPS = 0.01  # mm^3: an overlap smaller than this is touching, not hitting
 PETG = 1.27  # g/cm^3
@@ -192,17 +194,22 @@ def _vol_area(shape) -> float:
 
 def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: float | dict | None = None,
           printed: dict | None = None, lid: str = "lid", base: str = "base",
-          printing: dict | None = None, min_gap: float = 0.1, only: set | None = None) -> dict:
+          printing: dict | None = None, min_gap: float = 0.1, only: set | None = None,
+          skip=()) -> dict:
     """parts: name -> build123d Part, assembled. printed: name -> Part as printed (for the bed
     and printability checks). lid, base: which parts lid_covers weighs. printing:
     mech.printable.check's keyword args. min_gap: board_gap's clearance. only: run just
-    the checks of these names (mech score's planted faults each need one)."""
+    the checks of these names (mech score's planted faults each need one). skip: checks
+    not to run, by name or with a trailing * as a prefix ("hole_*": a board held by card
+    guides, not its holes); FIT = {"skip": [...]} in a script."""
     checks = []
 
     def add(name, ok, **info):
         checks.append({"name": name, "ok": bool(ok), **info})
 
     def w(name) -> bool:
+        if any(name == k or (k.endswith("*") and name.startswith(k[:-1])) for k in skip):
+            return False
         return only is None or name in only
     enc = list(parts.values())
     whole = enc[0] if len(enc) == 1 else Compound(children=enc)
@@ -266,7 +273,15 @@ def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: floa
         p = port.plane
         # The column straight out from the face, 0.05 mm in from each side.
         s = 0.05
-        if port.edge == "W":
+        if port.kind in ROUND:   # the plug is round: a cylinder, so a round hole passes
+            dia, cu, cz = min(u1 - u0, z1 - z0) - 2 * s, (u0 + u1) / 2, (z0 + z1) / 2
+            ax = {"W": (-far, p - s), "E": (p + s, far), "S": (-far, p - s), "N": (p + s, far)}[port.edge]
+            if port.edge in "WE":
+                col = Pos((ax[0] + ax[1]) / 2, cu, cz) * Rot(0, 90, 0) * Cylinder(dia / 2, ax[1] - ax[0])
+            else:
+                col = Pos(cu, (ax[0] + ax[1]) / 2, cz) * Rot(90, 0, 0) * Cylinder(dia / 2, ax[1] - ax[0])
+            recess = {"W": p - outer.min.X, "E": outer.max.X - p, "S": p - outer.min.Y, "N": outer.max.Y - p}[port.edge]
+        elif port.edge == "W":
             col = block(-far, u0 + s, z0 + s, p - s, u1 - s, z1 - s)
             recess = p - outer.min.X
         elif port.edge == "E":
@@ -378,8 +393,13 @@ def markdown(report: dict, title: str = "") -> str:
         lines += ["", "## Reached from above", ""]
         for t in report["top_access"]:
             lines.append(f"- {t['ref']}: " + ("open above" if t["open_above"] else "under " + ", ".join(t["under"])))
+    if report.get("bought"):
+        lines += ["", "## Bought", ""]
+        lines += [f"- {n}" + (f": {w}" if w else "") for n, w in report["bought"].items()]
     if report.get("material"):
         lines += ["", "## Material", ""]
         for n, m in report["material"].items():
+            if n in report.get("bought", {}):
+                continue
             lines.append(f"- {n}: {m['volume_cm3']} cm3, {m['solid_petg_g']} g PETG if solid")
     return "\n".join(lines) + "\n"
