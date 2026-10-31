@@ -26,6 +26,8 @@ can't touch anything else.
 from __future__ import annotations
 
 import copy
+import multiprocessing
+import os
 import sys
 import time
 from dataclasses import dataclass
@@ -326,47 +328,93 @@ def _failing(r: dict) -> set[str]:
     return {x["name"] for x in r["checks"] if not x["ok"]}
 
 
+# Each worker's bases, built once per process (OCP shapes don't pickle, and a
+# fork of a process holding OCP's threads deadlocks: workers are spawned).
+_LOADED: dict[Path, Case] = {}
+
+
+def _base(script: Path) -> Case:
+    if script not in _LOADED:
+        _LOADED[script] = load_base(script)
+    return _LOADED[script]
+
+
+def _clean(script: Path) -> tuple[float, "set | str"]:
+    """A base built and checked clean: (seconds, the checks it fails, or why it doesn't build)."""
+    t0 = time.time()
+    try:
+        clean = _failing(_base(script).check())
+    except Exception as e:
+        clean = str(e)
+    return time.time() - t0, clean
+
+
+def _plant(task: "tuple[str, Path, set, str, Plant]") -> tuple[str, dict | None]:
+    """One fault planted on its base and checked: (line, result or None if skipped)."""
+    bname, script, clean, fname, plant = task
+    base = _base(script)
+    try:
+        got = plant(base)
+    except Exception as e:
+        got, why = None, f"can't plant: {e}"
+    else:
+        why = "nothing to plant it on"
+    if got is None:
+        return f"{bname}/{fname}: skipped ({why})", None
+    case, expect = got
+    try:
+        new = _failing(case.check({expect})) - clean
+    except Exception as e:
+        new, err = set(), str(e)
+    else:
+        err = ""
+    hit = expect in new
+    line = (f"caught by {expect}" if hit else
+            f"missed (meant for {expect}; check error: {err})" if err else f"missed (meant for {expect})")
+    return f"{bname}/{fname}: {line}", {"base": bname, "fault": fname, "expect": expect, "caught": hit}
+
+
+def jobs() -> int:
+    """Processes for the planted faults: MECH_JOBS, else this machine's cores."""
+    n = os.environ.get("MECH_JOBS")
+    return max(1, int(n) if n else len(os.sched_getaffinity(0)))
+
+
 def run(bases: dict[str, Path] = BASES, faults: dict[str, Plant] = FAULTS, out=sys.stdout) -> dict:
-    """{"caught", "faults", "false_alarms", "results"}; prints a line per fault."""
-    caught = total = alarms = 0
-    results = []
-    for bname, script in bases.items():
-        t0 = time.time()
-        try:
-            base = load_base(script)
-            clean = _failing(base.check())
-        except Exception as e:  # a base that doesn't build alarms once and plants nothing
-            print(f"{bname}: does not build: {e}", file=out)
-            alarms += 1
-            continue
-        alarms += len(clean)
-        for x in sorted(clean):
-            print(f"{bname}: false alarm on the clean base: {x}", file=out)
-        for fname, plant in faults.items():
-            try:
-                got = plant(base)
-            except Exception as e:
-                got, why = None, f"can't plant: {e}"
-            else:
-                why = "nothing to plant it on"
-            if got is None:
-                print(f"{bname}/{fname}: skipped ({why})", file=out)
+    """{"caught", "faults", "false_alarms", "results"}; prints a line per fault.
+    The bases are built and checked clean, then their faults planted and
+    checked, in jobs() spawned processes, each building a base once (each
+    fault on its own, so the numbers are the same as one at a time), and
+    printed in order."""
+    alarms = 0
+    results, tasks = [], []
+    scripts = [Path(s) for s in bases.values()]
+    n = min(jobs(), len(scripts) * len(faults))
+    pool = multiprocessing.get_context("spawn").Pool(n) if n > 1 else None
+    each = pool.imap if pool else map
+    try:
+        for (bname, script), (dt, clean) in zip(bases.items(), each(_clean, scripts)):
+            if isinstance(clean, str):  # a base that doesn't build alarms once and plants nothing
+                print(f"{bname}: does not build: {clean}", file=out)
+                alarms += 1
                 continue
-            case, expect = got
-            total += 1
-            try:
-                new = _failing(case.check({expect})) - clean
-            except Exception as e:
-                new, err = set(), str(e)
-            else:
-                err = ""
-            hit = expect in new
-            caught += hit
-            results.append({"base": bname, "fault": fname, "expect": expect, "caught": hit})
-            line = (f"caught by {expect}" if hit else
-                    f"missed (meant for {expect}; check error: {err})" if err else f"missed (meant for {expect})")
-            print(f"{bname}/{fname}: {line}", file=out)
-        print(f"{bname}: {time.time() - t0:.0f} s", file=out)
+            alarms += len(clean)
+            for x in sorted(clean):
+                print(f"{bname}: false alarm on the clean base: {x}", file=out)
+            print(f"{bname}: built and checked clean in {dt:.0f} s", file=out)
+            tasks += [(bname, Path(script), clean, fname, plant) for fname, plant in faults.items()]
+        t0 = time.time()
+        for line, r in each(_plant, tasks):
+            print(line, file=out)
+            if r:
+                results.append(r)
+    finally:
+        if pool:
+            pool.terminate()
+        _LOADED.clear()
+    print(f"{len(tasks)} faults in {time.time() - t0:.0f} s on {max(n, 1)} process(es)", file=out)
+    total = len(results)
+    caught = sum(r["caught"] for r in results)
     if not total:
         raise SystemExit("mech score: no faults planted")
     print(f"{caught}/{total} faults caught, {alarms} false alarm(s)", file=out)

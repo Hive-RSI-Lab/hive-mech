@@ -50,9 +50,10 @@ jobs:
   # (issue #41; the Hive's improve.ScoreJob is its name, improve.ScoreLine its last line). It
   # runs the score command .hive/project.json names, so a change to the score is measured here
   # as it would be there. The score slices nothing, so no PrusaSlicer. A red here is no red on
-  # main: the Hive then scores on its own machine.
+  # main: the Hive then scores on its own machine. A run by hand (workflow_dispatch) scores a
+  # branch the same way. Its corpus runs on the runner's 4 cores (mech.corpus.jobs): ~14 min, was 34.
   score:
-    if: github.event_name == 'push'
+    if: github.event_name != 'pull_request'
     continue-on-error: true
     runs-on: ubuntu-latest
     timeout-minutes: 40
@@ -72,3 +73,4 @@ jobs:
           echo "hive-score: $n"
         env:
           MECH_HOME: ${{ runner.temp }}/mech
+          PYTHONUNBUFFERED: "1"
