@@ -246,3 +246,34 @@ def test_only_runs_the_named_checks(board):
     r = fit.check(board, {"base": t.base(), "lid": t.lid()}, only={"port_J1", "lid_covers"})
     assert sorted(c["name"] for c in r["checks"]) == ["lid_covers", "port_J1"]
     assert names_failing(r) == ["port_J1"]
+
+
+def test_screw_for_reads_the_drill():
+    from mech.box import screw_for
+    assert [screw_for(d) for d in (1.2, 2.2, 2.7, 3.2, 3.5, 4.3, 6.5)] == [1.6, 2.0, 2.5, 3.0, 3.0, 4.0, 6.0]
+
+
+def test_pilot_follows_the_holes_screw(board):
+    import copy
+    from mech.fits import FITS
+    b = copy.deepcopy(board)
+    m2, m4 = b.holes[0], b.holes[1]
+    m2.drill, m2.pad = 2.2, 0.0
+    m4.drill, m4.pad = 4.3, 0.0
+    t = Tray(b)
+    assert t.pilot(m2) == round(FITS["pilot_d"] * 2 / 3, 2) and t.pilot(m4) == round(FITS["pilot_d"] * 4 / 3, 2)
+    assert t.boss(m4) >= t.pilot(m4) + 4.5
+    base = t.base()
+    for h in (m2, m4):
+        z = t.z_floor - 1.0
+        hole = cylinder(h.x, h.y, z, z + 0.5, t.pilot(h) - 0.1)   # the pilot is open...
+        rim = cylinder(h.x, h.y, z, z + 0.5, t.pilot(h) + 0.4) - cylinder(h.x, h.y, z - 1, z + 1, t.pilot(h) + 0.1)
+        assert fit._overlap(base, hole) < fit.EPS
+        assert (base & rim).volume > 0.99 * rim.volume              # ...and no wider
+    for h in board.holes:                                            # an M3 board is unchanged
+        assert screw_for_m3(h) and Tray(board).pilot(h) == FITS["pilot_d"]
+
+
+def screw_for_m3(h):
+    from mech.box import screw_for
+    return screw_for(h.drill) == 3.0
