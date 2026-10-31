@@ -31,6 +31,17 @@ from .kicad import Board, Port
 
 MIN = (Align.MIN, Align.MIN, Align.MIN)
 
+# Metric screw sizes a board's mounting hole is a clearance hole for.
+SCREWS = (1.6, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0)
+
+
+def screw_for(drill: float) -> float:
+    """The metric screw a mounting hole of this drill takes: the largest
+    size at least 0.1 under it (3.2 -> M3, 2.2 -> M2, 2.7 -> M2.5,
+    4.3 -> M4). A hole too small for M1.6 gets M1.6."""
+    fit = [m for m in SCREWS if m + 0.1 <= drill + 1e-9]
+    return fit[-1] if fit else SCREWS[0]
+
 
 def block(x0, y0, z0, x1, y1, z1) -> Part:
     """An axis-aligned box from corner to corner."""
@@ -77,7 +88,10 @@ class Tray:
     square board corner; "outline" rounds each corner by gap instead). standoff: floor top to board bottom.
     top_clear: tallest top part to the lid's underside. boss_d, pilot_d: the
     standoff's outer diameter and screw hole (an M3 self-tapper's pilot,
-    FITS["pilot_d"]; FITS["insert_d"] for an M3 heat-set insert). The fits
+    FITS["pilot_d"]; FITS["insert_d"] for an M3 heat-set insert). Both are
+    the M3 sizes: a hole drilled for another screw (screw_for: 2.2 mm is
+    M2, 4.3 is M4) gets them scaled to that screw (Tray.pilot), and a boss
+    at least 4.5 mm wider than its pilot. The fits
     are mech/fits.json's, which the test-print coupon calibrates (mech.coupon). port_margin: added round each
     connector's face. lip: the lid's locating lip (height, thickness, fit gap).
     roof: the widest flat top an opening in a wall may have; a wider one gets
@@ -169,10 +183,24 @@ class Tray:
         shell = self.plan(self.wall, self.z_bottom, self.z_top)
         shell -= self.plan(0.0, self.z_floor, self.z_top + 1)
         for h in self.board.holes:
-            shell += cylinder(h.x, h.y, self.z_floor - 0.01, 0.0, max(self.boss_d, h.pad))
+            shell += cylinder(h.x, h.y, self.z_floor - 0.01, 0.0, self.boss(h))
         for h in self.board.holes:
-            shell -= cylinder(h.x, h.y, self.z_floor - self.floor + 0.8, 0.01, self.pilot_d)
+            shell -= cylinder(h.x, h.y, self.z_floor - self.floor + 0.8, 0.01, self.pilot(h))
         return shell
+
+    def scale(self, h) -> float:
+        """The hole's screw over M3 (screw_for): what the M3 fits scale by."""
+        return screw_for(h.drill) / 3.0
+
+    def pilot(self, h) -> float:
+        """The screw hole in the boss under mounting hole h: pilot_d for M3,
+        scaled to the screw the hole is drilled for."""
+        return round(self.pilot_d * self.scale(h), 2)
+
+    def boss(self, h) -> float:
+        """The boss's diameter under mounting hole h: boss_d, the pad, or
+        4.5 mm more than the pilot, whichever is widest."""
+        return max(self.boss_d, h.pad, self.pilot(h) + 4.5)
 
     def lid(self) -> Part:
         lh, lt, lg = self.lip
@@ -217,14 +245,17 @@ class Tray:
         lid. Returns (base, lid). The base gets a clearance hole and a
         counterbore for the head; the lid a pillar that stops `short` above
         the board (so the screw pulls the lid down onto the walls) with a
-        pilot for an M3 thread-former (2.5 in PETG). Screw length: floor +
-        standoff + board + about 6 mm of pillar."""
+        pilot for an M3 thread-former (2.5 in PETG). The sizes are M3's: a
+        hole drilled for another screw (screw_for) gets clear, head and pilot
+        scaled to it, and a pillar at least 3.5 mm wider than its pilot.
+        Screw length: floor + standoff + board + about 6 mm of pillar."""
         zb, zt, top = self.z_bottom, self.z_top, self.board.thickness
         for h in self.board.holes:
-            base -= cylinder(h.x, h.y, zb - 1, 1.0, clear)
-            base -= cylinder(h.x, h.y, zb - 1, zb + head_depth, head)
-            lid += cylinder(h.x, h.y, top + short, zt + 0.01, pillar_d)
-            lid -= cylinder(h.x, h.y, top, zt + self.lid_t - 0.8, pilot)
+            k = self.scale(h)
+            base -= cylinder(h.x, h.y, zb - 1, 1.0, clear * k)
+            base -= cylinder(h.x, h.y, zb - 1, zb + head_depth, head * k)
+            lid += cylinder(h.x, h.y, top + short, zt + 0.01, max(pillar_d, pilot * k + 3.5))
+            lid -= cylinder(h.x, h.y, top, zt + self.lid_t - 0.8, pilot * k)
         return base, lid
 
     def opening(self, port: Port, margin: float | None = None) -> tuple:
