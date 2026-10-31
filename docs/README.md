@@ -119,6 +119,21 @@ For a different shape (a sloped front, a panel-mount, a clamshell), use
 the board's edge (a module's antenna end) gets room with `t.pocket(base, ref)`;
 a connector that does passes through the wall with `cut_ports` as it is.
 
+**Bought parts.** Not every part is printed. `mech/bought.py` has an
+extruded aluminium case with card guides, `Hammond1455(board, "1455J1201",
+slot=1)` (numbers from Hammond's drawing; add a series the same way), with
+`.shell()`, `.end_plates()` (or `t=1.6` for a PCB panel), `.bezel("W")`,
+`.cut_ports(plate)` and `.parts()` for all of them, and `panel(board, "W")`,
+a flat metal or PCB panel across one edge with its ports cut. Name what you
+buy in the script, `BOUGHT = {"shell": "Hammond 1455J1201", ...}`: `mech
+build` doesn't export, slice or print-check those parts, and does fit-check
+them. A board in card guides has holes that hold nothing:
+`FIT = {"skip": ["hole_*", "screw_*"]}`.
+
+**Round ports.** SMA and BNC connectors (`kicad.ROUND`) get a round opening,
+pointed on top so a wall prints upright (`Tray.cut_ports`, `bought.port_hole`).
+Their plug is a 9.5 mm (SMA) or 14.6 mm (BNC) cylinder in the fit check.
+
 ## 3. Build and check: `mech build`
 
 Inside a Hive turn, `build`, `fit`, `score` and `test` wait for `hive agent

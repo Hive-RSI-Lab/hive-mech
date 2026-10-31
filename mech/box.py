@@ -327,10 +327,20 @@ class Tray:
         return self.cut_box(*self.opening(port, margin))
 
     def cut_ports(self, part: Part, refs: list[str] | None = None, margin: float | None = None) -> Part:
-        """Every port's opening (port_box), through open_wall."""
+        """Every port's opening (port_box), through open_wall; a round plug's
+        (SMA, BNC) a round one, a teardrop so the wall prints upright."""
+        from .kicad import ROUND
         for p in self.ports:
             if refs is None or p.ref in refs:
-                part = self.open_wall(part, self.opening(p, margin))
+                if p.kind in ROUND:   # a round plug: a round hole, pointed on top to print upright
+                    e, u0, u1, z0, z1, a, b = self.opening(p, margin)
+                    dia, cu, cz = max(u1 - u0, z1 - z0), (u0 + u1) / 2, (z0 + z1) / 2
+                    hole = teardrop((a + b) / 2, cu, cz, dia, b - a, axis="x") if e in "WE" else \
+                        teardrop(cu, (a + b) / 2, cz, dia, b - a, axis="y")
+                    self._cuts.append((e, cu - dia / 2, cu + dia / 2, cz - dia / 2, cz + dia / 2, a, b))
+                    part = part - hole
+                else:
+                    part = self.open_wall(part, self.opening(p, margin))
         return part
 
     def open_wall(self, part: Part, cut: tuple) -> Part:

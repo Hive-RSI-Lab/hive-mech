@@ -81,9 +81,16 @@ PLUGS = {
     "usb-micro": (10.6, 7.0, 2.0),
     "usb-a": (16.0, 8.5, 2.0),
     "terminal": (0.0, 0.0, 6.0),  # wires go in at the face; screws from above
+    "sma": (9.5, 9.5, 2.0),  # the plug's 5/16" coupling nut, 9.2 across corners, on the jack's thread
+    "bnc": (14.6, 14.6, 3.0),  # the plug's bayonet sleeve, about 14.5 across, over the jack's pins
     "generic": (0.0, 0.0, 3.0),
 }
+# Kinds whose plug is round: a round opening (mech.box, mech.bought) and a
+# round column in the fit check, the plug's (width) across.
+ROUND = {"sma", "bnc"}
 _KINDS = [
+    (re.compile(r"(?:^|[-_:])SMA(?:[-_]|$)|sma[-_]?(?:edge|jack|female|plug)|rp[-_]?sma", re.I), "sma"),
+    (re.compile(r"(?:^|[-_:])BNC(?:[-_]|$)", re.I), "bnc"),
     (re.compile(r"usb[-_]?c\b|type[-_]?c|usb4105|usb-3\.1-smd_16p", re.I), "usb-c"),
     (re.compile(r"micro[-_]?usb|usb[-_]?micro", re.I), "usb-micro"),
     (re.compile(r"usb[-_]?a\b", re.I), "usb-a"),

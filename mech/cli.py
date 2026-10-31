@@ -20,6 +20,7 @@ An enclosure script is plain Python with build123d:
     BOARD = "board.json"                # or a .kicad_pcb; relative to the script
     HEIGHTS = "heights.json"            # optional, with a .kicad_pcb: part height overrides
     PRINT = {"lid": "flip"}             # optional: parts turned for the bed
+    BOUGHT = {"shell": "Hammond 1455J1201"}  # optional: parts bought, not printed (mech.bought)
     FIT = {"max_recess": 3.0}           # optional: fit.check's keyword args
     SLICE = {"fill_density": "15%",     # optional: PrusaSlicer options over
              "lid": {"perimeters": 3}}  # mech/slicer.ini, all parts or one
@@ -118,9 +119,15 @@ def run_script(script: Path, board_arg: str | None = None, heights_arg: list | N
 
 
 def printed_parts(mod, parts: dict) -> dict:
+    """The parts as printed (PRINT's turn, on the bed); not the bought ones
+    (BOUGHT: mech.bought), which are checked assembled but never printed."""
     from build123d import Pos, Rot
+    from .bought import bought_names
     out = {}
+    bought = bought_names(mod)
     for name, part in parts.items():
+        if name in bought:
+            continue
         how = getattr(mod, "PRINT", {}).get(name)
         p = part
         if how == "flip":
@@ -159,6 +166,10 @@ def cmd_build(a, export=True) -> int:
     printed = printed_parts(mod, parts)
     report = fit.check(board, parts, printed=printed, **getattr(mod, "FIT", {}))
     report["build_s"] = round(t_build, 1)
+    from .bought import bought_names
+    if bought_names(mod):
+        b = getattr(mod, "BOUGHT")
+        report["bought"] = {n: (b[n] if isinstance(b, dict) else "") for n in sorted(bought_names(mod))}
     print(fit.summary(report))
     for wmsg in board.warnings:
         print(f"warning: {wmsg}")
