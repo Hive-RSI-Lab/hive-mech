@@ -328,15 +328,17 @@ def _failing(r: dict) -> set[str]:
     return {x["name"] for x in r["checks"] if not x["ok"]}
 
 
-# The bases run() loaded, read by _plant in the pool's forked workers (OCP
-# shapes don't pickle; a fork inherits them).
-_LOADED: dict[str, tuple[Case, set]] = {}
+# Each worker's bases, built once per process (OCP shapes don't pickle, and a
+# fork of a process holding OCP's threads deadlocks: workers are spawned).
+_LOADED: dict[Path, Case] = {}
 
 
-def _plant(task: tuple[str, str, Plant]) -> tuple[str, dict | None]:
-    """One fault planted on its loaded base and checked: (line, result or None if skipped)."""
-    bname, fname, plant = task
-    base, clean = _LOADED[bname]
+def _plant(task: "tuple[str, Path, set, str, Plant]") -> tuple[str, dict | None]:
+    """One fault planted on its base and checked: (line, result or None if skipped)."""
+    bname, script, clean, fname, plant = task
+    if script not in _LOADED:
+        _LOADED[script] = load_base(script)
+    base = _LOADED[script]
     try:
         got = plant(base)
     except Exception as e:
@@ -366,12 +368,12 @@ def jobs() -> int:
 
 def run(bases: dict[str, Path] = BASES, faults: dict[str, Plant] = FAULTS, out=sys.stdout) -> dict:
     """{"caught", "faults", "false_alarms", "results"}; prints a line per fault.
-    Each base is built and checked clean here, once; its faults are planted
-    and checked in jobs() forked processes (each fault on its own, so the
-    numbers are the same as one at a time), and printed in order."""
+    Each base is built and checked clean here; its faults are planted and
+    checked in jobs() spawned processes, each building a base once (each
+    fault on its own, so the numbers are the same as one at a time), and
+    printed in order."""
     alarms = 0
     results, tasks = [], []
-    _LOADED.clear()
     for bname, script in bases.items():
         t0 = time.time()
         try:
@@ -385,11 +387,11 @@ def run(bases: dict[str, Path] = BASES, faults: dict[str, Plant] = FAULTS, out=s
         for x in sorted(clean):
             print(f"{bname}: false alarm on the clean base: {x}", file=out)
         print(f"{bname}: built and checked clean in {time.time() - t0:.0f} s", file=out)
-        _LOADED[bname] = (base, clean)
-        tasks += [(bname, fname, plant) for fname, plant in faults.items()]
+        _LOADED[Path(script)] = base
+        tasks += [(bname, Path(script), clean, fname, plant) for fname, plant in faults.items()]
     t0 = time.time()
     n = min(jobs(), len(tasks))
-    pool = multiprocessing.get_context("fork").Pool(n) if n > 1 else None
+    pool = multiprocessing.get_context("spawn").Pool(n) if n > 1 else None
     try:
         for line, r in (pool.imap(_plant, tasks) if pool else map(_plant, tasks)):
             print(line, file=out)
