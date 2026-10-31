@@ -60,12 +60,19 @@ EasyEDA STEP for the RCA jack sits 13.5 mm low. Put a datasheet number in a
 Keys can be a reference or a footprint name. This file is the same format
 as hifi-receiver's `enclosure/heights.json`.
 
+When `BOARD` is the `.kicad_pcb` itself, `mech build` and `mech fit` apply
+heights as they read it: `--heights FILE` (repeatable), else the script's
+`HEIGHTS = "heights.json"` (or a list; `[]` for none), else `heights.json`
+and `<pcb>.heights.json` beside the script if they exist. A `board.json`
+already holds its heights (`mech board --heights`).
+
 ## 2. Write the enclosure
 
 ```python
 from mech.box import Tray
 
 BOARD = "board.json"                 # or the .kicad_pcb, relative to this file
+HEIGHTS = "heights.json"             # with a .kicad_pcb: optional height overrides
 PRINT = {"lid": "flip"}              # turn parts for the bed (or (rx, ry, rz))
 FIT = {"max_recess": {"J4": 6.0}}    # optional: fit.check keyword args
 

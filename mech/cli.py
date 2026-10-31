@@ -2,10 +2,11 @@
 
     mech board <file.kicad_pcb> [-o board.json] [--heights heights.json]
                                                  what the enclosure needs, as JSON
-    mech build <enclosure.py> [-o DIR] [--no-render] [--no-slice] [--board B]
+    mech build <enclosure.py> [-o DIR] [--no-render] [--no-slice] [--board B] [--heights H ...]
                                                  run it, export, fit-check, slice, render
     mech slice <part.stl ...> [--install]        PrusaSlicer's grams, support and time
-    mech fit <enclosure.py> [--board B]          the fit check alone
+    mech fit <enclosure.py> [--board B] [--heights H ...]
+                                                 the fit check alone
     mech coupon [-o DIR] [--no-slice]            the test print that calibrates mech/fits.json
     mech coupon --record lip=4 pilot=2 ... [--note N]
                                                  write back what fit on it (mech.coupon)
@@ -17,6 +18,7 @@
 An enclosure script is plain Python with build123d:
 
     BOARD = "board.json"                # or a .kicad_pcb; relative to the script
+    HEIGHTS = "heights.json"            # optional, with a .kicad_pcb: part height overrides
     PRINT = {"lid": "flip"}             # optional: parts turned for the bed
     FIT = {"max_recess": 3.0}           # optional: fit.check's keyword args
     SLICE = {"fill_density": "15%",     # optional: PrusaSlicer options over
@@ -30,6 +32,13 @@ Onshape or any CAD), board.json, fit.json, fit.md (the same report as a
 table, one pass/fail row per check), slice.json (each part sliced by
 PrusaSlicer, mech.slicer: filament grams, support volume, print time; also
 a table in fit.md) and the renders. --no-slice or MECH_SLICE=0 skips it.
+
+Heights (mech.kicad.read_heights) apply when the board is a .kicad_pcb read
+now: --heights (repeatable, relative to here or the script), else the
+script's HEIGHTS (a path or a list, relative to the script; [] for none),
+else heights.json and <pcb>.heights.json beside the script if they exist
+(the product's enclosure/ layout, as mech pin reads it). Later files win.
+A board.json was read already: naming heights for one is an error.
 """
 from __future__ import annotations
 
@@ -59,16 +68,49 @@ def load_script(path: Path):
     return mod
 
 
-def run_script(script: Path, board_arg: str | None = None):
-    from .kicad import load
+def _beside(script: Path, src) -> Path:
+    p = Path(src)
+    if not p.is_absolute() and not p.exists():
+        p = script.parent / p
+    return p
+
+
+def heights_for(script: Path, mod, bpath: Path, heights_arg=None) -> list[Path]:
+    """The heights files that apply to the script's board (see the module doc)."""
+    if heights_arg:
+        files, said = [_beside(script, h) for h in heights_arg], "--heights"
+    elif getattr(mod, "HEIGHTS", None) is not None:
+        h = mod.HEIGHTS
+        files, said = [script.parent / x for x in ([h] if isinstance(h, (str, os.PathLike)) else h)], "HEIGHTS"
+    else:
+        if bpath.suffix != ".kicad_pcb":
+            return []
+        return [f for f in (script.parent / "heights.json", script.parent / f"{bpath.stem}.heights.json") if f.is_file()]
+    if files and bpath.suffix == ".json":
+        raise SystemExit(f"{script}: {said} names heights for {bpath.name}, a board.json read already: "
+                         "apply them when reading it (mech board PCB --heights H) or box the .kicad_pcb")
+    for f in files:
+        if not f.is_file():
+            raise SystemExit(f"{script}: heights file {f} not found ({said})")
+    return files
+
+
+def run_script(script: Path, board_arg: str | None = None, heights_arg: list | None = None):
+    from .kicad import load, read_board, read_heights
     mod = load_script(script)
     src = board_arg or getattr(mod, "BOARD", None)
     if not src:
         raise SystemExit(f"{script}: say which board (BOARD = ... or --board)")
-    bpath = Path(src)
-    if not bpath.is_absolute() and not bpath.exists():
-        bpath = script.parent / bpath
-    board = load(bpath)
+    bpath = _beside(script, src)
+    files = heights_for(script, mod, bpath, heights_arg)
+    if files:
+        heights = {}
+        for f in files:
+            heights.update(read_heights(f))
+        print(f"heights: {', '.join(str(f) for f in files)}", file=sys.stderr)
+        board = read_board(bpath, heights=heights)
+    else:
+        board = load(bpath)
     parts = mod.build(board)
     if not isinstance(parts, dict) or not parts:
         raise SystemExit(f"{script}: build() must return a dict of name -> Part")
@@ -112,7 +154,7 @@ def cmd_build(a, export=True) -> int:
     from . import fit
     script = Path(a.script).resolve()
     t0 = time.time()
-    mod, board, parts = run_script(script, a.board)
+    mod, board, parts = run_script(script, a.board, a.heights)
     t_build = time.time() - t0
     printed = printed_parts(mod, parts)
     report = fit.check(board, parts, printed=printed, **getattr(mod, "FIT", {}))
@@ -291,6 +333,7 @@ def main(argv=None) -> int:
         s = sub.add_parser(name)
         s.add_argument("script")
         s.add_argument("--board")
+        s.add_argument("--heights", action="append", help="heights.json for a .kicad_pcb board (repeatable)")
         if name == "build":
             s.add_argument("-o", "--output")
             s.add_argument("--no-render", action="store_true")
