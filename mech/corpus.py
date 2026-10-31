@@ -333,12 +333,25 @@ def _failing(r: dict) -> set[str]:
 _LOADED: dict[Path, Case] = {}
 
 
+def _base(script: Path) -> Case:
+    if script not in _LOADED:
+        _LOADED[script] = load_base(script)
+    return _LOADED[script]
+
+
+def _clean(script: Path) -> tuple[float, "set | str"]:
+    """A base built and checked clean: (seconds, the checks it fails, or why it doesn't build)."""
+    t0 = time.time()
+    try:
+        return time.time() - t0, _failing(_base(script).check())
+    except Exception as e:
+        return time.time() - t0, str(e)
+
+
 def _plant(task: "tuple[str, Path, set, str, Plant]") -> tuple[str, dict | None]:
     """One fault planted on its base and checked: (line, result or None if skipped)."""
     bname, script, clean, fname, plant = task
-    if script not in _LOADED:
-        _LOADED[script] = load_base(script)
-    base = _LOADED[script]
+    base = _base(script)
     try:
         got = plant(base)
     except Exception as e:
@@ -368,32 +381,29 @@ def jobs() -> int:
 
 def run(bases: dict[str, Path] = BASES, faults: dict[str, Plant] = FAULTS, out=sys.stdout) -> dict:
     """{"caught", "faults", "false_alarms", "results"}; prints a line per fault.
-    Each base is built and checked clean here; its faults are planted and
-    checked in jobs() spawned processes, each building a base once (each
+    The bases are built and checked clean, then their faults planted and
+    checked, in jobs() spawned processes, each building a base once (each
     fault on its own, so the numbers are the same as one at a time), and
     printed in order."""
     alarms = 0
     results, tasks = [], []
-    for bname, script in bases.items():
-        t0 = time.time()
-        try:
-            base = load_base(script)
-            clean = _failing(base.check())
-        except Exception as e:  # a base that doesn't build alarms once and plants nothing
-            print(f"{bname}: does not build: {e}", file=out)
-            alarms += 1
-            continue
-        alarms += len(clean)
-        for x in sorted(clean):
-            print(f"{bname}: false alarm on the clean base: {x}", file=out)
-        print(f"{bname}: built and checked clean in {time.time() - t0:.0f} s", file=out)
-        _LOADED[Path(script)] = base
-        tasks += [(bname, Path(script), clean, fname, plant) for fname, plant in faults.items()]
-    t0 = time.time()
-    n = min(jobs(), len(tasks))
+    scripts = [Path(s) for s in bases.values()]
+    n = min(jobs(), len(scripts) * len(faults))
     pool = multiprocessing.get_context("spawn").Pool(n) if n > 1 else None
+    each = pool.imap if pool else map
     try:
-        for line, r in (pool.imap(_plant, tasks) if pool else map(_plant, tasks)):
+        for (bname, script), (dt, clean) in zip(bases.items(), each(_clean, scripts)):
+            if isinstance(clean, str):  # a base that doesn't build alarms once and plants nothing
+                print(f"{bname}: does not build: {clean}", file=out)
+                alarms += 1
+                continue
+            alarms += len(clean)
+            for x in sorted(clean):
+                print(f"{bname}: false alarm on the clean base: {x}", file=out)
+            print(f"{bname}: built and checked clean in {dt:.0f} s", file=out)
+            tasks += [(bname, Path(script), clean, fname, plant) for fname, plant in faults.items()]
+        t0 = time.time()
+        for line, r in each(_plant, tasks):
             print(line, file=out)
             if r:
                 results.append(r)
