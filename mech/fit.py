@@ -50,7 +50,8 @@ Each check is a name, ok, and what it measured; `ok` is all of them.
   `printing` passes printable.check's keyword args (nozzle, max_bridge, ...).
 
 It also lists, without judging, which top_access parts (switches, LEDs, IR
-receivers) have an opening above them, and each part's volume and mass.
+receivers) have an opening above them (below them, for a part on the
+board's bottom side, seen through the floor), and each part's volume and mass.
 """
 from __future__ import annotations
 
@@ -349,7 +350,9 @@ def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: floa
     for ref in board.top_access if only is None else []:
         p = board.part(ref)
         cx, cy = (p.bbox[0] + p.bbox[2]) / 2, (p.bbox[1] + p.bbox[3]) / 2
-        col = cylinder(cx, cy, p.z[1] + 0.01, outer.max.Z + 1, 1.0)
+        # what's in front of it: above a top part, below a bottom one (seen through the floor)
+        col = cylinder(cx, cy, p.z[1] + 0.01, outer.max.Z + 1, 1.0) if p.side != "bottom" else \
+            cylinder(cx, cy, outer.min.Z - 1, p.z[0] - 0.01, 1.0)
         over = [n for n, e in parts.items() if _overlap(col, e) >= EPS]
         top.append({"ref": ref, "open_above": not over, "under": over})
 
