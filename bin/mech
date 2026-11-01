@@ -39,7 +39,7 @@ shared=${MECH_SHARED:-$tools/mech}
 finduv() {
 	uv=$(command -v uv || true)
 	[ -z "$uv" ] && [ -x "$tools/uv/bin/uv" ] && uv=$tools/uv/bin/uv
-	[ -n "$uv" ] || { echo "mech: needs uv (hive agent install --tool uv)" >&2; exit 127; }
+	[ -n "$uv" ] || { echo "mech: needs uv; install it from https://docs.astral.sh/uv" >&2; exit 127; }
 }
 
 # publish builds the environment beside <dir>/mech and swaps it in, so a
