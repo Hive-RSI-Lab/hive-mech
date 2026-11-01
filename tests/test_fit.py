@@ -332,8 +332,12 @@ def test_lid_lip_clears_a_wide_plugs_opening(board):
     t = Tray(b)
     _, _, _, _, z1, _, _ = t.opening(b.port("J1"))
     assert z1 > t.z_top - t.lip[0]           # the case this is about
-    r = fit.check(b, {"base": t.cut_ports(t.base()), "lid": t.lid()})
+    lid = t.lid()
+    r = fit.check(b, {"base": t.cut_ports(t.base()), "lid": lid})
     assert names_failing(r) == [], fit.summary(r)
+    # and the notch leaves no sliver of lip on the inside
+    from mech import printable
+    assert printable.check(lid)["wall"]["ok"]
 
 
 def test_top_access_of_a_bottom_part_looks_down(board):

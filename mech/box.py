@@ -230,10 +230,14 @@ class Tray:
         # Nor in a port's opening: the plug (a USB-C overmold, 12.4 wide) is
         # wider than the receptacle, so the part's notch alone leaves lip in
         # the plug's way where the opening reaches above the lip's foot.
+        # The notch runs across the whole lip, so no sliver of it is left inside.
+        ix0, iy0, ix1, iy1 = self.inner
+        near = lt + lg + self.web
         for port in self.ports:
             e, u0, u1, z0, z1, a, b = self.opening(port)
             if z1 > self.z_top - lh:
-                lid = self.clear_lip(lid, a, u0, b, u1) if e in "WE" else self.clear_lip(lid, u0, a, u1, b)
+                lid = self.clear_lip(lid, *{"W": (ix0 - 1, u0, ix0 + near, u1), "E": (ix1 - near, u0, ix1 + 1, u1),
+                                            "S": (u0, iy0 - 1, u1, iy0 + near), "N": (u0, iy1 - near, u1, iy1 + 1)}[e])
         return lid
 
     def clear_lip(self, lid: Part, x0: float, y0: float, x1: float, y1: float) -> Part:
