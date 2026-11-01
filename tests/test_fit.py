@@ -318,3 +318,36 @@ def test_keepout_side_cone_and_box_round_trip(board, tmp_path):
     p.write_text(b.to_json())
     back = load(p)
     assert [k.name for k in back.keepouts] == ["j1_out", "finger"] and back.keepouts[1].box[2] == 20
+
+
+def test_lid_lip_clears_a_wide_plugs_opening(board):
+    """With low parts, the lid's lip comes down past a USB-C opening's top:
+    the plug (12.4 wide) is wider than the receptacle the lip was notched
+    over, so the lip is notched over the port's opening too."""
+    import copy
+    b = copy.deepcopy(board)
+    for p in b.parts:
+        if p.side == "top" and p.ref != "J1":
+            p.z[1] = min(p.z[1], 4.0)
+    t = Tray(b)
+    _, _, _, _, z1, _, _ = t.opening(b.port("J1"))
+    assert z1 > t.z_top - t.lip[0]           # the case this is about
+    r = fit.check(b, {"base": t.cut_ports(t.base()), "lid": t.lid()})
+    assert names_failing(r) == [], fit.summary(r)
+
+
+def test_top_access_of_a_bottom_part_looks_down(board):
+    """A bottom-side LED is seen through the floor: open below it, not above."""
+    import copy
+    from mech.kicad import Part
+    b = copy.deepcopy(board)
+    b.parts.append(Part("LED9", "led", "LED_0603", "bottom", 10.0, 10.0, 0.0, [9.0, 9.5, 11.0, 10.5],
+                        [-0.8, 0.0], "table", False))
+    b.top_access.append("LED9")
+    t = Tray(b)
+    base, lid = t.cut_ports(t.base()), t.lid()
+    under = {x["ref"]: x["under"] for x in fit.check(b, {"base": base, "lid": lid})["top_access"]}
+    assert under["LED9"] == ["base"]
+    base -= cylinder(10.0, 10.0, t.z_bottom - 1, -0.5, 2.0)
+    under = {x["ref"]: x["under"] for x in fit.check(b, {"base": base, "lid": lid})["top_access"]}
+    assert under["LED9"] == []

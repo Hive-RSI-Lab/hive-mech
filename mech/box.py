@@ -227,6 +227,13 @@ class Tray:
         for p in self.board.parts:
             if p.side == "top" and p.z[1] > self.z_top - lh:
                 lid = self.clear_lip(lid, p.bbox[0] - 0.5, p.bbox[1] - 0.5, p.bbox[2] + 0.5, p.bbox[3] + 0.5)
+        # Nor in a port's opening: the plug (a USB-C overmold, 12.4 wide) is
+        # wider than the receptacle, so the part's notch alone leaves lip in
+        # the plug's way where the opening reaches above the lip's foot.
+        for port in self.ports:
+            e, u0, u1, z0, z1, a, b = self.opening(port)
+            if z1 > self.z_top - lh:
+                lid = self.clear_lip(lid, a, u0, b, u1) if e in "WE" else self.clear_lip(lid, u0, a, u1, b)
         return lid
 
     def clear_lip(self, lid: Part, x0: float, y0: float, x1: float, y1: float) -> Part:
