@@ -31,7 +31,7 @@
 # instead of either. Nothing here installs anything outside HOME but
 # publish's <dir>.
 set -e
-here=$(cd "$(dirname "$0")/.." && pwd)
+here=$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)   # follow the link `hive module add` puts in ~/.local/bin
 tools=${HIVE_TOOLS:-/hive/tools}
 state=${MECH_HOME:-$HOME/.cache/mech}
 venv=${MECH_VENV:-$state/venv}
