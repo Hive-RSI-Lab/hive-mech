@@ -52,6 +52,23 @@ also prints a one-line summary and a warning for every height it guessed.
 - **top_access**: switches, LEDs, IR receivers and displays. Each one needs
   a decision: a button, a light pipe, a window, or nothing.
 
+What the reader doesn't know:
+
+- It keeps DNP parts. A footprint marked do-not-populate still gets a box
+  and a height, so filter the `(attr ... dnp)` footprints out of the
+  board, or skip their `parts_clear` misses.
+- Any `H<n>`/`MH<n>` reference with a hole of 2 mm or more reads as a
+  mount, even a through-hole part's large lead hole. Check `holes` and
+  skip the false ones (`FIT = {"skip": ["hole_H3", "screw_H3"]}`).
+- A part's box is its courtyard (else its fab outline, else its pads), so
+  a connector whose courtyard is drawn generously sits in a box bigger
+  than the body. Measure the body from the datasheet when the box decides
+  a wall.
+- The board is one flat slab of the board's thickness, so a rigid-flex
+  board (or one bent in the enclosure) can't be modelled: skip
+  `board_clear` and `board_gap` and check a real model of the bent board
+  in a test of your own.
+
 **Check the heights.** 3D models are often wrong. On the hifi Lite board,
 the 470 µF cap's model is 7.8 mm tall but the real part is 13 mm, and the
 EasyEDA STEP for the RCA jack sits 13.5 mm low. Put a datasheet number in a
@@ -93,6 +110,8 @@ in `build` (apex on the part's top, along +z; `axis="N"` for a side looker,
 or `board.add_keepout_box(...)`. `t.clear_keepout(lid, "fov")` cuts the
 cone through a part, and the fit check's `keepout_fov` fails while any
 other enclosure part is in it.
+A straight-through keep-out (a beam with no spread) can't take
+`half_angle=0`; give it a tiny angle such as `0.01`.
 
 Something that isn't on the board but must fit inside the box (a heatsink,
 a binding post's nut and lug, a second board and its parts) goes in as
@@ -133,6 +152,13 @@ them. A board in card guides has holes that hold nothing:
 **Round ports.** SMA and BNC connectors (`kicad.ROUND`) get a round opening,
 pointed on top so a wall prints upright (`Tray.cut_ports`, `bought.port_hole`).
 Their plug is a 9.5 mm (SMA) or 14.6 mm (BNC) cylinder in the fit check.
+The hole `port_hole` cuts is the plug's diameter plus the margin (about
+10.1 mm for an SMA). An edge-launch SMA's 6.5 mm square flange falls
+through that, so a plate meant to hold the jack can't. For a jack that
+bolts to the plate, cut a thread-clearance hole (about 6.6 mm for
+1/4-36) and set the plate so its inside face bears on the flange; the
+plug then stays outside the wall and the `port_<ref>` check's cylinder
+will report it as blocked, so skip that check with a note.
 
 ## 3. Build and check: `mech build`
 
@@ -180,6 +206,12 @@ shoulders over it, two openings or lip notches closer than `web` (1 mm) are
 cut as one, a `pocket` inside the lid's outline runs up to the wall's top,
 and a button's flange meets its cap on a 45-degree cone.
 
+Two of your own cuts the checks won't catch: a pocket in the lid's
+underside must not run over a lid pillar (it leaves the pillar hanging
+from nothing) or under the lip (the lip then prints on air). The `wall_`
+check reads engraved text and the sharp corners of a 45-degree dovetail as
+thin walls; look at where it points before you thicken anything.
+
 It also lists what is above each top-access part (open, lid, a button) and
 each part's volume and solid PETG mass, which gives a material cost (PETG is
 about $20/kg). The slicer's figures below are the real ones.
@@ -195,6 +227,10 @@ extrusions), so `support_g = 0` means the part prints as it lies with none.
 The geometry checks above are a fast guess; the slicer is the word: on
 hifi-receiver's Lite enclosure every print check passes, and PrusaSlicer
 still adds 3.5 g of support under the base and 0.2 g under each button.
+Exact 45-degree roofs (a teardrop's point, a slot's roof) pass the
+overhang check and can still get 0.4-1.6 g of support from the slicer;
+a steeper 60-degree roof avoids that, but across a thin plate (2.4 mm) it
+leaves a sliver the `wall_` check fails, so thicken the plate there.
 
 The settings are `mech/slicer.ini`: the receiver's own (PETG, 0.4 mm nozzle,
 0.2 mm layers, 4 perimeters, 20 % gyroid, auto support at 45 degrees) on an
@@ -226,6 +262,10 @@ Look at them: the checks only catch what they measure.
   least 12.4 x 6.6 mm, so the overmold fits. A connector set back from the
   board edge adds that set-back to the recess. Tell the board's worker to
   move it to the edge rather than thinning the wall.
+- A port's recess is measured from the outermost part on that side of
+  the whole assembly, so a bezel standing proud of the plate or a mount
+  foot adds to it. If the plate face is what matters, check its recess in
+  a test of your own.
 - The cavity follows the board's outline (Edge.Cuts) grown by `gap`, so a
   shaped board sits in a box of the same shape. Each wall, the lid and its lip
   are offsets of that plan. Convex corners round by the offset; concave ones
@@ -237,6 +277,18 @@ Look at them: the checks only catch what they measure.
   shows up in `parts_clear`.
 - build123d's `Text()` can hang for minutes looking for fonts, so leave
   embossed labels out or give it a font file path.
+- Other build123d (0.13) traps: `Cylinder(..., align=...)` wants `Align`
+  values, not strings; a `Box` with a negative size raises
+  `Standard_DomainError`; an extrude goes along the face's normal, so on
+  `Plane.YZ`/`Plane.XZ` it can go the other way from what you expect, and
+  it's safer to place a part by its bounding box than by the sketch
+  plane's origin. A circle drawn as a polygon has its chords inside the
+  radius: push the vertices out by 1/cos(step/2) when it must clear a
+  round part.
+- `mech.printable.check(part)` works on any build123d part, not only an
+  enclosure from `mech build`: a printed fixture or jig that holds no
+  board can use its overhang, bridge and wall results directly (plain
+  build123d through `mech python`, with its own export).
 - The machine is often loaded. One CAD build at a time, at `nice 19`, takes
   about 1 min for the Lite box.
 
