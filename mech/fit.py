@@ -5,7 +5,8 @@
 
 Each check is a name, ok, and what it measured; `ok` is all of them.
 
-- board_clear: the board's outline slab touches no part of the enclosure.
+- board_clear: the board's outline slab touches no part of the enclosure
+  (a locating peg inside a mounting hole is fine).
 - board_gap: the board drops in: nothing of the enclosure within min_gap
   (default 0.1 mm) of its outline's edge, through its thickness. A wall
   that only touches the board passes board_clear but won't take a printed
@@ -81,8 +82,12 @@ def _overlap(a, b) -> float:
         return 0.0
 
 
-def board_solid(board: Board) -> Part:
-    return extrude(Polygon(*[tuple(p) for p in board.outline], align=None), amount=board.thickness)
+def board_solid(board: Board, holes: bool = False) -> Part:
+    """The board's outline slab; with holes, its mounting holes cut through it (a peg in one is no clash)."""
+    slab = extrude(Polygon(*[tuple(p) for p in board.outline], align=None), amount=board.thickness)
+    for h in board.holes if holes else ():
+        slab -= cylinder(h.x, h.y, -1.0, board.thickness + 1.0, h.drill)
+    return slab
 
 
 def board_ring(board: Board, gap: float) -> Part:
@@ -217,7 +222,7 @@ def check(board: Board, parts: dict, bed=(220.0, 220.0, 250.0), max_recess: floa
     outer = whole.bounding_box()
 
     if w("board_clear"):
-        ov = sum(_overlap(board_solid(board), e) for e in enc)
+        ov = sum(_overlap(board_solid(board, holes=True), e) for e in enc)
         add("board_clear", ov < EPS, overlap_mm3=round(ov, 3))
 
     if w("board_gap"):

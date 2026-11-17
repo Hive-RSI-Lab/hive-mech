@@ -239,6 +239,9 @@ def test_boss_without_a_screw_hole_fails_screw(board):
     peg = cylinder(h.x, h.y, -4, board.thickness + 1, 2.0)  # a locating peg through the hole
     r = fit.check(board, {"base": base + peg, "lid": t.lid()})
     assert f"screw_{h.ref}" not in names_failing(r), fit.summary(r)
+    assert "board_clear" not in names_failing(r), fit.summary(r)   # it's in the hole, not the board
+    fat = cylinder(h.x, h.y, -4, board.thickness + 1, h.drill + 1.0)  # wider than the hole: into the board
+    assert "board_clear" in names_failing(fit.check(board, {"base": base + fat, "lid": t.lid()}))
 
 
 def test_only_runs_the_named_checks(board):
